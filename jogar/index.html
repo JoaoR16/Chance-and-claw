@@ -1401,9 +1401,10 @@ function startFight(i){return runFight(S.opps[i],false)}
 function startRival(i){const r=ACC.rivals[i];if(r)return runFight(rivalOpp(r),false)}
 function startChallenge(){return runFight(chalOpp(),false,true)}
 async function runFight(opp,tour,chal){
-  const prev=_sceneForce;
+  const prev=_sceneForce,prevE=_evForce;
   _sceneForce=chal?null:(SCENES.find(x=>x.id===opp.scene)||null);
-  try{return await runFight0(opp,tour,chal)}finally{_sceneForce=prev}
+  if(opp.ev)_evForce=EVENTS.find(x=>x.id===opp.ev)||_evForce;
+  try{return await runFight0(opp,tour,chal)}finally{_sceneForce=prev;_evForce=prevE}
 }
 async function runFight0(opp,tour,chal){
   if(busy)return;
@@ -1413,7 +1414,7 @@ async function runFight0(opp,tour,chal){
   const prevEv=_evForce;
   if(chal)_evForce={id:'semana',nome:'',desc:'',m:{}};
   let res;
-  try{res=simulate(fa,fb)}finally{_evForce=prevEv}
+  try{res=opp.pre||simulate(fa,fb)}finally{_evForce=prevEv}
   res_max.a=res.maxA;res_max.b=res.maxB;
   speed=userSpeed;setSpeedUI();
   $('na').textContent=fa.name;$('la').textContent='Nv. '+fa.level;
@@ -1978,6 +1979,7 @@ async function lgDuel(targetId){
 }
 async function lgRender(){
   const el=$('lg-body');if($('s-league').hidden)return;
+  if(lgSrv())return lsRender();
   const tok=++LG.tok;
   if(!LG.started){el.innerHTML='<p class="msg">A ligar à liga...</p>';return}
   if(!LG.db||!LG.uid){el.innerHTML='<div class="panel"><p>A liga só funciona quando o jogo está aberto no claude.ai, com a sessão iniciada. Aqui não está disponível.</p><p class="msg">O resto do jogo funciona normalmente.</p></div>';return}
@@ -2027,7 +2029,112 @@ $('lg-body').addEventListener('click',async e=>{
   else if(a==='leaveyes')await lgLeave();
   else if(a==='duel')await lgDuel(b.dataset.id);
 });
+/* ===== liga no servidor (site com conta online) ===== */
+const LS={rows:[],duels:[],loading:false,err:'',leave:false,busy:false};
+const LS_DAILY=3,LS_WIN=3;
+const lgSrv=()=>!!window.CC_CLOUD;
+const lsUid=()=>(CL&&CL.user&&CL.user.id)||null;
+const lsDay=()=>new Date().toISOString().slice(0,10);
+const lsMine=()=>LS.rows.find(r=>r.user_id===lsUid())||null;
+const lsLeft=()=>{const m=lsMine();return m&&m.dd_day===lsDay()?Math.max(0,LS_DAILY-(+m.dd_n||0)):LS_DAILY};
+const LS_ERR={daily_limit:'Já fizeste os 3 duelos de hoje. Volta amanhã.',same_target:'Já desafiaste este campeão hoje. Escolhe outro.',target_gone:'Esse campeão saiu da liga.',target_invalid:'Esse campeão não passou na verificação e não pode ser desafiado.',invalid_fighter:'O teu campeão não passou na verificação do servidor. Escolhe outro lutador.',not_in_league:'Ainda não entraste na liga.',auth:'A tua sessão expirou. Volta a entrar na conta online.',net:'Não foi possível falar com a liga agora. Tenta outra vez daqui a pouco.'};
+async function lsCall(action,extra){
+  const r0=await CL.sb.auth.getSession();const s=r0&&r0.data&&r0.data.session;
+  if(!s)throw Object.assign(new Error('auth'),{code:'auth'});
+  let r,j={};
+  try{r=await fetch(window.CC_CLOUD.url+'/functions/v1/league',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+s.access_token,apikey:window.CC_CLOUD.key},body:JSON.stringify(Object.assign({action},extra||{}))})}
+  catch(e){throw Object.assign(new Error('net'),{code:'net'})}
+  try{j=await r.json()}catch(e){}
+  if(!r.ok||j.err)throw Object.assign(new Error(j.err||'net'),{code:j.err||'net'});
+  return j;
+}
+async function lsLoad(){
+  if(!CL.sb||!CL.user)return;
+  LS.loading=true;lsRender();
+  try{
+    const a=await CL.sb.from('league_fighters').select('*');
+    const b=await CL.sb.from('league_duels').select('*').order('created_at',{ascending:false}).limit(200);
+    if(a.error)throw a.error;if(b.error)throw b.error;
+    LS.rows=a.data||[];LS.duels=b.data||[];
+  }catch(e){LS.err='net'}
+  LS.loading=false;lsRender();
+}
+async function lsOpen(){
+  LS.err='';LS.leave=false;lsRender();
+  await lsLoad();
+  const m=lsMine(),c=lgChamp();
+  if(m&&c&&exportFighter(c.f)!==m.code){try{await lsCall('sync',{code:exportFighter(c.f)});await lsLoad()}catch(e){LS.err=e.code||'net';lsRender()}}
+}
+async function lsJoin(idx){
+  const c=ACC.chars[idx];if(!c||LS.busy)return;
+  LS.busy=true;LS.err='';
+  try{await lsCall('join',{code:exportFighter(c.f)});ACC.chars.forEach(x=>{delete x.lgIn});c.lgIn=true;saveAcc()}catch(e){LS.err=e.code||'net'}
+  LS.busy=false;await lsLoad();
+}
+async function lsLeave(){
+  if(LS.busy)return;LS.busy=true;LS.err='';
+  try{await lsCall('leave');ACC.chars.forEach(x=>{delete x.lgIn});saveAcc()}catch(e){LS.err=e.code||'net'}
+  LS.busy=false;LS.leave=false;await lsLoad();
+}
+async function lsDuel(tid){
+  if(busy||LS.busy)return;
+  const c=lgChamp(),t=LS.rows.find(x=>x.user_id===tid);
+  if(!c||!t||!lsMine())return;
+  const rb=importFighter(t.code);
+  if(rb.err){LS.err='target_invalid';lsRender();return}
+  LS.busy=true;LS.err='';lsRender();
+  let j;
+  try{j=await lsCall('duel',{target:tid,code:exportFighter(c.f)})}
+  catch(e){LS.err=e.code||'net';LS.busy=false;await lsLoad();return}
+  ACC.active=ACC.chars.indexOf(c);S=c;saveAcc();
+  const opp={f:rb.f,rival:true,league:true,diff:'Liga',xp:8,scene:j.scene,ev:j.ev,pre:j.res};
+  LS.busy=false;
+  await runFight(opp,false);
+  toast('Duelo registado na liga.');
+  await lsLoad();
+}
+function lsRender(){
+  const el=$('lg-body');if($('s-league').hidden)return;
+  if(!CL.on||!CL.user){el.innerHTML='<div class="panel"><p>Para jogares na liga tens de entrar na tua conta online (com o teu email).</p><div class="row" style="margin-top:10px"><button class="btn small" data-ls="acc">Ir para a conta</button></div></div>';return}
+  const uid=lsUid(),m=lsMine(),c=lgChamp(),left=lsLeft();
+  let h='';
+  if(LS.err)h+='<p class="err" role="alert">'+esc(LS_ERR[LS.err]||LS_ERR.net)+'</p>';
+  if(LS.loading)h+='<p class="msg">A carregar a liga...</p>';
+  h+='<div class="panel"><h3>O teu lugar na liga</h3>';
+  if(m){h+='<p>O teu campeão: <strong>'+esc(m.fname)+'</strong> (nível '+(+m.lv||1)+'). Pontos: <strong>'+(+m.pts||0)+'</strong>. Duelos que ainda podes fazer hoje: <strong>'+left+'</strong> de '+LS_DAILY+'.</p>'+(c?'':'<p class="msg">Esse lutador já não está neste aparelho. Escolhe outro para voltares a poder desafiar.</p>')+'<p class="msg">Quando o teu campeão sobe de nível, a liga atualiza sozinha quando abres este ecrã.</p>'}
+  else h+='<p>Ainda não entraste. Escolhe o lutador que vai defender o teu nome.</p>';
+  const sel=c?ACC.chars.indexOf(c):(ACC.active!==null?ACC.active:0);
+  h+='<div class="row" style="margin-top:10px"><select id="lg-pick" aria-label="Lutador para a liga">'+ACC.chars.map((x,i)=>'<option value="'+i+'"'+(i===sel?' selected':'')+'>'+esc(x.f.name)+' (nível '+x.f.level+')</option>').join('')+'</select>'+
+    '<button class="btn small" data-ls="join"'+(LS.busy?' disabled':'')+'>'+(m?'Usar este campeão':'Entrar na liga')+'</button>'+
+    (m?(LS.leave?'<button class="btn ghost small" data-ls="leaveyes">Sim, sair da liga</button><button class="btn ghost small" data-ls="leaveno">Cancelar</button>':'<button class="btn ghost small" data-ls="leave">Sair da liga</button>'):'')+'</div></div>';
+  const rows=LS.rows.filter(p=>typeof p.code==='string'&&typeof p.fname==='string'&&!importFighter(p.code).err).sort((a,b)=>(+b.pts||0)-(+a.pts||0)||(+b.aw||0)-(+a.aw||0)||String(a.user_id).localeCompare(String(b.user_id)));
+  h+='<h3 class="gh" style="margin-top:22px">Ranking</h3><p class="msg" style="margin:0">Cada vitória a atacar vale '+LS_WIN+' pontos. Podes fazer '+LS_DAILY+' duelos por dia, no máximo um por adversário. Os duelos são calculados no servidor.</p>';
+  if(!rows.length)h+='<p class="msg">Ainda ninguém entrou na liga. Sê o primeiro.</p>';
+  else h+='<div class="lg-list">'+rows.map((p,i)=>{
+    const me=p.user_id===uid,dw=LS.duels.filter(d=>d.b===p.user_id&&!d.won).length,dl=LS.duels.filter(d=>d.b===p.user_id&&d.won).length;
+    const done=LS.duels.some(d=>d.a===uid&&d.b===p.user_id&&String(d.created_at).slice(0,10)===lsDay());
+    const can=!me&&m&&c&&left>0&&!busy&&!LS.busy&&!done;
+    return '<div class="lg-r'+(me?' me':'')+'"><div class="lg-rk">'+(i+1)+'</div><div><h3>'+esc(p.fname)+' <small>nível '+(+p.lv||1)+'</small></h3><small>'+(me?'tu · ':'')+(+p.pts||0)+' pts · ataques '+(+p.aw||0)+'V '+(+p.al||0)+'D · defesas '+dw+'V '+dl+'D</small></div>'+
+      '<div class="go">'+(me?'':'<button class="btn small" data-ls="duel" data-id="'+esc(p.user_id)+'"'+(can?'':' disabled')+'>'+(done?'Já desafiado hoje':'Desafiar')+'</button>')+'</div></div>';
+  }).join('')+'</div>';
+  if(rows.length&&(!m||!c))h+='<p class="msg">Entra na liga com um lutador para poderes desafiar os outros.</p>';
+  else if(rows.length&&left<1)h+='<p class="msg">Já fizeste os '+LS_DAILY+' duelos de hoje. Volta amanhã.</p>';
+  const fd=LS.duels.slice(0,12);
+  if(fd.length)h+='<h3 class="gh" style="margin-top:22px">Últimos duelos</h3><ul class="lg-feed">'+fd.map(d=>'<li><strong>'+esc(d.an)+'</strong>'+(d.a===uid?' (tu)':'')+' '+(d.won?'venceu':'perdeu contra')+' <strong>'+esc(d.bn)+'</strong>'+(d.b===uid?' (tu)':'')+' <small>'+fmtDT(Date.parse(d.created_at))+'</small></li>').join('')+'</ul>';
+  el.innerHTML=h;
+}
+$('lg-body').addEventListener('click',async e=>{
+  const b=e.target.closest('[data-ls]');if(!b||b.disabled)return;
+  const a=b.dataset.ls;
+  if(a==='acc')renderAccount();
+  else if(a==='join'){const v=$('lg-pick');if(v)await lsJoin(+v.value)}
+  else if(a==='leave'){LS.leave=true;lsRender()}
+  else if(a==='leaveno'){LS.leave=false;lsRender()}
+  else if(a==='leaveyes')await lsLeave();
+  else if(a==='duel')await lsDuel(b.dataset.id);
+});
 function lgOpen(){
+  if(lgSrv()){LS.leave=false;show('s-league');lsOpen();return}
   LG.leave=false;show('s-league');lgInit();lgRender();lgSync();
 }
 $('btn-league').addEventListener('click',()=>{if(!busy)lgOpen()});
