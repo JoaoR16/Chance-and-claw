@@ -1,0 +1,2237 @@
+<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#11141b"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2312161f'/%3E%3Cg fill='none' stroke='%23f5a524' stroke-width='3.4' stroke-linecap='round'%3E%3Cpath d='M9 6l8 21'/%3E%3Cpath d='M16 6l8 21' opacity='.7'/%3E%3C/g%3E%3C/svg%3E"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style><title>Chance &amp; Claw</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Layout: cabeçalho curto e um ecrã de cada vez (conta, criar, hub, combate). Papel frio, tinta escura, âmbar só nas armas. */
+:root{
+  --bg:#e8ebea;--panel:#f6f7f6;--ink:#1a2030;--muted:#566074;--line:#c7cfd1;
+  --weapon:#d4820a;--good:#1b7a4b;--bad:#b8372f;--focus:#3e63dd;
+  --f-display:'Space Grotesk',system-ui,sans-serif;--f-body:'Inter',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#11141b;--panel:#1a1f2a;--ink:#e8eaef;--muted:#9ba4b4;--line:#2d3545;--weapon:#f5a524;--good:#4cc38a;--bad:#f0705f;--focus:#8da2fb;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#11141b;--panel:#1a1f2a;--ink:#e8eaef;--muted:#9ba4b4;--line:#2d3545;--weapon:#f5a524;--good:#4cc38a;--bad:#f0705f;--focus:#8da2fb;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--f-body);padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:980px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0;font-weight:700}
+h1{font-size:clamp(26px,5vw,36px);letter-spacing:-.01em}
+h2{font-size:24px}
+h3{font-size:18px}
+p{margin:0}
+small{color:var(--muted)}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:22px}
+.tagline{color:var(--muted);margin-top:6px;max-width:60ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.btn{font:600 15px var(--f-body);min-height:42px;padding:0 18px;border-radius:8px;border:1px solid var(--ink);background:var(--ink);color:var(--bg);cursor:pointer}
+.btn:hover{opacity:.88}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.small{min-height:34px;padding:0 12px;font-size:14px}
+.btn:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.eyebrow{font:600 12px var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.lead{color:var(--muted);margin:10px 0 20px;max-width:56ch}
+
+.create{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,300px);gap:28px;align-items:start}
+.create label.lbl,.create legend{display:block;font:600 14px var(--f-body);margin-bottom:6px;padding:0}
+.create fieldset{border:0;padding:0;margin:18px 0}
+input[type=text],input[type=email]{width:100%;max-width:360px;min-height:44px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:16px var(--f-body)}
+.err{color:var(--bad);font-size:14px;margin-top:6px;min-height:20px}
+.sw{display:flex;gap:12px;flex-wrap:wrap}
+.sw label{position:relative;display:block}
+.sw input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.sw span{display:block;width:36px;height:36px;border-radius:50%;background:var(--c)}
+.sw input:checked+span{outline:3px solid var(--ink);outline-offset:3px}
+.sw input:focus-visible+span{outline:3px solid var(--focus);outline-offset:3px}
+.trait-pick{display:grid;gap:10px;margin:6px 0 22px;max-width:460px}
+.trait-pick .tr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+.pvbox{text-align:center}
+.pvbox svg{width:100%;max-width:260px;height:auto}
+
+.fg-body{fill:var(--ink)}
+.fg-acc{fill:var(--acc,#d4820a)}
+.fg-wp{fill:var(--weapon)}
+.fg-ws{fill:none;stroke:var(--weapon);stroke-width:4;stroke-linecap:round}
+
+.top{display:flex;gap:14px;align-items:center}
+.top svg{width:72px;height:auto;flex:none}
+.fcard .top svg{width:84px}
+.top h2,.top h3{overflow-wrap:anywhere}
+.rec{color:var(--muted);font-size:14px;margin-top:2px}
+.hub{display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:20px;align-items:start}
+.xp{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:16px 0 4px}
+.xp i{display:block;height:100%;background:var(--ink)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+.stats dt{font:600 12px var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.stats dd{margin:0;font:700 26px var(--f-display);font-variant-numeric:tabular-nums}
+.stats dd small{font:400 13px var(--f-body);margin-left:6px}
+.gear{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:6px}
+.gear li{display:flex;flex-wrap:wrap;gap:2px 8px;align-items:baseline}
+.gear li small{font-size:13px}
+.gear .none{color:var(--muted)}
+.sect{margin-top:16px}
+.traitlist{display:grid;gap:8px;margin-top:8px}
+.trait{display:flex;flex-wrap:wrap;gap:2px 8px;align-items:baseline;border:1px solid currentColor;border-radius:8px;padding:7px 10px;font-size:14px}
+.trait b{font-weight:700}
+.trait strong{color:var(--ink);font-weight:600}
+.trait small{flex-basis:100%}
+.trait.pos{color:var(--good)}
+.trait.neg{color:var(--bad)}
+.tchips{display:flex;flex-wrap:wrap;gap:6px}
+.tc{font:600 12px var(--f-body);border:1px solid currentColor;border-radius:99px;padding:1px 9px}
+.tc.pos{color:var(--good)}
+.tc.neg{color:var(--bad)}
+.right-h{margin-bottom:4px}
+.right-p{color:var(--muted);margin-bottom:16px}
+.opps{display:grid;gap:12px}
+.opp{display:grid;grid-template-columns:78px minmax(0,1fr) auto;gap:16px;align-items:center}
+.opp svg{width:78px;height:auto}
+.opp h3{overflow-wrap:anywhere}
+.opp .meta{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;margin-top:2px}
+.chip{font:600 11px var(--f-body);letter-spacing:.08em;text-transform:uppercase;border:1px solid currentColor;border-radius:99px;padding:1px 8px}
+.chip.f{color:var(--good)}.chip.i{color:var(--muted)}.chip.d{color:var(--bad)}
+.opp .nums{font-size:13px;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums}
+.ups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.up{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:6px;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.up:hover{border-color:var(--ink)}
+.up:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.up strong{font:700 18px var(--f-display)}
+.up span{font-size:14px;color:var(--muted)}
+.up .kind{font:600 11px var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--weapon)}
+
+.acc-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px}
+.acc-head label{display:block;font:600 14px var(--f-body);margin-bottom:6px}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:6px}
+.slot{display:flex;flex-direction:column;gap:12px}
+.slot.empty{border-style:dashed;justify-content:center;align-items:flex-start;min-height:190px;color:var(--muted)}
+.fg-pet{fill:var(--muted)}
+.fg-pe{fill:var(--bg)}
+.pet-row{display:flex;gap:12px;align-items:center;margin-top:8px}
+.pet-row svg{width:72px;height:auto;flex:none}
+.pet-row div{min-width:0}
+.pet-row small{display:block;font-size:13px}
+#res .pet-row{margin:4px 0 16px}
+.gtabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 8px}
+.gtabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.gh{margin:22px 0 10px;font:700 18px var(--f-display)}
+.gcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.gc{display:flex;flex-direction:column;gap:6px;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);min-width:0}
+.gc.own{border:2px solid var(--ink);padding:13px}
+.gc .top2{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.gc strong{font:700 17px var(--f-display);overflow-wrap:anywhere}
+.gc.pos strong{color:var(--good)}
+.gc.neg strong{color:var(--bad)}
+.gc .d{font-size:14px;color:var(--muted)}
+.gc .st{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.gc svg{width:88px;height:auto}
+.chip.o{color:var(--ink)}
+.tour{padding-bottom:22px;border-bottom:1px solid var(--line)}
+.tour-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.brwrap{overflow-x:auto;margin-top:10px}
+.bracket{display:grid;grid-template-columns:repeat(3,minmax(150px,1fr));gap:12px;min-width:480px}
+.rdc{display:grid;gap:8px;align-content:space-around;min-width:0}
+.mt{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--bg)}
+.mt.mine{border:2px solid var(--ink)}
+.mt>div{display:flex;justify-content:space-between;gap:6px;padding:5px 8px;font-size:13px}
+.mt>div+div{border-top:1px solid var(--line)}
+.mt>div.w{font-weight:700}
+.mt>div.l{color:var(--muted)}
+.mt span{min-width:0;overflow-wrap:anywhere}
+.chal{margin-top:22px}
+.nums-d{margin:4px 0 16px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.nums-d summary{cursor:pointer;padding:10px 14px;font:600 14px var(--f-body)}
+.nums-d summary:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:10px}
+.tbl{overflow-x:auto;padding:0 14px 12px}
+.tbl table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{padding:6px 8px;text-align:right;border-top:1px solid var(--line)}
+.tbl th:first-child{text-align:left;font-weight:500;color:var(--muted)}
+.tbl thead th{border-top:0;font-weight:700;color:var(--ink);overflow-wrap:anywhere}
+.nums-note{margin-top:8px;font-size:13px;color:var(--muted)}
+.msg{color:var(--muted);font-size:14px;margin-top:8px;overflow-wrap:anywhere}
+#cl .row{margin-top:10px}#cl-codebox{margin-top:12px}#cl-conf .cmp{display:grid;gap:8px;margin:10px 0}.linkbtn{background:none;border:0;padding:0;color:var(--ink);text-decoration:underline;font:inherit;cursor:pointer}
+.evtag{margin-top:6px;font-size:14px;color:var(--muted);max-width:60ch}
+textarea{width:100%;font:13px/1.4 var(--f-mono,ui-monospace,monospace);padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical}
+textarea:focus-visible,select:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+select{min-height:40px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:15px var(--f-body);padding:0 10px;max-width:100%}
+.lbl2{display:block;font:600 13px var(--f-body);margin-bottom:4px}
+.cosrow{display:flex;flex-wrap:wrap;gap:14px;margin-top:6px}
+.up .hint{color:var(--good);font-weight:600}
+.gc.locked{opacity:.55}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.tile{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:12px 14px}
+.tv{font:700 26px var(--f-display);font-variant-numeric:tabular-nums}
+.hlist{display:grid;gap:8px;margin-top:18px}
+.hrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:10px 14px}
+.hrow strong{overflow-wrap:anywhere}
+.hx{white-space:nowrap}
+#ie-out{margin-top:10px}
+#ie-out .msg{color:var(--muted);font-size:14px}
+#toast{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;padding:0 16px calc(16px + env(safe-area-inset-bottom,0px));pointer-events:none;z-index:20}
+#toast[hidden]{display:none}
+#toast span{background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font:600 14px var(--f-body);max-width:420px}
+@media (max-width:520px){.hrow{grid-template-columns:auto minmax(0,1fr)}.hx{grid-column:1/-1}}
+
+.bars{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:10px}
+.who{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.who strong{font-family:var(--f-display);overflow-wrap:anywhere}
+.hp{height:12px;background:var(--line);border-radius:6px;overflow:hidden;margin:6px 0 2px;display:flex}
+.hp.r{justify-content:flex-end}
+.hp i{display:block;height:100%;width:100%;background:var(--good);transition:width .25s}
+.bars small{font-variant-numeric:tabular-nums}
+#arena{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+.ground{stroke:var(--line);stroke-width:2}
+.fx{transform-box:fill-box;transform-origin:50% 100%}
+.fx.hit .fg-body{fill:var(--bad)}
+.dmg{font:700 24px var(--f-display);fill:var(--bad);text-anchor:middle;paint-order:stroke;stroke:var(--panel);stroke-width:4px}
+.dmg.crit{font-size:32px}
+.dmg.miss{fill:var(--muted);font-size:18px}
+.dmg.good{fill:var(--good);font-size:20px}
+.dmg.info{fill:var(--weapon);font-size:18px}
+#log{min-height:28px;margin:12px 0;color:var(--muted);font-size:15px}
+.ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.seg{display:flex;gap:6px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#res{margin-top:18px;text-align:left}
+#res h3.win{color:var(--good)}
+#res h3.lose{color:var(--bad)}
+#res p{margin:6px 0 14px}
+
+@media (max-width:760px){
+  .create,.hub{grid-template-columns:minmax(0,1fr)}
+  .create .pvbox{order:-1}
+  .ups{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:520px){
+  .opp{grid-template-columns:64px minmax(0,1fr)}
+  .opp svg{width:64px}
+  .opp .go{grid-column:1/-1}
+  .opp .go .btn{width:100%}
+  .bars{gap:10px}
+  .trait-pick .tr{grid-template-columns:minmax(0,1fr)}
+}
+@media (prefers-reduced-motion:reduce){.hp i{transition:none}}
+/* ===== Gráficos v2: cenário, impacto, interface ===== */
+.ups{grid-template-columns:minmax(0,460px)}
+:root{--dawn1:#f9d5b0;--dawn2:#c9dcec;--dusk1:#f3a77a;--dusk2:#c9b3d6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--dawn1:#6b4a52;--dawn2:#2a3350;--dusk1:#7a3b4a;--dusk2:#2b2747}}
+:root[data-theme="dark"]{--dawn1:#6b4a52;--dawn2:#2a3350;--dusk1:#7a3b4a;--dusk2:#2b2747}
+.scname{font:600 13px var(--f-body);fill:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.boosttag.bad{fill:var(--bad)}
+#arena.night .boosttag.bad{fill:#ff9a8a}
+.boosttag{font:700 13px var(--f-body);fill:var(--good);paint-order:stroke;stroke:var(--panel);stroke-width:3px}
+#arena.night .scname{fill:#9aa0c0}
+#arena.night .fg-pet{fill:#8b93b5}
+#arena.night .boosttag{fill:#7fe0ad;stroke:#1a1c33}
+.gc svg.thumb{width:100%;height:auto;border-radius:8px}
+:root{--sky:#dfe5e6;--floor:#cdd5d3;--sun:#f3c969;--hpB:#8fd9b0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--sky:#1d2433;--floor:#2a3244;--sun:#e9e6c8;--hpB:#7fe0ad}}
+:root[data-theme="dark"]{--sky:#1d2433;--floor:#2a3244;--sun:#e9e6c8;--hpB:#7fe0ad}
+#arena{background:var(--sky)}
+.shadow{fill:#000;opacity:.15}
+#arena.night .fx:not(.hit) .fg-body{fill:#e8eaef}
+#arena.night .ground{stroke:#3a3a58}
+#arena.night .dmg{stroke:#1a1c33}
+#arena.night .shadow{opacity:.35}
+.idle{animation:idle 1.7s ease-in-out infinite}
+.idle.b{animation-delay:.55s}
+@keyframes idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.star{animation:tw 2.5s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.25}50%{opacity:1}}
+.ember{animation:rise 2.6s ease-in infinite}
+@keyframes rise{0%{transform:translateY(0);opacity:0}15%{opacity:.9}100%{transform:translateY(-110px);opacity:0}}
+.streak{stroke:var(--muted);stroke-width:2;stroke-linecap:round;opacity:0;animation:dash 1.8s linear infinite}
+@keyframes dash{0%{transform:translateX(-120px);opacity:0}25%{opacity:.45}100%{transform:translateX(780px);opacity:0}}
+.cloud{fill:var(--panel);opacity:.75;animation:drift 70s linear infinite}
+@keyframes drift{from{transform:translateX(-160px)}to{transform:translateX(840px)}}
+.burst{fill:none;stroke:var(--weapon);stroke-width:3;stroke-linecap:round;transform-box:fill-box;transform-origin:50% 50%}
+.burst.crit{stroke:var(--bad);stroke-width:4}
+.dmg{transform-box:fill-box;transform-origin:50% 100%}
+.hp{height:14px;border-radius:99px}
+.hp i{background:linear-gradient(90deg,var(--good),var(--hpB));border-radius:99px;transition:width .35s ease,background .35s}
+.hp i.mid{background:linear-gradient(90deg,var(--weapon),#f7cf7a)}
+.hp i.low{background:linear-gradient(90deg,var(--bad),#f5a094)}
+.xp{height:10px;border-radius:99px}
+.xp i{background:linear-gradient(90deg,var(--weapon),#f6d98a);border-radius:99px;animation:grow .9s ease-out}
+@keyframes grow{from{width:0}}
+@keyframes enter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+section:not([hidden]){animation:enter .28s ease-out}
+#res:not([hidden]){animation:enter .35s ease-out}
+.btn{transition:transform .12s,opacity .15s}
+.btn:active:not(:disabled){transform:scale(.97)}
+.fcard svg,.opp>svg{background:var(--bg);border-radius:14px;padding:4px}
+.opps .opp{padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--bg);transition:transform .18s,box-shadow .18s,border-color .18s}
+.opps .opp:hover{transform:translateY(-2px);border-color:var(--muted);box-shadow:0 10px 22px -16px rgba(0,0,0,.5)}
+.up{transition:transform .18s,border-color .18s,box-shadow .18s}
+.up:hover{transform:translateY(-4px);border-color:var(--weapon);box-shadow:0 12px 24px -14px rgba(0,0,0,.5)}
+.ups .up{animation:enter .35s ease-out both}
+.ups .up:nth-child(2){animation-delay:.07s}.ups .up:nth-child(3){animation-delay:.14s}
+.mt{border-radius:10px;box-shadow:0 4px 12px -10px rgba(0,0,0,.5)}
+.mt.mine{border-color:var(--weapon)}
+.mt>div.w{background:color-mix(in srgb,var(--good) 14%,transparent)}
+@media (prefers-reduced-motion:reduce){.idle,.star,.ember,.streak,.cloud,section,#res,.ups .up,.xp i{animation:none!important}.up,.opps .opp,.btn{transition:none}}
+
+.tut-dots{display:flex;gap:8px;margin:0 0 14px}
+.tut-dots i{width:28px;height:6px;border-radius:99px;background:var(--line)}
+.tut-dots i.on{background:var(--focus)}
+.tut-step{font:600 12px var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+#tut-body ul{margin:10px 0 0;padding-left:20px;display:grid;gap:8px}
+#tut-body li{overflow-wrap:anywhere}
+.lg-list{display:grid;gap:8px;margin-top:10px}
+.lg-r{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);min-width:0}
+.lg-r.me{border-color:var(--focus)}
+.lg-rk{font-weight:700;font-size:20px;line-height:1;text-align:center;color:var(--muted)}
+.lg-r h3{font-size:16px;margin:0;overflow-wrap:anywhere}
+.lg-r small{color:var(--muted);overflow-wrap:anywhere}
+.lg-feed{margin:8px 0 0;padding:0;list-style:none;display:grid;gap:6px;font-size:14px}
+.lg-feed li{padding:8px 10px;border:1px solid var(--line);border-radius:8px;overflow-wrap:anywhere;min-width:0}
+.lg-feed small{color:var(--muted)}
+#lg-body select{max-width:100%}
+@media (max-width:520px){.lg-r{grid-template-columns:34px minmax(0,1fr)}.lg-r .go{grid-column:1/-1}}
+</style><script>window.CC_CLOUD={url:"https://ulwxnharicpevojoerff.supabase.co",key:"sb_publishable_5TK0S386gpVHezHm7ZydQQ_rWi9VWua",google:false};</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script></head><body>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Chance &amp; Claw</h1>
+      <p class="tagline">Os combates são automáticos. A sorte decide como o lutador evolui.</p>
+      <p class="evtag" id="evtag"></p>
+    </div>
+    <nav class="row"><button class="btn ghost small" id="btn-acc" hidden>A tua conta</button><button class="btn ghost small" id="btn-league" hidden>Liga</button><button class="btn ghost small" id="btn-hist" hidden>Histórico</button><button class="btn ghost small" id="btn-guide">Guia</button><button class="btn ghost small" id="btn-snd" aria-pressed="true">Som: ligado</button></nav>
+  </header>
+
+  <section id="s-account" hidden>
+    <div class="acc-head">
+      <div>
+        <h2>A tua conta</h2>
+        <p class="lead" style="margin-bottom:0">Até 5 lutadores. Ficam guardados neste browser.</p>
+      </div>
+      <div>
+        <label for="in-acc">Nome da conta</label>
+        <input type="text" id="in-acc" maxlength="20" autocomplete="off">
+      </div>
+    </div>
+    <div class="panel" id="cl" hidden style="margin:16px 0 18px">
+      <h3>Conta online</h3>
+      <div id="cl-out">
+        <p class="lead" style="margin:6px 0 12px">Entra para guardares os lutadores na nuvem e jogares em qualquer dispositivo. Sem entrar, continuas a jogar e a guardar neste browser.</p>
+        <label class="lbl2" for="cl-email">Email</label>
+        <input type="email" id="cl-email" autocomplete="email" inputmode="email" placeholder="o.teu@email.com">
+        <div class="row"><button class="btn small" id="cl-send">Enviar link de entrada</button><button class="btn ghost small" id="cl-google" hidden>Entrar com Google</button></div>
+        <div id="cl-codebox" hidden>
+          <label class="lbl2" for="cl-code">Código do email (se o email trouxer um)</label>
+          <input type="text" id="cl-code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="123456">
+          <div class="row"><button class="btn small" id="cl-verify">Confirmar código</button></div>
+        </div>
+        <p class="msg" id="cl-priv" style="margin-top:12px">Guardamos só o teu email, para entrares, e os dados do jogo.</p>
+      </div>
+      <div id="cl-in" hidden>
+        <p id="cl-who" style="margin-top:6px"></p>
+        <p class="msg" id="cl-state" role="status"></p>
+        <div class="row"><button class="btn small" id="cl-now">Guardar agora</button><button class="btn ghost small" id="cl-logout">Sair</button><button class="linkbtn" id="cl-del" style="margin-left:6px">Apagar a gravação online</button></div>
+        <div id="cl-delbox" hidden class="row"><span>Apagar a gravação online? Os lutadores deste browser não são apagados.</span><button class="btn small" id="cl-delyes">Sim, apagar</button><button class="btn ghost small" id="cl-delno">Cancelar</button></div>
+      </div>
+      <div id="cl-conf" hidden>
+        <p style="margin-top:6px"><strong>Encontrámos duas versões.</strong> Escolhe qual queres manter. A outra fica guardada como código de cópia, mais abaixo nesta página.</p>
+        <div class="cmp" id="cl-cmp"></div>
+        <div class="row"><button class="btn small" id="cl-usecloud">Usar a conta online</button><button class="btn ghost small" id="cl-uselocal">Usar este dispositivo</button></div>
+      </div>
+      <p class="msg" id="cl-msg" role="status"></p>
+    </div>
+    <div class="slots" id="slots"></div>
+    <div class="panel" id="ie" style="margin-top:18px">
+      <h3>Exportar e importar</h3>
+      <p class="lead" style="margin:6px 0 12px">Exporta um lutador para um código de texto e envia-o a um amigo. Quem o importar pode lutar contra ele como rival. Para exportar, usa o botão "Exportar" na vaga do lutador.</p>
+      <label class="lbl2" for="ie-code">Código</label>
+      <textarea id="ie-code" rows="3" spellcheck="false" placeholder="Cola aqui o código de um lutador"></textarea>
+      <div class="row" style="margin-top:10px"><button class="btn small" id="ie-import">Importar</button><button class="btn ghost small" id="ie-copy">Copiar código</button></div>
+      <div id="ie-out" role="status"></div>
+    </div>
+    <div id="rivals"></div>
+    <div class="panel" id="bk" style="margin-top:18px">
+      <h3>Cópia de segurança</h3>
+      <p class="lead" style="margin:6px 0 12px">Os lutadores ficam guardados só neste browser. Se limpares os dados do browser ou mudares de dispositivo, perdes tudo. Guarda uma cópia da conta inteira (lutadores, rivais e conquistas) e restaura-a quando precisares.</p>
+      <p class="msg" id="bk-last" style="margin:0 0 10px"></p>
+      <div class="row"><button class="btn small" id="bk-save">Guardar ficheiro</button><button class="btn ghost small" id="bk-copy">Copiar código</button><label class="btn ghost small" for="bk-file" style="cursor:pointer">Carregar ficheiro</label><input type="file" id="bk-file" accept=".txt,.json,text/plain" hidden></div>
+      <label class="lbl2" for="bk-code" style="margin-top:12px">Código da cópia</label>
+      <textarea id="bk-code" rows="3" spellcheck="false" placeholder="Cola aqui o código de uma cópia de segurança"></textarea>
+      <div class="row" style="margin-top:10px"><button class="btn small" id="bk-restore">Restaurar</button></div>
+      <div id="bk-out" role="status"></div>
+    </div>
+  </section>
+
+  <section id="s-guide" hidden>
+    <div class="acc-head">
+      <div>
+        <h2>Guia</h2>
+        <p class="lead" id="guide-sub" style="margin-bottom:0"></p>
+      </div>
+      <div class="row"><button class="btn ghost small" id="guide-tut">Como jogar</button><button class="btn ghost small" id="guide-back">Voltar</button></div>
+    </div>
+    <div class="gtabs" role="group" aria-label="Categorias do guia">
+      <button class="btn ghost small" data-gt="weapons" aria-pressed="true">Armas</button>
+      <button class="btn ghost small" data-gt="skills" aria-pressed="false">Habilidades</button>
+      <button class="btn ghost small" data-gt="traits" aria-pressed="false">Traços</button>
+      <button class="btn ghost small" data-gt="pets" aria-pressed="false">Animais</button>
+      <button class="btn ghost small" data-gt="combos" aria-pressed="false">Combos</button>
+      <button class="btn ghost small" data-gt="ach" aria-pressed="false">Conquistas</button>
+      <button class="btn ghost small" data-gt="events" aria-pressed="false">Eventos</button>
+      <button class="btn ghost small" data-gt="scenes" aria-pressed="false">Cenários</button>
+    </div>
+    <div id="guide-body"></div>
+  </section>
+
+  <section id="s-history" hidden>
+    <div class="acc-head">
+      <div>
+        <h2>Histórico</h2>
+        <p class="lead" id="hist-sub" style="margin-bottom:0"></p>
+      </div>
+      <button class="btn ghost small" id="hist-back">Voltar</button>
+    </div>
+    <div id="hist-body" style="margin-top:18px"></div>
+  </section>
+
+  <section id="s-tut" hidden>
+    <div class="panel" style="max-width:640px;margin:0 auto">
+      <div class="tut-dots" id="tut-dots" aria-hidden="true"></div>
+      <div class="tut-step" id="tut-step"></div>
+      <h2 id="tut-title" style="margin:6px 0 10px"></h2>
+      <div id="tut-body"></div>
+      <div class="row" style="margin-top:20px">
+        <button class="btn ghost small" id="tut-prev">Anterior</button>
+        <button class="btn" id="tut-next">Seguinte</button>
+        <button class="btn ghost small" id="tut-skip">Saltar</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="s-league" hidden>
+    <div class="acc-head">
+      <div>
+        <h2>Liga</h2>
+        <p class="lead" style="margin-bottom:0">Entra com um dos teus lutadores. Os outros jogadores podem desafiá-lo e tu podes desafiar os deles. Os duelos são automáticos, mesmo que o dono não esteja online.</p>
+      </div>
+      <button class="btn ghost small" id="lg-back">Voltar</button>
+    </div>
+    <div id="lg-body" style="margin-top:18px"></div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite" hidden></div>
+
+  <section id="s-create" hidden>
+    <div class="create">
+      <div>
+        <h2>Cria um lutador</h2>
+        <p class="lead">Dá-lhe um nome, uma cor e um visual. Ele nasce com um traço bom e um traço mau, sorteados, e com atributos sorteados (15 pontos repartidos ao acaso, mínimo 1 em cada). Podes sortear de novo até 3 vezes cada traço; os atributos ficam como saírem.</p>
+        <form id="f-create" novalidate>
+          <label class="lbl" for="in-name">Nome</label>
+          <input type="text" id="in-name" maxlength="14" autocomplete="off" placeholder="O teu nome de lutador">
+          <div class="err" id="err" role="alert"></div>
+          <fieldset>
+            <legend>Cor</legend>
+            <div class="sw" id="sw"></div>
+          </fieldset>
+          <p class="lead" style="margin:14px 0 4px">Escolhe o visual agora: depois de criares o lutador, a cor e os adornos já não se podem mudar.</p>
+          <div class="cosrow">
+            <div><label class="lbl" for="in-h">Cabeça</label><select id="in-h"></select></div>
+            <div><label class="lbl" for="in-e">Extra</label><select id="in-e"></select></div>
+          </div>
+          <div class="eyebrow" style="margin-top:18px">Traços</div>
+          <div class="trait-pick">
+            <div class="tr"><div id="tr-pos"></div><button type="button" class="btn ghost small" data-roll="pos">Sortear outro bom</button></div>
+            <div class="tr"><div id="tr-neg"></div><button type="button" class="btn ghost small" data-roll="neg">Sortear outro mau</button></div>
+          </div>
+          <div class="eyebrow" style="margin-top:18px">Atributos sorteados</div>
+          <div id="st-roll" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"></div>
+          <div class="row">
+            <button class="btn" type="submit">Entrar na arena</button>
+            <button class="btn ghost" type="button" id="cancel-create" hidden>Cancelar</button>
+            <button class="btn ghost" type="button" id="cl-goto" hidden>Já tenho conta online</button>
+          </div>
+        </form>
+      </div>
+      <div class="pvbox">
+        <svg id="pv" viewBox="-80 -205 170 215" role="img" aria-label="Pré-visualização do lutador"></svg>
+        <p class="eyebrow" id="pv-name">Sem nome</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="s-hub" hidden>
+    <div class="hub">
+      <div class="panel" id="hub-f"></div>
+      <div class="panel" id="hub-r"></div>
+    </div>
+  </section>
+
+  <section id="s-fight" hidden>
+    <div class="bars">
+      <div>
+        <div class="who"><strong id="na"></strong><small id="la"></small></div>
+        <div class="hp"><i id="fa"></i></div>
+        <small id="ta"></small>
+      </div>
+      <div style="text-align:right">
+        <div class="who"><small id="lb"></small><strong id="nb"></strong></div>
+        <div class="hp r"><i id="fb"></i></div>
+        <small id="tb"></small>
+      </div>
+    </div>
+    <svg id="arena" viewBox="0 0 680 290" role="img" aria-label="Arena de combate"></svg>
+    <p id="log" role="status" aria-live="polite"></p>
+    <div class="ctl" id="ctl">
+      <div class="seg" role="group" aria-label="Velocidade da luta">
+        <button class="btn ghost small" data-sp="1" aria-pressed="true">1x</button>
+        <button class="btn ghost small" data-sp="2" aria-pressed="false">2x</button>
+        <button class="btn ghost small" data-sp="4" aria-pressed="false">4x</button>
+      </div>
+      <button class="btn ghost small" id="skip">Saltar</button>
+    </div>
+    <div class="panel" id="res" hidden></div>
+  </section>
+</div>
+
+<script id="engine">
+const WEAPONS={
+  punhos:{nome:'Punhos',min:2,max:4,acc:1,cd:0,desc:'Sem arma.'},
+  moca:{nome:'Moca',min:7,max:10,acc:.9,cd:16,desc:'Pesada e fiável.'},
+  adaga:{nome:'Adaga',min:2,max:4,acc:1,cd:-55,crit:.1,desc:'Muito rápida, +10% de crítico.'},
+  machado:{nome:'Machado',min:11,max:16,acc:.78,cd:52,desc:'Dano enorme, lento e menos preciso.'},
+  espada:{nome:'Espada',min:5,max:8,acc:.95,cd:-6,desc:'Equilibrada e precisa.'},
+  lanca:{nome:'Lança',min:6,max:9,acc:.92,cd:7,pierce:true,desc:'Ignora a Couraça do adversário.'},
+  martelo:{nome:'Martelo',min:15,max:21,acc:.7,cd:68,stun:.25,desc:'Pesadíssimo. 25% de atordoar o adversário.'},
+  chicote:{nome:'Chicote',min:2,max:5,acc:1.1,cd:-40,desc:'Rápido e quase nunca falha.'},
+  bastao:{nome:'Bastão',min:4,max:7,acc:.94,cd:-13,desc:'Permite aparar: -1 de dano sofrido.'},
+  cutelo:{nome:'Cutelo',min:8,max:12,acc:.83,cd:25,crit:.06,desc:'Golpes largos, +6% de crítico.'}
+};
+const SKILLS={
+  coura:{nome:'Couraça',desc:'Reduz 1 de dano em cada golpe sofrido.'},
+  contra:{nome:'Contra-ataque',desc:'25% de hipótese de responder logo após uma esquiva.'},
+  furia:{nome:'Fúria',desc:'+28% de dano abaixo de metade da vida.'},
+  certeiro:{nome:'Golpe certeiro',desc:'+15% de hipótese de crítico.'},
+  vampiro:{nome:'Sede de sangue',desc:'Recupera 20% do dano causado.'},
+  esquiva:{nome:'Reflexos',desc:'+8% de esquiva.'},
+  primeiro:{nome:'Primeiro a atacar',desc:'Começa a luta com vantagem de ritmo.'},
+  tenaz:{nome:'Tenaz',desc:'+12% de PV.'},
+  duplo:{nome:'Golpe duplo',desc:'15% de hipótese de atacar duas vezes seguidas.'},
+  espinhos:{nome:'Espinhos',desc:'Devolve 2 de dano a quem o acerta.'},
+  ultimo:{nome:'Último fôlego',desc:'Uma vez por luta, tem 80% de hipótese de sobreviver com 1 PV a um golpe fatal.'},
+  concentra:{nome:'Concentração',desc:'+8% de precisão.'},
+  intimida:{nome:'Intimidação',desc:'Os adversários acertam menos 6%.'},
+  regen:{nome:'Regeneração',desc:'Recupera 1 PV antes de cada ataque.'},
+  pele:{nome:'Pele de ferro',desc:'Sofre menos 8% de dano.'},
+  execucao:{nome:'Execução',desc:'+70% de dano contra adversários abaixo de 30% dos PV.'},
+  adrenalina:{nome:'Adrenalina',desc:'Ataca 15% mais depressa abaixo de metade da vida.'},
+  foco:{nome:'Foco',desc:'Cada golpe seguido que acerta dá +1 de dano (máx. +4). Falhar zera.'},
+  escudo:{nome:'Escudo',desc:'Absorve os primeiros 6 de dano sofridos em cada luta.'},
+  domador:{nome:'Domador',desc:'O animal ataca 25% mais depressa e com +2 de dano. Só serve com animal.'},
+  cacador:{nome:'Caçador',desc:'+20% de dano contra adversários com animal.'},
+  trevo:{nome:'Trevo',desc:'+8% de crítico, e os críticos fazem +95% de dano em vez de +60%.'},
+  sujo:{nome:'Golpe sujo',desc:'25% de hipótese de causar +4 de dano em cada golpe.'},
+  segundo:{nome:'Segundo fôlego',desc:'Uma vez por luta, recupera 15% dos PV quando desce abaixo de 30%.'},
+  ritmo:{nome:'Ritmo',desc:'Cada golpe seguido que acerta acelera o ataque seguinte em 5% (máx. 25%). Falhar zera.'},
+  aposta:{nome:'Aposta',desc:'Cada golpe tem 50% de causar +30% de dano e 50% de causar -10%.'},
+  supera:{nome:'Superação',desc:'O traço mau deixa de ter efeito.'},
+  dom:{nome:'Dom natural',desc:'O traço bom vale o dobro.'}
+};
+const TRAITS={
+  robusto:{k:'pos',nome:'Robusto',desc:'+15% de PV.',m:{hp:.15}},
+  agil:{k:'pos',nome:'Ágil',desc:'+6% de esquiva.',m:{dodge:.06}},
+  forte:{k:'pos',nome:'Músculos de aço',desc:'+10% de dano.',m:{dmg:.1}},
+  rapido:{k:'pos',nome:'Pés ligeiros',desc:'Ataca 8% mais depressa.',m:{spd:-.08}},
+  pontaria:{k:'pos',nome:'Boa pontaria',desc:'+8% de precisão.',m:{acc:.08}},
+  olho:{k:'pos',nome:'Olho clínico',desc:'+8% de crítico.',m:{crit:.08}},
+  pele:{k:'pos',nome:'Pele dura',desc:'-10% de dano sofrido.',m:{taken:-.1}},
+  aprendiz:{k:'pos',nome:'Aprendiz rápido',desc:'+15% de XP ganho.',m:{xp:.15}},
+  entrada:{k:'pos',nome:'Entrada em força',desc:'+30% de dano nos 3 primeiros golpes.',m:{early:.3}},
+  fragil:{k:'neg',nome:'Frágil',desc:'-15% de PV.',m:{hp:-.15}},
+  desajeitado:{k:'neg',nome:'Desajeitado',desc:'-6% de esquiva.',m:{dodge:-.06}},
+  fraco:{k:'neg',nome:'Braços fracos',desc:'-10% de dano.',m:{dmg:-.1}},
+  lento:{k:'neg',nome:'Pés de chumbo',desc:'Ataca 10% mais devagar.',m:{spd:.1}},
+  mira:{k:'neg',nome:'Mira torta',desc:'-8% de precisão.',m:{acc:-.08}},
+  tremulas:{k:'neg',nome:'Mãos trémulas',desc:'-4% de crítico.',m:{crit:-.04}},
+  pelefina:{k:'neg',nome:'Pele fina',desc:'+10% de dano sofrido.',m:{taken:.1}},
+  teimoso:{k:'neg',nome:'Teimoso',desc:'-15% de XP ganho.',m:{xp:-.15}},
+  cobarde:{k:'neg',nome:'Cobarde',desc:'-20% de dano abaixo de metade da vida.',m:{cowardly:-.2}},
+  semfolego:{k:'neg',nome:'Sem fôlego',desc:'-20% de dano a partir do 7.º golpe.',m:{late:-.2}}
+};
+const PETS={
+  cao:{nome:'Cão de guerra',rar:'Rara',w:30,min:2,max:3,acc:.85,cd:140,desc:'Ataca por conta própria, mais devagar que o dono: 2–3 de dano.'},
+  gato:{nome:'Gato sombra',rar:'Rara',w:30,desc:'Passivo: o dono ganha +7% de esquiva.'},
+  corvo:{nome:'Corvo',rar:'Muito rara',w:20,min:1,max:3,acc:1,sure:true,cd:120,fly:true,desc:'Ataca do ar e nunca falha: 1–3 de dano.'},
+  urso:{nome:'Urso cinzento',rar:'Muito rara',w:15,min:6,max:9,acc:.7,cd:230,desc:'Ataca devagar mas com força: 6–9 de dano.'},
+  fenix:{nome:'Fénix',rar:'Lendária',w:5,desc:'Uma vez por luta, tem 85% de hipótese de fazer o dono renascer com 8% dos PV.'},
+  tartaruga:{nome:'Tartaruga',rar:'Rara',w:18,desc:'Passivo: o dono sofre menos 9% de dano.'},
+  coruja:{nome:'Coruja',rar:'Rara',w:18,desc:'Passivo: o dono ganha +7% de precisão e +4% de crítico.'},
+  lobo:{nome:'Lobo',rar:'Muito rara',w:12,min:3,max:5,acc:.8,cd:175,desc:'Caça em matilha com o dono: 3–5 de dano.'},
+  dragao:{nome:'Dragão',rar:'Lendária',w:4,min:3,max:5,acc:1,sure:true,cd:250,fly:true,desc:'Cospe fogo do ar e nunca falha: 3–5 de dano.'}
+};
+const MAX_PETS=3,PET_RANK=[1,.75,.55];
+const SCENES=[
+  {id:'amanhecer',nome:'Amanhecer',horas:'06:00–09:00',fx:{fenix:{ph:.1},cao:{pdmg:-.2},dragao:{pdmg:-.15}}},
+  {id:'dia',nome:'Dia',horas:'09:00–17:00',fx:{cao:{pdmg:.25},urso:{pdmg:-.2},gato:{dodge:-.05},lobo:{pdmg:-.15}}},
+  {id:'porsol',nome:'Pôr do sol',horas:'17:00–20:00',fx:{urso:{pdmg:.3},corvo:{pdmg:-.2},dragao:{pdmg:.2}}},
+  {id:'noite',nome:'Noite',horas:'20:00–06:00',fx:{corvo:{pdmg:.25},gato:{dodge:.05},fenix:{ph:-.05},lobo:{pdmg:.25}}}
+];
+const SC_NEUTRAL={id:'dia',nome:'Dia',horas:'',fx:{}};
+function fxLabel(e){const p=[],pc=x=>(x>0?'+':'')+Math.round(x*100)+'%';if(e.pdmg)p.push(pc(e.pdmg)+' de dano');if(e.dodge)p.push(pc(e.dodge)+' de esquiva do dono');if(e.ph)p.push(pc(e.ph)+' de PV ao renascer');return p.join(', ')}
+function fxGood(e){return((e.pdmg||0)+(e.dodge||0)+(e.ph||0))>0}
+function sceneTag(sc,id){const e=sc.fx[id];return e?fxLabel(e):''}
+function sceneDesc(sc){const b=[],n=[];Object.keys(sc.fx).forEach(id=>{(fxGood(sc.fx[id])?b:n).push(PETS[id].nome+' ('+fxLabel(sc.fx[id])+')')});return(b.length?'Bónus: '+b.join('; ')+'. ':'')+(n.length?'Penalização: '+n.join('; ')+'.':'')}
+function petScenes(id){const g=SCENES.filter(x=>x.fx[id]&&fxGood(x.fx[id])).map(x=>x.nome),b=SCENES.filter(x=>x.fx[id]&&!fxGood(x.fx[id])).map(x=>x.nome);return(g.length?'Bónus: '+g.join(', '):'')+(g.length&&b.length?' · ':'')+(b.length?'Penalização: '+b.join(', '):'')}
+function petsOf(f){if(Array.isArray(f.pets))return f.pets.filter(id=>PETS[id]);return f.pet&&PETS[f.pet]?[f.pet]:[]}
+let _sceneForce=null;
+function forceScene(id){_sceneForce=SCENES.find(x=>x.id===id)||null}
+function curScene(){
+  if(_evForce&&_evForce.id==='semana')return SC_NEUTRAL;
+  if(_sceneForce)return _sceneForce;
+  return SC_NEUTRAL;
+}
+function rndScene(rng=Math.random){return SCENES[Math.floor(rng()*SCENES.length)].id}
+function withScene(id,fn){const p=_sceneForce;_sceneForce=SCENES.find(x=>x.id===id)||null;try{return fn()}finally{_sceneForce=p}}
+function rollPet(rng=Math.random,not=[]){
+  const ids=Object.keys(PETS).filter(id=>!not.includes(id));
+  if(!ids.length)return null;
+  const tot=ids.reduce((s,id)=>s+PETS[id].w,0);
+  let r=rng()*tot;
+  for(const id of ids){r-=PETS[id].w;if(r<0)return id}
+  return ids[0];
+}
+const STATS={
+  vida:{nome:'Vida',inc:3,desc:'+3 de Vida (+12 PV).'},
+  forca:{nome:'Força',inc:2,desc:'+2 de Força (mais dano).'},
+  agi:{nome:'Agilidade',inc:2,desc:'+2 de Agilidade (mais esquiva).'},
+  vel:{nome:'Velocidade',inc:2,desc:'+2 de Velocidade (ataca mais vezes).'}
+};
+const NAMES=['Zé Pancada','Tó Cepo','Maria Brava','Quim Bruto','Manel Cabeçudo','Rosa Murro','Bino Ferro','Gina Granito','Tino Tronco','Lena Lasca'];
+const COLORS=[
+  {id:'ambar',nome:'Âmbar',hex:'#f59e0b'},{id:'coral',nome:'Coral',hex:'#e5484d'},
+  {id:'verde',nome:'Verde',hex:'#12a594'},{id:'azul',nome:'Azul',hex:'#3e63dd'},
+  {id:'violeta',nome:'Violeta',hex:'#8e4ec6'},{id:'lima',nome:'Lima',hex:'#7cb518'}
+];
+const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
+function rollTrait(kind,not,rng=Math.random){
+  const ids=Object.keys(TRAITS).filter(id=>TRAITS[id].k===kind&&id!==not);
+  return ids[Math.floor(rng()*ids.length)];
+}
+const EVENTS=[
+  {id:'veloz',nome:'Dia veloz',desc:'Todos atacam 15% mais depressa.',m:{spd:-.15}},
+  {id:'sorte',nome:'Dia de sorte',desc:'+10% de crítico para todos.',m:{crit:.1}},
+  {id:'gigantes',nome:'Dia dos gigantes',desc:'+25% de PV para todos.',m:{hp:.25}},
+  {id:'bruto',nome:'Dia bruto',desc:'+15% de dano para todos.',m:{dmg:.15}},
+  {id:'estudo',nome:'Dia de estudo',desc:'+50% de XP em todos os combates.',m:{xp:.5}},
+  {id:'caca',nome:'Dia de caça',desc:'O dobro da hipótese de encontrar animais.',pet:2,m:{}},
+  {id:'torneio',nome:'Dia de torneio',desc:'Entrar num torneio custa só 3 combates.',cost:3,m:{}}
+];
+let _evk='',_ev=EVENTS[0],_evForce=null;
+function forceEvent(id){_evForce=EVENTS.find(e=>e.id===id)||null}
+function curEv(){
+  if(_evForce)return _evForce;
+  const d=new Date(),k=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+  if(k!==_evk){_evk=k;let h=0;for(let i=0;i<k.length;i++)h=(h*31+k.charCodeAt(i))>>>0;_ev=EVENTS[h%EVENTS.length]}
+  return _ev;
+}
+const COMBOS={
+  frenesi:{nome:'Frenesi',desc:'Sede de sangue recupera 35% do dano em vez de 20%.',req:[['skill','vampiro'],['skill','furia']],fl:{heal:.35}},
+  fortaleza:{nome:'Fortaleza',desc:'+10% de PV.',req:[['skill','coura'],['skill','tenaz']],m:{hp:.1}},
+  duelista:{nome:'Duelista',desc:'O Contra-ataque dispara 40% das vezes em vez de 25%.',req:[['skill','contra'],['skill','esquiva']],fl:{counter:.4}},
+  atirador:{nome:'Atirador',desc:'+8% de crítico.',req:[['skill','certeiro'],['skill','concentra']],m:{crit:.08}},
+  berserker:{nome:'Berserker',desc:'+10% de dano.',req:[['skill','furia'],['weapon','machado','martelo']],m:{dmg:.1}},
+  muralha:{nome:'Muralha',desc:'Os Espinhos devolvem 3 de dano em vez de 2.',req:[['skill','espinhos'],['skill','coura']],fl:{thorns:3}},
+  rajada:{nome:'Rajada',desc:'O Golpe duplo dispara 25% das vezes em vez de 15%.',req:[['skill','duplo'],['skill','primeiro']],fl:{dup:.25}},
+  investida:{nome:'Investida',desc:'+20% de dano nos primeiros golpes.',req:[['trait','entrada'],['skill','primeiro']],m:{early:.2}},
+  alcateia:{nome:'Alcateia',desc:'O Cão de guerra faz +1 de dano.',req:[['pet','cao'],['skill','intimida']],fl:{petBonus:1}},
+  aguia:{nome:'Olho de águia',desc:'+6% de crítico.',req:[['pet','corvo'],['skill','certeiro']],m:{crit:.06}},
+  hiberna:{nome:'Hibernação',desc:'+10% de PV.',req:[['pet','urso'],['skill','tenaz']],m:{hp:.1}},
+  sombra:{nome:'Sombra',desc:'+4% de esquiva.',req:[['pet','gato'],['skill','esquiva']],m:{dodge:.04}},
+  titan:{nome:'Titã',desc:'-5% de dano sofrido.',req:[['trait','robusto'],['skill','pele','coura','escudo']],m:{taken:-.05}},
+  bailarino:{nome:'Bailarino',desc:'+5% de esquiva.',req:[['trait','agil'],['weapon','adaga','chicote','espada']],m:{dodge:.05}},
+  bruta:{nome:'Brutamontes',desc:'+7% de dano.',req:[['trait','forte'],['weapon','martelo','machado','moca']],m:{dmg:.07}},
+  corredor:{nome:'Corredor',desc:'Ataca 7% mais depressa.',req:[['trait','rapido'],['skill','adrenalina','primeiro','ritmo']],m:{spd:-.07}},
+  franco:{nome:'Franco-atirador',desc:'+4% de precisão.',req:[['trait','pontaria'],['weapon','lanca','espada','chicote']],m:{acc:.04}},
+  lince:{nome:'Olho de lince',desc:'+7% de crítico.',req:[['trait','olho'],['skill','execucao','trevo','aposta']],m:{crit:.07}},
+  rino:{nome:'Pele de rinoceronte',desc:'-4% de dano sofrido.',req:[['trait','pele'],['skill','escudo','espinhos']],m:{taken:-.04}},
+  mente:{nome:'Mente aberta',desc:'+20% de XP ganho.',req:[['trait','aprendiz'],['skill','dom','supera']],m:{xp:.2}},
+  abertura:{nome:'Abertura explosiva',desc:'+20% de dano nos primeiros golpes.',req:[['trait','entrada'],['skill','duplo','ritmo']],m:{early:.2}},
+  pequeno:{nome:'Pequeno mas duro',desc:'+9% de PV, que compensa a Fragilidade.',req:[['trait','fragil'],['skill','tenaz','regen','segundo']],m:{hp:.09}},
+  tecnica:{nome:'Técnica apurada',desc:'+8% de dano, que compensa os Braços fracos.',req:[['trait','fraco'],['weapon','bastao','adaga','chicote','lanca']],m:{dmg:.08}},
+  treino:{nome:'Treino de mira',desc:'+5% de precisão, que compensa a Mira torta.',req:[['trait','mira'],['skill','concentra','certeiro','foco']],m:{acc:.05}},
+  aquece:{nome:'Aquecimento',desc:'Ataca 8% mais depressa, o que compensa os Pés de chumbo.',req:[['trait','lento'],['skill','adrenalina','ritmo','primeiro']],m:{spd:-.08}},
+  coragem:{nome:'Coragem',desc:'Reduz a penalização do Cobarde abaixo de metade da vida (de -20% para -5%).',req:[['trait','cobarde'],['skill','furia','adrenalina','vampiro']],m:{cowardly:.15}},
+  ventania:{nome:'Segunda ventania',desc:'Anula a penalização do Sem fôlego nos golpes tardios.',req:[['trait','semfolego'],['skill','regen','vampiro','segundo']],m:{late:.2}},
+  improvisa:{nome:'Armadura improvisada',desc:'-7% de dano sofrido, que compensa a Pele fina.',req:[['trait','pelefina'],['skill','escudo','coura','pele']],m:{taken:-.07}},
+  firme:{nome:'Mão firme',desc:'+7% de crítico, que compensa as Mãos trémulas.',req:[['trait','tremulas'],['skill','foco','trevo','concentra']],m:{crit:.07}},
+  gatos:{nome:'Pés de gato',desc:'+4% de esquiva, que compensa o Desajeitado.',req:[['trait','desajeitado'],['skill','esquiva','contra']],m:{dodge:.04}},
+  matilha:{nome:'Matilha',desc:'Os animais atacantes fazem +2 de dano.',req:[['pet','lobo'],['skill','intimida','domador','cacador']],fl:{petBonus:2}},
+  noturna:{nome:'Visão noturna',desc:'+8% de dano.',req:[['pet','coruja'],['skill','execucao','cacador','trevo']],m:{dmg:.08}},
+  casco:{nome:'Casco duro',desc:'+8% de PV.',req:[['pet','tartaruga'],['skill','coura','escudo','pele']],m:{hp:.08}},
+  fogo:{nome:'Fogo interior',desc:'+6% de dano.',req:[['pet','dragao'],['skill','furia','vampiro','adrenalina']],m:{dmg:.06}},
+  cinzas:{nome:'Cinzas eternas',desc:'A Fénix faz renascer com 35% dos PV em vez de 8% (quando renasce).',req:[['pet','fenix'],['skill','ultimo']],fl:{phHp:.35}}
+};
+function owns(f,r){
+  const ids=r.slice(1);
+  if(r[0]==='skill')return ids.some(i=>f.skills.includes(i));
+  if(r[0]==='weapon')return ids.some(i=>f.weapons.includes(i));
+  if(r[0]==='pet')return petsOf(f).some(p=>ids.includes(p));
+  return ids.some(i=>(f.traits||[]).includes(i));
+}
+function activeCombos(f){return Object.keys(COMBOS).filter(id=>COMBOS[id].req.every(r=>owns(f,r)))}
+function comboHint(f,o){
+  const g={...f,skills:f.skills.slice(),weapons:f.weapons.slice()};
+  if(o.type==='skill')g.skills.push(o.id);else if(o.type==='weapon')g.weapons.push(o.id);else return [];
+  const before=activeCombos(f);
+  return activeCombos(g).filter(id=>!before.includes(id));
+}
+const COS_H={nenhum:'Sem adorno',crista:'Crista',cartola:'Cartola',cornos:'Cornos',coroa:'Coroa',bandana:'Bandana',capacete:'Capacete',aureola:'Auréola',orelhas:'Orelhas de gato',palha:'Chapéu de palha'};
+const COS_E={nenhum:'Nada',capa:'Capa',oculos:'Óculos',cachecol:'Cachecol',bigode:'Bigode',cicatriz:'Cicatriz',medalha:'Medalha',ombreiras:'Ombreiras',asas:'Asas',mascara:'Máscara'};
+function pickKey(o,rng){const ks=Object.keys(o).filter(k=>k!=='nenhum');return ks[Math.floor(rng()*ks.length)]}
+const START_TOTAL=15;
+function newFighter(name,color,traits=[],cos){return{name,color,level:1,xp:0,stats:{vida:5,forca:3,agi:3,vel:3},weapons:[],skills:[],traits:traits.slice(),cos:{h:cos&&COS_H[cos.h]?cos.h:'nenhum',e:cos&&COS_E[cos.e]?cos.e:'nenhum'}}}
+function b64e(s){return btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+function b64d(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return decodeURIComponent(escape(atob(s)))}
+function chk(s){let h=7;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h.toString(36)}
+function exportFighter(f){
+  const o={n:f.name,c:f.color,l:f.level,s:[f.stats.vida,f.stats.forca,f.stats.agi,f.stats.vel],w:f.weapons,k:f.skills,t:f.traits,p:petsOf(f),h:(f.cos&&f.cos.h)||'nenhum',e:(f.cos&&f.cos.e)||'nenhum',b:['vida','forca','agi','vel'].map(k=>(f.bp&&f.bp[k])||0).concat([f.bs||0]),z:f.z||[5,3,3,3]};
+  const body=b64e(JSON.stringify(o));
+  return 'AB1.'+body+'.'+chk(body);
+}
+function importFighter(code){
+  const bad={err:'Código inválido ou alterado. Confirma que o copiaste todo.'};
+  try{
+    const parts=String(code).trim().replace(/\s+/g,'').split('.');
+    if(parts.length!==3||parts[0]!=='AB1'||chk(parts[1])!==parts[2])return bad;
+    const o=JSON.parse(b64d(parts[1]));
+    const name=String(o.n||'').trim().slice(0,14),level=Math.floor(+o.l);
+    if(!name||!(level>=1&&level<=99)||!Array.isArray(o.s)||o.s.length!==4)return bad;
+    const [vida,forca,agi,vel]=o.s.map(Number);
+    if(![vida,forca,agi,vel].every(Number.isInteger))return bad;
+    const bb=Array.isArray(o.b)?o.b.map(Number):[0,0,0,0];
+    if(bb.length===4)bb.push(0);
+    if(bb.length!==5||!bb.every(x=>Number.isInteger(x)&&x>=0&&x<=400))return bad;
+    let z=[5,3,3,3];
+    if(o.z!==undefined){z=Array.isArray(o.z)?o.z.map(Number):[];if(z.length!==4||!z.every(x=>Number.isInteger(x)&&x>=1)||z.reduce((a,b)=>a+b,0)!==START_TOTAL)return bad}
+    const v0=vida-bb[0]-z[0],f0=forca-bb[1]-z[1],a0=agi-bb[2]-z[2],l0=vel-bb[3]-z[3];
+    if(v0<0||f0<0||a0<0||l0<0||v0%3||f0%2||a0%2||l0%2)return bad;
+    const uniq=(a,db)=>Array.isArray(a)&&a.every(x=>typeof x==='string'&&db[x]&&x!=='punhos')&&new Set(a).size===a.length;
+    if(!uniq(o.w,WEAPONS)||!uniq(o.k,SKILLS))return bad;
+    const t=o.t;
+    if(!Array.isArray(t)||t.length!==2||!t.every(x=>typeof x==='string'&&TRAITS[x])||TRAITS[t[0]].k===TRAITS[t[1]].k)return bad;
+    const ups=v0/3+f0/2+a0/2+l0/2+o.w.length+o.k.length;
+    if(ups>level-1+bb[4])return bad;
+    const pets=Array.isArray(o.p)?o.p:(o.p?[o.p]:[]);
+    if(pets.length>MAX_PETS||new Set(pets).size!==pets.length||!pets.every(x=>typeof x==='string'&&PETS[x]))return bad;
+    const f=newFighter(name,COLORS.some(c=>c.hex===o.c)?o.c:COLORS[0].hex,t,{h:o.h,e:o.e});
+    f.level=level;f.stats={vida,forca,agi,vel};if(o.z!==undefined)f.z=z.slice();f.weapons=o.w.slice();f.skills=o.k.slice();
+    if(bb.slice(0,4).some(x=>x))f.bp={vida:bb[0],forca:bb[1],agi:bb[2],vel:bb[3]};
+    if(bb[4])f.bs=bb[4];
+    if(pets.length)f.pets=pets.slice();
+    return{f};
+  }catch(e){return bad}
+}
+function derive(f){
+  const has=s=>f.skills.includes(s),tm={},fl={};
+  const add=m=>{for(const k in m)tm[k]=(tm[k]||0)+m[k]};
+  (f.traits||[]).forEach(id=>{const T=TRAITS[id];if(!T)return;const k=T.k==='neg'&&has('supera')?0:T.k==='pos'&&has('dom')?2:1,m={};for(const x in T.m)m[x]=T.m[x]*k;add(m)});
+  activeCombos(f).forEach(id=>{add(COMBOS[id].m||{});Object.assign(fl,COMBOS[id].fl||{})});
+  add(curEv().m||{});
+  const g=k=>tm[k]||0,pl=petsOf(f);let sdg=0,sph=0;pl.forEach(id=>{const e=curScene().fx[id]||{};sdg+=e.dodge||0;sph+=e.ph||0});
+  return{
+    heal:fl.heal||.2,counter:fl.counter||.25,dup:fl.dup||.15,thorns:fl.thorns||2,petBonus:(fl.petBonus||0)+(has('domador')?2:0),petSpd:has('domador')?.8:1,phHp:Math.max(.05,(fl.phHp||PH)+sph),
+    maxHp:Math.round((20+4*f.stats.vida)*(1+g('hp')+(has('tenaz')?.12:0))),
+    dodge:clamp(.03+f.stats.agi*.03+(has('esquiva')?.08:0)+(pl.includes('gato')?.07:0)+sdg+g('dodge'),0,.45),
+    cd:Math.max(45,(110-f.stats.vel*5)*(1+g('spd'))),
+    crit:Math.max(0,.05+(has('certeiro')?.15:0)+(has('trevo')?.08:0)+(pl.includes('coruja')?.04:0)+g('crit')),
+    bonus:Math.round(f.stats.forca*.7),
+    dmgMul:1+g('dmg')+Math.min(XW*3,XW*Math.max(0,f.weapons.length-1)),taken:1+g('taken')-(has('pele')?.08:0)-(pl.includes('tartaruga')?.09:0),
+    acc:g('acc')+(has('concentra')?.08:0)+(pl.includes('coruja')?.07:0),
+    xp:1+g('xp'),early:g('early'),late:g('late'),cowardly:g('cowardly')
+  };
+}
+function pool(f){
+  const p=Object.keys(STATS).map(id=>({type:'stat',id}));
+  Object.keys(WEAPONS).filter(id=>id!=='punhos'&&!f.weapons.includes(id)).forEach(id=>p.push({type:'weapon',id}));
+  Object.keys(SKILLS).filter(id=>!f.skills.includes(id)).forEach(id=>p.push({type:'skill',id}));
+  return p;
+}
+function pickOptions(f,rng=Math.random){
+  const p=pool(f),out=[];
+  while(out.length<3&&p.length)out.push(p.splice(Math.floor(rng()*p.length),1)[0]);
+  if(!out.some(o=>o.type==='stat'))out[2]={type:'stat',id:Object.keys(STATS)[Math.floor(rng()*4)]};
+  return out;
+}
+const UP_W={stat:.55,skill:.30,weapon:.15};
+function rollUpgrade(f,rng=Math.random,not=null){
+  let p=pool(f);if(not)p=p.filter(o=>!(o.type===not.type&&o.id===not.id));
+  const w=Object.assign({},UP_W);if(!f.weapons.some(id=>id!=='punhos'))w.weapon=.3;
+  const by={stat:[],weapon:[],skill:[]};p.forEach(o=>by[o.type].push(o));
+  const types=Object.keys(by).filter(t=>by[t].length);
+  let r=rng()*types.reduce((a,t)=>a+w[t],0),t=types[types.length-1];
+  for(const k of types){r-=w[k];if(r<0){t=k;break}}
+  const l=by[t];return l[Math.floor(rng()*l.length)];
+}
+function applyUpgrade(f,o){
+  if(o.type==='stat')f.stats[o.id]+=STATS[o.id].inc;
+  else if(o.type==='weapon')f.weapons.push(o.id);
+  else f.skills.push(o.id);
+}
+function makeOpponent(level,rng=Math.random,used=[]){
+  let name;do{name=NAMES[Math.floor(rng()*NAMES.length)]}while(used.includes(name));
+  const f=newFighter(name,COLORS[Math.floor(rng()*COLORS.length)].hex,[rollTrait('pos',null,rng),rollTrait('neg',null,rng)]);
+  f.level=level;
+  for(let i=1;i<level;i++)applyUpgrade(f,rollUpgrade(f,rng));
+  if(rng()<.06)f.pets=[rollPet(rng)];
+  f.cos={h:rng()<.5?'nenhum':pickKey(COS_H,rng),e:rng()<.5?'nenhum':pickKey(COS_E,rng)};
+  return f;
+}
+const BK=1;
+const PETLV=.05,XW=.08,PH=.08,ULT=.8,FEN=.85;
+function simulate(fa,fb,rng=Math.random){
+  const mk=f=>{const d=derive(f),pl=petsOf(f).filter(id=>PETS[id].cd).map((id,i)=>({id,p:PETS[id],pt:PETS[id].cd*d.petSpd*(.6+.4*rng()),mul:(1+((curScene().fx[id]||{}).pdmg||0))*(PET_RANK[i]||.5)*(1+PETLV*Math.max(0,f.level-8))}));return{f,d,hp:d.maxHp,n:0,used:false,ph:false,pets:pl,shield:f.skills.includes('escudo')?6:0,streak:0,t:d.cd*(.6+.4*rng())*(f.skills.includes('primeiro')?.4:1)}};
+  const C={a:mk(fa),b:mk(fb)},ev=[];
+  function revive(D,e){
+    if(D.f.skills.includes('ultimo')&&!D.used){D.used=true;if(rng()<ULT){D.hp=1;e.saved=true;return}}
+    if(petsOf(D.f).includes('fenix')&&!D.ph&&(D.ph=true)&&rng()<FEN){D.hp=Math.round(D.d.maxHp*D.d.phHp);e.phoenix=true}
+    else D.hp=0;
+  }
+  function second(D,e){
+    if(D.hp>0&&D.f.skills.includes('segundo')&&!D.sec&&D.hp<D.d.maxHp*.3){D.sec=true;D.hp=Math.min(D.d.maxHp,D.hp+Math.round(D.d.maxHp*.15));e.second=true}
+  }
+  function petStrike(s,pk){
+    const o=s==='a'?'b':'a',A=C[s],D=C[o],p=pk.p;
+    const e={a:s,d:o,pet:pk.id,hit:false};
+    if(rng()<(p.sure?1:clamp(p.acc-D.d.dodge,.12,.97))){
+      let dmg=Math.max(1,Math.round((p.min+Math.floor(rng()*(p.max-p.min+1))+A.d.petBonus)*pk.mul*D.d.taken));
+      if(D.shield>0){const ab=Math.min(D.shield,dmg);D.shield-=ab;dmg-=ab;e.shield=ab}
+      D.hp-=dmg;
+      if(D.hp<=0)revive(D,e);
+      second(D,e);
+      Object.assign(e,{hit:true,dmg});
+    }
+    e.hpa=C.a.hp;e.hpb=C.b.hp;
+    ev.push(e);
+    pk.pt+=p.cd*A.d.petSpd;
+  }
+  function strike(s,counter,kind){
+    const o=s==='a'?'b':'a',A=C[s],D=C[o];
+    const wid=A.f.weapons.length?A.f.weapons[Math.floor(rng()*A.f.weapons.length)]:'punhos';
+    const w=WEAPONS[wid];
+    const e={a:s,d:o,w:wid,counter:!!counter,double:kind==='duplo'};
+    if(A.f.skills.includes('regen')&&A.hp<A.d.maxHp){const r=Math.min(1,A.d.maxHp-A.hp);A.hp+=r;e.regen=r}
+    A.n++;
+    const hitP=clamp(w.acc+A.d.acc-D.d.dodge-(D.f.skills.includes('intimida')?.06:0),.12,.97);
+    if(rng()<hitP){
+      const focus=A.f.skills.includes('foco')?Math.min(4,A.streak):0;
+      let dmg=(w.min+Math.floor(rng()*(w.max-w.min+1))+A.d.bonus*Math.pow((w.min+w.max)/14,BK)+focus+(A.f.skills.includes('sujo')&&rng()<.25?4:0))*A.d.dmgMul;
+      if(A.f.skills.includes('aposta'))dmg*=rng()<.5?1.3:.9;
+      if(A.n<=3)dmg*=1+A.d.early;
+      if(A.n>=7)dmg*=1+A.d.late;
+      if(A.f.skills.includes('execucao')&&D.hp<D.d.maxHp*.3)dmg*=1.7;
+      if(A.f.skills.includes('cacador')&&petsOf(D.f).length)dmg*=1.2;
+      if(A.hp<A.d.maxHp/2){dmg*=1+A.d.cowardly;if(A.f.skills.includes('furia'))dmg*=1.28}
+      const crit=rng()<A.d.crit+(w.crit||0);
+      if(crit)dmg*=A.f.skills.includes('trevo')?1.95:1.6;
+      dmg=Math.round(dmg*D.d.taken);
+      if(D.f.skills.includes('coura')&&!w.pierce)dmg-=1;
+      if(D.f.weapons.includes('bastao'))dmg-=1;
+      dmg=Math.max(1,dmg);
+      if(D.shield>0){const ab=Math.min(D.shield,dmg);D.shield-=ab;dmg-=ab;e.shield=ab}
+      D.hp-=dmg;
+      if(D.hp<=0)revive(D,e);
+      second(D,e);
+      let heal=0;
+      if(A.f.skills.includes('vampiro')){heal=Math.min(A.d.maxHp-A.hp,Math.round(dmg*A.d.heal));A.hp+=heal}
+      if(D.hp>0&&D.f.skills.includes('espinhos')){A.hp=Math.max(0,A.hp-D.d.thorns);e.thorns=D.d.thorns}
+      if(D.hp>0&&w.stun&&rng()<w.stun){D.t+=45;e.stun=true}
+      A.streak++;
+      Object.assign(e,{hit:true,dmg,crit,heal});
+    }else{e.hit=false;A.streak=0}
+    e.hpa=C.a.hp;e.hpb=C.b.hp;
+    ev.push(e);
+    return{e,w};
+  }
+  let n=0;
+  while(C.a.hp>0&&C.b.hp>0&&n++<400){
+    let np=null,ns=null;
+    ['a','b'].forEach(q=>C[q].pets.forEach(pk=>{if(!np||pk.pt<np.pt){np=pk;ns=q}}));
+    if(np&&np.pt<Math.min(C.a.t,C.b.t)){petStrike(ns,np);continue}
+    const s=C.a.t<=C.b.t?'a':'b',o=s==='a'?'b':'a';
+    const{e,w}=strike(s,false);
+    C[s].t+=Math.max(30,C[s].d.cd*(1+w.cd/95)*(C[s].f.skills.includes('adrenalina')&&C[s].hp<C[s].d.maxHp/2?.85:1)*(C[s].f.skills.includes('ritmo')?1-Math.min(.25,.05*C[s].streak):1));
+    if(!e.hit&&C[o].hp>0&&C[s].hp>0&&C[o].f.skills.includes('contra')&&rng()<C[o].d.counter)strike(o,true);
+    if(e.hit&&C[o].hp>0&&C[s].hp>0&&C[s].f.skills.includes('duplo')&&rng()<C[s].d.dup)strike(s,false,'duplo');
+  }
+  let win;
+  if(C.a.hp<=0)win='b';else if(C.b.hp<=0)win='a';
+  else win=C.a.hp/C.a.d.maxHp>=C.b.hp/C.b.d.maxHp?'a':'b';
+  return{events:ev,winner:win,maxA:C.a.d.maxHp,maxB:C.b.d.maxHp};
+}
+</script>
+
+<script id="ui">
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const KEY1='arena-dos-brutos-v1',KEY2='arena-dos-brutos-v2',MAXC=5;
+const xpNeed=l=>20+8*(l-1);
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ACC=null,S=null,speed=1,userSpeed=reduce?4:1,busy=false,fig={},pickedColor=COLORS[0].hex,tr={pos:'',neg:''},delIdx=-1;
+
+const OPP_CATS=['Fácil','Fácil','Igual','Igual','Difícil','Difícil'];
+function newOpp(c,i,used){
+  const L=c.f.level,cat=OPP_CATS[i],l=cat==='Fácil'?Math.max(1,L-1):cat==='Igual'?L:L+1;
+  const o=makeOpponent(l,Math.random,used);used.push(o.name);
+  return{f:o,diff:cat,xp:(cat==='Fácil'?6:cat==='Igual'?10:16)+(petsOf(o).length?4:0),scene:rndScene()};
+}
+function newOpps(c){const used=[];return OPP_CATS.map((_,i)=>newOpp(c,i,used))}
+function fixChar(c){
+  const f=c.f;
+  f.weapons=f.weapons||[];f.skills=f.skills||[];
+  if(f.pet||f.pets){f.pets=petsOf(f).slice(0,MAX_PETS);delete f.pet;if(!f.pets.length)delete f.pets}
+  if(!f.cos||!COS_H[f.cos.h]||!COS_E[f.cos.e])f.cos={h:'nenhum',e:'nenhum'};
+  if(!Array.isArray(c.hist))c.hist=[];
+  if(!Array.isArray(f.traits)||f.traits.length<2||f.traits.some(id=>!TRAITS[id]))f.traits=[rollTrait('pos'),rollTrait('neg')];
+  c.pend=c.pend||0;c.wins=c.wins||0;c.losses=c.losses||0;if(c.opts===undefined)c.opts=null;
+  if(c.opts&&c.opts.length!==1){c.opts=c.pend>0?[rollUpgrade(c.f)]:null;c.rr=1}
+  if(c.rr===undefined)c.rr=c.opts?1:0;
+  if(c.charge===undefined)c.charge=5;
+  c.titles=c.titles||0;
+  const t=c.tour;
+  if(!(t&&Array.isArray(t.field)&&t.field.length===8&&Array.isArray(t.rounds)&&t.rounds[t.rd]&&t.field.every((x,i)=>i===t.p?x===null:x&&Array.isArray(x.traits))))c.tour=null;
+  if(c.opps.length!==6||c.opps.some(o=>!o.f||!Array.isArray(o.f.traits)||!o.scene))c.opps=newOpps(c);
+}
+function validChar(c){return c&&c.f&&c.f.stats&&Array.isArray(c.opps)}
+function loadAcc(){
+  try{
+    const r=JSON.parse(localStorage.getItem(KEY2)||'null');
+    if(r&&Array.isArray(r.chars)){
+      r.chars=r.chars.filter(validChar).slice(0,MAXC);r.chars.forEach(fixChar);
+      if(!(r.active>=0&&r.active<r.chars.length))r.active=null;
+      r.name=r.name||'Conta local';
+      r.rivals=Array.isArray(r.rivals)?r.rivals.filter(x=>x&&x.f&&x.f.stats&&Array.isArray(x.f.traits)).slice(0,8):[];
+      r.ach=r.ach&&typeof r.ach==='object'?r.ach:{};r.tw=r.tw||0;r.mute=!!r.mute;r.bk=+r.bk||0;r.tut=!!r.tut;
+      return r;
+    }
+  }catch(e){}
+  const acc={name:'Conta local',chars:[],active:null,rivals:[],ach:{},tw:0,mute:false};
+  try{
+    const o=JSON.parse(localStorage.getItem(KEY1)||'null');
+    if(validChar(o)){fixChar(o);acc.chars.push(o);acc.active=0}
+  }catch(e){}
+  return acc;
+}
+function saveAcc(){try{localStorage.setItem(KEY2,JSON.stringify(ACC));localStorage.removeItem(KEY1)}catch(e){}}
+
+let lastScreen='s-create',guideTab='weapons';
+const tourCost=()=>curEv().cost||5;
+function dayStr(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
+function dateLabel(){const d=new Date();return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')}
+function refreshSnd(){
+  const off=!!(ACC&&ACC.mute);
+  $('btn-snd').textContent='Som: '+(off?'desligado':'ligado');
+  $('btn-snd').setAttribute('aria-pressed',String(!off));
+}
+function show(id){
+  ['s-account','s-create','s-hub','s-fight','s-guide','s-history','s-league','s-tut'].forEach(x=>{$(x).hidden=x!==id});
+  if(id!=='s-guide'&&id!=='s-history'&&id!=='s-league'&&id!=='s-tut')lastScreen=id;
+  $('btn-acc').hidden=!(ACC&&ACC.chars.length)||id==='s-fight'||id==='s-account';
+  $('btn-guide').hidden=id==='s-fight'||id==='s-guide';
+  $('btn-league').hidden=!(ACC&&ACC.chars.length)||id==='s-fight'||id==='s-league'||id==='s-create';
+  $('btn-hist').hidden=!S||id==='s-fight'||id==='s-create'||id==='s-history';
+  if(id==='s-tut')['btn-acc','btn-hist','btn-league','btn-guide'].forEach(b=>{$(b).hidden=true});
+  refreshSnd();
+  const ev=curEv();$('evtag').textContent='Evento de hoje: '+ev.nome+'. '+ev.desc;
+}
+
+function weaponShape(id){
+  switch(id){
+    case 'moca':return '<path class="fg-wp" d="M-3 0L5 -46L15 -44L7 2Z"/><circle class="fg-wp" cx="11" cy="-52" r="12"/>';
+    case 'adaga':return '<path class="fg-wp" d="M-2 0L5 -36L11 -2Z"/>';
+    case 'machado':return '<path class="fg-wp" d="M-3 0L5 -52L11 -50L6 2Z"/><path class="fg-wp" d="M8 -52L32 -44L30 -24L8 -32Z"/>';
+    case 'espada':return '<path class="fg-wp" d="M-2 0L5 -66L11 -64L5 2Z"/><rect class="fg-wp" x="-9" y="-8" width="24" height="5"/>';
+    case 'lanca':return '<path class="fg-wp" d="M-2 14L4 -66L9 -66L3 14Z"/><path class="fg-wp" d="M6.5 -90L15 -64L-2 -64Z"/>';
+    case 'martelo':return '<path class="fg-wp" d="M-3 6L4 -46L9 -44L3 8Z"/><path class="fg-wp" d="M-6 -48L20 -60L27 -46L1 -34Z"/>';
+    case 'chicote':return '<path class="fg-wp" d="M-3 6L2 -14L7 -12L2 8Z"/><path class="fg-ws" d="M5 -14Q34 -34 14 -54T30 -84"/>';
+    case 'bastao':return '<path class="fg-wp" d="M-3 14L6 -74L12 -73L3 15Z"/>';
+    case 'cutelo':return '<path class="fg-wp" d="M-2 6L3 -22L7 -21L3 8Z"/><path class="fg-wp" d="M2 -24L28 -30L31 -56L4 -52Z"/>';
+    default:return '';
+  }
+}
+function cosBack(c){
+  if(!c)return '';
+  if(c.e==='capa')return '<path class="fg-acc" d="M-34 -115L-60 -34L-22 -46Z"/>';
+  if(c.e==='asas')return '<path class="fg-acc" d="M-30 -112L-76 -154L-72 -104L-56 -92L-40 -74Z"/><path class="fg-acc" d="M30 -112L76 -154L72 -104L56 -92L40 -74Z"/>';
+  return '';
+}
+function cosFront(c){
+  if(!c)return '';
+  let s='';
+  if(c.h==='crista')s+='<path class="fg-acc" d="M-13 -172L-9 -192L-3 -175Z"/><path class="fg-acc" d="M-5 -175L0 -198L5 -175Z"/><path class="fg-acc" d="M3 -175L9 -192L13 -172Z"/>';
+  else if(c.h==='cartola')s+='<rect class="fg-acc" x="-30" y="-178" width="60" height="6" rx="2"/><rect class="fg-acc" x="-16" y="-202" width="32" height="26" rx="2"/>';
+  else if(c.h==='cornos')s+='<path class="fg-acc" d="M-20 -168L-31 -196L-8 -174Z"/><path class="fg-acc" d="M20 -168L31 -196L8 -174Z"/>';
+  else if(c.h==='coroa')s+='<path class="fg-acc" d="M-18 -174L-22 -198L-10 -186L0 -202L10 -186L22 -198L18 -174Z"/>';
+  else if(c.h==='bandana')s+='<rect class="fg-acc" x="-23" y="-170" width="46" height="8" rx="3"/><path class="fg-acc" d="M20 -167L44 -178L40 -160Z"/>';
+  else if(c.h==='capacete')s+='<path class="fg-acc" d="M-27 -148L-27 -158Q-27 -184 0 -184Q27 -184 27 -158L27 -148L19 -150L19 -161L-19 -161L-19 -150Z"/>';
+  else if(c.h==='aureola')s+='<ellipse cx="0" cy="-192" rx="20" ry="5" fill="none" stroke="var(--acc,#d4820a)" stroke-width="4"/>';
+  else if(c.h==='orelhas')s+='<path class="fg-body" d="M-23 -166L-21 -194L-5 -174Z"/><path class="fg-body" d="M23 -166L21 -194L5 -174Z"/><path class="fg-acc" d="M-19 -172L-18 -186L-11 -176Z"/><path class="fg-acc" d="M19 -172L18 -186L11 -176Z"/>';
+  else if(c.h==='palha')s+='<ellipse class="fg-acc" cx="0" cy="-175" rx="40" ry="7"/><path class="fg-acc" d="M-19 -177Q-17 -200 0 -200Q17 -200 19 -177Z"/><rect class="fg-body" x="-19" y="-184" width="38" height="5"/>';
+  if(c.e==='oculos')s+='<rect class="fg-pe" x="-19" y="-162" width="16" height="12" rx="4"/><rect class="fg-pe" x="3" y="-162" width="16" height="12" rx="4"/><rect class="fg-acc" x="-4" y="-158" width="8" height="3"/>';
+  else if(c.e==='bigode')s+='<path class="fg-acc" d="M-16 -143Q0 -152 16 -143Q9 -135 0 -141Q-9 -135 -16 -143Z"/>';
+  else if(c.e==='cicatriz')s+='<path class="fg-acc" d="M9 -168L13 -169L20 -138L16 -137Z"/>';
+  else if(c.e==='medalha')s+='<path class="fg-acc" d="M-20 -112L-8 -112L-14 -96Z"/><circle class="fg-acc" cx="-14" cy="-92" r="8"/><circle class="fg-pe" cx="-14" cy="-92" r="3"/>';
+  else if(c.e==='ombreiras')s+='<ellipse class="fg-acc" cx="-42" cy="-114" rx="15" ry="8"/><ellipse class="fg-acc" cx="44" cy="-114" rx="15" ry="8"/>';
+  else if(c.e==='mascara')s+='<path class="fg-acc" d="M-25 -167L25 -167L23 -146Q0 -140 -23 -146Z"/><rect class="fg-pe" x="-17" y="-160" width="12" height="6" rx="3"/><rect class="fg-pe" x="5" y="-160" width="12" height="6" rx="3"/>';
+  else if(c.e==='cachecol')s+='<rect class="fg-acc" x="-22" y="-134" width="44" height="10" rx="4"/><rect class="fg-acc" x="10" y="-128" width="10" height="28" rx="3"/>';
+  return s;
+}
+function figure(wid,cos){return cosBack(cos)+figureBase(wid)+cosFront(cos)}
+function figureBase(wid){
+  return '<path class="fg-body" d="M-40 -115L40 -115L25 -40L-25 -40Z"/>'+
+  '<path class="fg-body" d="M-40 -115L-55 -65L-40 -60L-25 -110Z"/>'+
+  '<path class="fg-body" d="M40 -115L60 -150L73 -142L53 -102Z"/>'+
+  '<rect class="fg-body" x="-21" y="-40" width="18" height="40"/>'+
+  '<rect class="fg-body" x="3" y="-40" width="18" height="40"/>'+
+  '<circle class="fg-body" cx="0" cy="-152" r="24"/>'+
+  '<rect class="fg-acc" x="-25" y="-70" width="50" height="8"/>'+
+  '<rect class="fg-acc" x="-12" y="-156" width="24" height="4"/>'+
+  '<g class="wp" transform="translate(66,-146)">'+weaponShape(wid)+'</g>';
+}
+function miniSvg(f){
+  return '<svg viewBox="-80 -205 170 215" style="--acc:'+f.color+'" aria-hidden="true">'+figure(f.weapons[0]||'',f.cos)+'</svg>';
+}
+function traitCard(id){
+  const t=TRAITS[id];
+  return '<div class="trait '+t.k+'"><b aria-hidden="true">'+(t.k==='pos'?'+':'−')+'</b><strong>'+t.nome+'</strong><small>'+t.desc+'</small></div>';
+}
+function traitChip(id){
+  const t=TRAITS[id];
+  return '<span class="tc '+t.k+'" title="'+esc(t.desc)+'">'+(t.k==='pos'?'+':'−')+' '+t.nome+'</span>';
+}
+
+function statRows(f){
+  const d=derive(f),s=f.stats;
+  return '<dl class="stats">'+
+  '<div><dt>Vida</dt><dd>'+s.vida+'<small>'+d.maxHp+' PV</small></dd></div>'+
+  '<div><dt>Força</dt><dd>'+s.forca+'<small>+'+d.bonus+' dano</small></dd></div>'+
+  '<div><dt>Agilidade</dt><dd>'+s.agi+'<small>'+Math.round(d.dodge*100)+'% esquiva</small></dd></div>'+
+  '<div><dt>Velocidade</dt><dd>'+s.vel+'<small>ritmo '+(100/d.cd).toFixed(1)+'</small></dd></div></dl>';
+}
+function weaponList(f){
+  const ids=f.weapons.length?f.weapons:['punhos'];
+  return ids.map(id=>'<li>'+WEAPONS[id].nome+' <small>dano '+WEAPONS[id].min+'–'+WEAPONS[id].max+'</small></li>').join('');
+}
+function skillList(f){
+  return f.skills.length?f.skills.map(id=>'<li><strong>'+SKILLS[id].nome+'</strong><small>'+SKILLS[id].desc+'</small></li>').join(''):'<li class="none">Ainda sem habilidades.</li>';
+}
+function comboBlock(f){
+  const ids=activeCombos(f);
+  if(!ids.length)return '<p class="rec" style="margin-top:6px">Nenhum ainda. Junta certas habilidades, armas e animais para os ativar. Vê o Guia.</p>';
+  return '<ul class="gear">'+ids.map(id=>'<li><strong>'+COMBOS[id].nome+'</strong><small>'+COMBOS[id].desc+'</small></li>').join('')+'</ul>';
+}
+function optsHtml(db,cur){return Object.keys(db).map(k=>'<option value="'+k+'"'+(k===cur?' selected':'')+'>'+db[k]+'</option>').join('')}
+function rivalOpp(r){
+  const L=S.f.level,l=r.f.level;
+  if(!r.scene)r.scene=rndScene();
+  return{f:r.f,rival:true,scene:r.scene,diff:l<L?'Fácil':l===L?'Igual':'Difícil',xp:(l<L?6:l===L?10:16)+(petsOf(r.f).length?4:0)};
+}
+function addBonusStat(f,k){f.stats[k]++;f.bp=f.bp||{};f.bp[k]=(f.bp[k]||0)+1}
+const TOUR_PET=.02,TOUR_SKILL=.10,TOUR_WEAPON=.05,PET_WIN=.015,PET_WIN_HARD=.04,PET_SCALE=[1,.5,.25];
+function petChance(f,base){const n=petsOf(f).length;return n>=MAX_PETS?0:base*PET_SCALE[n]}
+function tourReward(f,mult){
+  const r=Math.random(),petP=petChance(f,TOUR_PET)*(mult||1);
+  if(r<petP){const id=rollPet(Math.random,petsOf(f));if(id){f.pets=petsOf(f).concat(id);delete f.pet;return{found:id,text:'Recompensa do torneio: um animal de estimação, '+PETS[id].nome+'!'}}}
+  const free=Object.keys(SKILLS).filter(id=>!f.skills.includes(id));
+  if(r<petP+TOUR_SKILL&&free.length){
+    const id=free[Math.floor(Math.random()*free.length)];
+    f.skills.push(id);f.bs=(f.bs||0)+1;
+    return{found:null,text:'Recompensa do torneio: a habilidade '+SKILLS[id].nome+'!'}
+  }
+  const freeW=Object.keys(WEAPONS).filter(id=>id!=='punhos'&&!f.weapons.includes(id));
+  if(r>=petP+TOUR_SKILL&&r<petP+TOUR_SKILL+TOUR_WEAPON&&freeW.length){
+    const id=freeW[Math.floor(Math.random()*freeW.length)];
+    f.weapons.push(id);f.bs=(f.bs||0)+1;
+    return{found:null,text:'Recompensa do torneio: a arma '+WEAPONS[id].nome+'!'}
+  }
+  const ks=['vida','forca','agi','vel'],got=[];
+  for(let i=0;i<2;i++){const k=ks[Math.floor(Math.random()*4)];addBonusStat(f,k);got.push(k)}
+  const txt=got[0]===got[1]?'+2 de '+STATS[got[0]].nome:'+1 de '+STATS[got[0]].nome+' e +1 de '+STATS[got[1]].nome;
+  return{found:null,text:'Recompensa do torneio: '+txt+'.'}
+}
+function sceneNote(o){
+  const sc=SCENES.find(x=>x.id===o.scene);if(!sc)return '';
+  const p=[];
+  petsOf(S.f).forEach(id=>{const t=sceneTag(sc,id);if(t)p.push('o teu '+PETS[id].nome+': '+t)});
+  petsOf(o.f).forEach(id=>{const t=sceneTag(sc,id);if(t)p.push(PETS[id].nome+' dele: '+t)});
+  return '<div class="nums">Cenário: '+sc.nome+(p.length?' · '+p.join('; '):'')+'</div>';
+}
+function oppCard(o,attr){
+  const est=o.est!==undefined?o.est:withScene(o.scene,()=>winEstimate(S.f,o.f));
+  const mult=derive(S.f).xp,d=derive(o.f),cls=o.diff==='Fácil'?'f':o.diff==='Igual'?'i':'d';
+  const extras=o.f.weapons.map(id=>WEAPONS[id].nome).concat(o.f.skills.map(id=>SKILLS[id].nome)).concat(petsOf(o.f).length?['Animais: '+petsOf(o.f).map(id=>PETS[id].nome).join(', ')]:[]);
+  return '<div class="opp">'+miniSvg(o.f)+
+    '<div><h3>'+esc(o.f.name)+'</h3><div class="meta"><span class="chip '+cls+'">'+o.diff+'</span><small>Nível '+o.f.level+' · +'+Math.max(1,Math.round(o.xp*mult))+' XP</small><small>Vitória estimada: '+est+'%</small></div>'+
+    '<div class="nums">'+d.maxHp+' PV · For '+o.f.stats.forca+' · Agi '+o.f.stats.agi+' · Vel '+o.f.stats.vel+'</div>'+
+    sceneNote(o)+'<div class="tchips" style="margin-top:6px">'+o.f.traits.map(traitChip).join('')+'</div>'+
+    (extras.length?'<div class="nums">'+extras.join(' · ')+'</div>':'')+'</div>'+
+    '<div class="go"><button class="btn" '+attr+'>Lutar</button></div></div>';
+}
+function rivalsHtml(){
+  if(!ACC.rivals.length)return '';
+  return '<h2 class="right-h" style="margin-top:26px">Rivais</h2><p class="right-p">Lutadores importados de amigos. Lutar contra eles não os altera.</p><div class="opps">'+
+    ACC.rivals.map((r,i)=>oppCard(rivalOpp(r),'data-rival="'+i+'"')).join('')+'</div>';
+}
+function nextOpts(){S.rr=1;return[rollUpgrade(S.f)]}
+function optCard(o,i){
+  let kind,name,desc;
+  if(o.type==='stat'){kind='Atributo';name=STATS[o.id].nome;desc=STATS[o.id].desc}
+  else if(o.type==='weapon'){const w=WEAPONS[o.id];kind='Arma';name=w.nome;desc='Dano '+w.min+'–'+w.max+', precisão '+Math.min(100,Math.round(w.acc*100))+'%. '+w.desc}
+  else{kind='Habilidade';name=SKILLS[o.id].nome;desc=SKILLS[o.id].desc}
+  const hs=comboHint(S.f,o);
+  return '<button class="up" data-up="'+i+'"><span class="kind">'+kind+'</span><strong>'+name+'</strong><span>'+desc+'</span>'+(hs.length?'<span class="hint">Completa o combo '+hs.map(id=>COMBOS[id].nome).join(', ')+'</span>':'')+'</button>';
+}
+
+function renderHub(){
+  const f=S.f,need=xpNeed(f.level),mult=derive(f).xp;
+  $('hub-f').innerHTML=
+    '<div class="top fcard">'+miniSvg(f)+'<div><div class="eyebrow">Nível '+f.level+'</div><h2>'+esc(f.name)+'</h2><div class="rec">'+S.wins+(S.wins===1?' vitória':' vitórias')+' · '+S.losses+(S.losses===1?' derrota':' derrotas')+(S.titles?' · '+S.titles+(S.titles===1?' torneio ganho':' torneios ganhos'):'')+'</div></div></div>'+
+    '<div class="xp" role="progressbar" aria-valuemin="0" aria-valuemax="'+need+'" aria-valuenow="'+f.xp+'" aria-label="Experiência"><i style="width:'+Math.round(f.xp/need*100)+'%"></i></div>'+
+    '<small>'+f.xp+' / '+need+' XP para o nível '+(f.level+1)+'</small>'+
+    statRows(f)+
+    '<div class="eyebrow">Traços</div><div class="traitlist">'+f.traits.map(traitCard).join('')+'</div>'+
+    '<div class="eyebrow sect">Animal de estimação</div>'+petBlock(f)+
+    '<div class="eyebrow sect">Armas</div><ul class="gear">'+weaponList(f)+'</ul>'+
+    '<div class="eyebrow sect">Habilidades</div><ul class="gear">'+skillList(f)+'</ul>'+
+    '<div class="eyebrow sect">Combos ativos</div>'+comboBlock(f);
+  if(S.opts){
+    $('hub-r').innerHTML='<h2 class="right-h">A tua melhoria</h2><p class="right-p">'+
+      (S.pend>1?'Tens '+S.pend+' melhorias por receber.':'Subiste para o nível '+f.level+'.')+' Esta melhoria foi sorteada: toca na carta para a aceitar ou sorteia outra (só uma troca por melhoria, e fica com a segunda).</p><div class="ups">'+S.opts.map(optCard).join('')+'</div>'+
+      '<div class="row" style="margin-top:12px"><button class="btn ghost" data-reroll="1"'+(S.rr>0?'':' disabled')+'>'+(S.rr>0?'Sortear outra (1 troca)':'Troca já usada')+'</button></div>';
+  }else{
+    $('hub-r').innerHTML=tourPanel()+challengePanel()+'<h2 class="right-h" style="margin-top:26px">Combate normal</h2><p class="right-p">Dois adversários por dificuldade. Quanto mais forte, mais experiência ganhas, e cada um tem o seu cenário sorteado. Perder também dá um pouco.</p><div class="opps">'+
+      S.opps.map((o,i)=>(i%2===0?'<div class="eyebrow" style="margin-top:'+(i?'10':'0')+'px">'+o.diff+'</div>':'')+oppCard(o,'data-fight="'+i+'"')).join('')+'</div>'+rivalsHtml();
+  }
+  show('s-hub');
+}
+$('hub-r').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b||busy)return;
+  if(b.dataset.up!==undefined){
+    applyUpgrade(S.f,S.opts[+b.dataset.up]);
+    S.pend--;S.opts=S.pend>0?nextOpts():null;
+    checkAch({});saveAcc();renderHub();
+  }else if(b.dataset.reroll!==undefined){
+    if(S.rr>0&&S.opts){S.rr--;S.opts=[rollUpgrade(S.f,Math.random,S.opts[0])];saveAcc();renderHub()}
+  }else if(b.dataset.fight!==undefined)startFight(+b.dataset.fight);
+  else if(b.dataset.rival!==undefined)startRival(+b.dataset.rival);
+  else if(b.dataset.chal!==undefined)startChallenge();
+  else if(b.dataset.cshare!==undefined)shareChal();
+  else if(b.dataset.tenter!==undefined){if((S.charge||0)>=tourCost()&&!S.tour){newTour();tourQuit=false;saveAcc();renderHub()}}
+  else if(b.dataset.tfight!==undefined&&S.tour){tourQuit=false;runFight({f:tourOpp(S.tour),diff:'',xp:0,scene:(S.tour.scs||[])[S.tour.rd]},true)}
+  else if(b.dataset.tquit!==undefined){
+    const v=b.dataset.tquit;
+    if(v==='ask')tourQuit=true;else if(v==='no')tourQuit=false;else{S.tour=null;tourQuit=false;saveAcc()}
+    renderHub();
+  }
+});
+
+function renderAccount(){
+  $('in-acc').value=ACC.name;
+  const out=[];
+  for(let i=0;i<MAXC;i++){
+    const c=ACC.chars[i];
+    if(!c){out.push('<div class="panel slot empty"><div class="eyebrow">Vaga '+(i+1)+'</div><p>Vaga livre</p><button class="btn ghost small" data-new="1">Criar lutador</button></div>');continue}
+    const f=c.f;
+    const actions=delIdx===i
+      ?'<p>Apagar '+esc(f.name)+' para sempre?</p><div class="row"><button class="btn small" data-delyes="'+i+'">Sim, apagar</button><button class="btn ghost small" data-delno="1">Cancelar</button></div>'
+      :'<div class="row"><button class="btn small" data-play="'+i+'">Jogar</button><button class="btn ghost small" data-exp="'+i+'">Exportar</button><button class="btn ghost small" data-del="'+i+'">Apagar</button></div>';
+    out.push('<div class="panel slot"><div class="top">'+miniSvg(f)+'<div><div class="eyebrow">Vaga '+(i+1)+(ACC.active===i?' · em uso':'')+'</div><h3>'+esc(f.name)+'</h3><div class="rec">Nível '+f.level+' · '+c.wins+' V · '+c.losses+' D</div></div></div><div class="tchips">'+f.traits.map(traitChip).join('')+'</div>'+actions+'</div>');
+  }
+  $('slots').innerHTML=out.join('');
+  renderRivals();bkLabel();clRender();
+  show('s-account');
+}
+$('slots').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  const d=b.dataset;
+  if(d.new!==undefined)showCreate();
+  else if(d.exp!==undefined){
+    const c=ACC.chars[+d.exp];
+    $('ie-code').value=exportFighter(c.f);
+    $('ie-out').innerHTML='<p class="msg">Código de '+esc(c.f.name)+' pronto. Copia-o e envia-o ao teu amigo.</p>';
+    $('ie-code').focus();$('ie-code').select();
+  }
+  else if(d.play!==undefined){ACC.active=+d.play;S=ACC.chars[ACC.active];delIdx=-1;saveAcc();renderHub()}
+  else if(d.del!==undefined){delIdx=+d.del;renderAccount()}
+  else if(d.delno!==undefined){delIdx=-1;renderAccount()}
+  else if(d.delyes!==undefined){
+    const i=+d.delyes;ACC.chars.splice(i,1);
+    if(ACC.active===i)ACC.active=null;else if(ACC.active!==null&&ACC.active>i)ACC.active--;
+    S=ACC.active!==null?ACC.chars[ACC.active]:null;
+    delIdx=-1;saveAcc();renderAccount();
+  }
+});
+$('in-acc').addEventListener('input',e=>{ACC.name=e.target.value.trim().slice(0,20)||'Conta local';saveAcc()});
+$('btn-acc').addEventListener('click',()=>{if(!busy){delIdx=-1;renderAccount()}});
+
+const SVGNS='http://www.w3.org/2000/svg';
+const REDUCED=(()=>{try{return matchMedia('(prefers-reduced-motion:reduce)').matches}catch(e){return false}})();
+function sceneBg(sc){
+  const id='sg-'+sc;
+  if(sc==='noite')return '<rect x="0" y="0" width="680" height="262" fill="#1a1c33"/>';
+  if(sc==='dia')return '<rect x="0" y="0" width="680" height="262" fill="var(--sky)"/>';
+  const a=sc==='amanhecer'?'var(--dawn1)':'var(--dusk1)',c=sc==='amanhecer'?'var(--dawn2)':'var(--dusk2)';
+  return '<defs><linearGradient id="'+id+'" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:'+a+'"/><stop offset="1" style="stop-color:'+c+'"/></linearGradient></defs><rect x="0" y="0" width="680" height="262" fill="url(#'+id+')"/>';
+}
+function ambience(sc,ev){
+  let h=sceneBg(sc),fl='<rect x="0" y="262" width="680" height="28" fill="'+(sc==='noite'?'#2a2a42':'var(--floor)')+'"/>';
+  if(sc==='noite'){
+    for(let i=0;i<16;i++)h+='<circle class="star" cx="'+((i*47+23)%660+10)+'" cy="'+((i*29+11)%150+8)+'" r="1.6" fill="#fff" style="animation-delay:'+(i*.2).toFixed(1)+'s"/>';
+    h+='<circle cx="86" cy="52" r="17" fill="#e9e6c8"/>'+fl;
+  }else if(sc==='amanhecer'){
+    h+='<circle cx="150" cy="262" r="64" fill="#ffd9a0" opacity=".28"/><circle cx="150" cy="262" r="38" fill="#ffc46b"/>'+fl;
+    h+='<ellipse class="cloud" cx="0" cy="70" rx="52" ry="10" style="fill:#fff;opacity:.5"/><ellipse class="cloud" cx="0" cy="118" rx="36" ry="8" style="fill:#fff;opacity:.45;animation-delay:-35s;animation-duration:95s"/>';
+    for(let i=0;i<7;i++)h+='<circle class="star" cx="'+(60+i*95)+'" cy="'+(246+(i%2)*8)+'" r="1.8" fill="#fff" style="animation-delay:'+(i*.35).toFixed(2)+'s"/>';
+  }else if(sc==='porsol'){
+    h+='<circle cx="548" cy="262" r="78" fill="#ffb27a" opacity=".3"/><circle cx="548" cy="262" r="44" fill="#ff8a4a"/>'+fl;
+    h+='<ellipse class="cloud" cx="0" cy="84" rx="58" ry="9" style="fill:#d46a5a;opacity:.55"/><ellipse class="cloud" cx="0" cy="130" rx="40" ry="7" style="fill:#b55a6a;opacity:.5;animation-delay:-40s;animation-duration:100s"/>';
+    for(let i=0;i<6;i++)h+='<circle class="ember" cx="'+(70+i*100)+'" cy="'+(262+(i%2)*6)+'" r="2" fill="#ffd27a" style="animation-delay:'+(i*.45).toFixed(2)+'s;animation-duration:4s"/>';
+  }else{
+    h+='<circle cx="596" cy="54" r="22" fill="var(--sun)" opacity=".85"/>'+fl;
+    h+='<ellipse class="cloud" cx="0" cy="60" rx="46" ry="12"/><ellipse class="cloud" cx="0" cy="104" rx="34" ry="9" style="animation-delay:-28s;animation-duration:90s"/>';
+  }
+  if(ev==='sorte')for(let i=0;i<10;i++)h+='<path class="star" d="M0 -6L1.8 -1.8L6 0L1.8 1.8L0 6L-1.8 1.8L-6 0L-1.8 -1.8Z" transform="translate('+((i*61+37)%640+20)+','+((i*37+25)%170+20)+')" fill="var(--sun)" style="animation-delay:'+(i*.25).toFixed(2)+'s"/>';
+  if(ev==='veloz')for(let i=0;i<6;i++)h+='<line class="streak" x1="0" y1="'+(70+i*30)+'" x2="'+(50+(i%3)*20)+'" y2="'+(70+i*30)+'" style="animation-delay:'+(i*.3).toFixed(1)+'s"/>';
+  if(ev==='bruto')for(let i=0;i<8;i++)h+='<circle class="ember" cx="'+(40+i*80)+'" cy="'+(262+(i%3)*6)+'" r="'+(2+i%3)+'" fill="#ff8a3a" style="animation-delay:'+(i*.3).toFixed(2)+'s"/>';
+  return h;
+}
+function sceneThumb(sc){return '<svg class="thumb" viewBox="0 0 680 290" aria-hidden="true">'+ambience(sc,'')+'</svg>'}
+function buildArena(fa,fb,evId,sc){sc=sc||'dia';
+  const xs={a:190,b:490},fs={a:fa,b:fb};
+  const petScale=n=>n>2?.62:n>1?.72:1,slotsA=[100,52,148];
+  const petsHtml=['a','b'].map(s=>{const pl=petsOf(fs[s]),k=petScale(pl.length);return pl.map((id,i)=>{const x=s==='a'?slotsA[i]:680-slotsA[i];return '<g transform="translate('+x+','+(PETS[id].fly?200:262)+')"><g class="fx" id="pet-'+s+'-'+id+'"><g transform="'+(s==='b'?'scale(-'+k+','+k+')':'scale('+k+')')+'">'+petShape(id)+'</g></g></g>'}).join('')}).join('');
+  $('arena').setAttribute('class',sc==='noite'?'night':'');
+  const SCN=SCENES.find(x=>x.id===sc)||SCENES[1];
+  const tags=['a','b'].map(s=>petsOf(fs[s]).map(id=>[id,sceneTag(SCN,id)]).filter(x=>x[1]).map((x,i)=>'<text class="boosttag '+(fxGood(SCN.fx[x[0]])?'good':'bad')+'" text-anchor="'+(s==='a'?'start':'end')+'" x="'+(s==='a'?20:660)+'" y="'+(92+i*17)+'">'+PETS[x[0]].nome.split(' ')[0]+': '+x[1]+'</text>').join('')).join('');
+  $('arena').innerHTML=ambience(sc,evId||'')+'<text class="scname" x="20" y="28">'+SCN.nome+'</text>'+'<line class="ground" x1="30" y1="262" x2="650" y2="262"/>'+
+    ['a','b'].map(s=>'<g transform="translate('+xs[s]+',262)"><g class="fx" id="fx-'+s+'" style="--acc:'+fs[s].color+'"><ellipse class="shadow" cx="0" cy="2" rx="38" ry="6"/><g class="idle '+s+'"><g transform="'+(s==='b'?'scale(-1,1)':'')+'">'+figure(fs[s].weapons[0]||'',fs[s].cos)+'</g></g></g></g>').join('')+
+    petsHtml+tags+'<g id="fxl"></g>';
+  ['a','b'].forEach(s=>{const fx=$('fx-'+s);fig[s]={fx,wp:fx.querySelector('.wp'),pets:Object.fromEntries(petsOf(fs[s]).map(id=>[id,$('pet-'+s+'-'+id)]))}});
+}
+function setBar(s,hp,max){const el=$('f'+s),p=Math.round(hp/max*100);el.style.width=p+'%';el.className=p<=25?'low':p<=50?'mid':'';$('t'+s).textContent=hp+' / '+max+' PV'}
+const sleep=ms=>new Promise(r=>setTimeout(r,Math.max(4,ms/speed)));
+function anim(el,kf,d,opt){return el.animate(kf,Object.assign({duration:Math.max(8,d/speed),easing:'ease-in-out'},opt||{})).finished.catch(()=>{})}
+function impact(s,crit){
+  const x=s==='a'?190:490,g=document.createElementNS(SVGNS,'g');
+  g.setAttribute('transform','translate('+x+',170)');
+  const n=crit?10:6;let d='';
+  for(let i=0;i<n;i++){const an=i/n*Math.PI*2,r2=crit?44:30;d+='M'+(Math.cos(an)*14).toFixed(1)+' '+(Math.sin(an)*14).toFixed(1)+'L'+(Math.cos(an)*r2).toFixed(1)+' '+(Math.sin(an)*r2).toFixed(1)}
+  const p=document.createElementNS(SVGNS,'path');p.setAttribute('d',d);p.setAttribute('class','burst'+(crit?' crit':''));
+  g.appendChild(p);$('fxl').appendChild(g);
+  const rm=()=>g.remove();
+  p.animate([{transform:'scale(.4)',opacity:1},{transform:'scale(1.15)',opacity:0}],{duration:Math.max(80,380/speed),easing:'ease-out'}).finished.then(rm).catch(rm);
+  shake(crit?7:3);
+}
+function shake(px){
+  if(REDUCED)return;
+  $('arena').animate([{transform:'translate(0,0)'},{transform:'translate('+(-px)+'px,'+(px/2)+'px)'},{transform:'translate('+px+'px,'+(-px/2)+'px)'},{transform:'translate('+(-px/2)+'px,0)'},{transform:'translate(0,0)'}],{duration:Math.max(60,260/speed),easing:'linear'});
+}
+function floatText(s,txt,cls,dy){
+  const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+  t.setAttribute('x',s==='a'?190:490);t.setAttribute('y',70+(dy||0));t.setAttribute('class','dmg '+cls);t.textContent=txt;
+  $('fxl').appendChild(t);
+  const rm=()=>t.remove();
+  t.animate([{transform:'translateY(6px) scale(.6)',opacity:0},{transform:'translateY(-6px) scale(1.15)',opacity:1,offset:.2},{transform:'translateY(-40px) scale(1)',opacity:0}],{duration:Math.max(120,900/speed),easing:'ease-out'}).finished.then(rm).catch(rm);
+}
+function logLine(e,names){
+  const A=names[e.a],D=names[e.d],W=WEAPONS[e.w].nome;
+  let pre=e.counter?'Contra-ataque! ':e.double?'Golpe duplo! ':'';
+  if(!e.hit)return pre+A+' ataca com '+(e.w==='punhos'?'os punhos':W)+' e falha: '+D+' esquiva.';
+  return pre+A+' acerta com '+(e.w==='punhos'?'os punhos':W)+': '+e.dmg+' de dano'+(e.crit?' (crítico)':'')+'.'+
+    (e.saved?' '+D+' aguenta com 1 PV!':'')+(e.second?' '+D+' recupera o fôlego.':'')+(e.phoenix?' '+D+' renasce das cinzas!':'')+(e.stun?' '+D+' fica atordoado.':'')+(e.thorns?' '+A+' fere-se nos espinhos.':'')+(e.shield?' O escudo absorve '+e.shield+'.':'');
+}
+function setSpeedUI(){document.querySelectorAll('[data-sp]').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.sp===userSpeed)))}
+document.querySelectorAll('[data-sp]').forEach(b=>b.addEventListener('click',()=>{userSpeed=+b.dataset.sp;speed=userSpeed;setSpeedUI()}));
+$('skip').addEventListener('click',()=>{speed=40});
+
+async function playback(res,fa,fb){
+  const names={a:fa.name,b:fb.name};
+  for(const e of res.events){
+    if(e.pet){await petPlay(e,names);continue}
+    const A=fig[e.a],D=fig[e.d],dir=e.a==='a'?1:-1;
+    A.wp.innerHTML=weaponShape(e.w==='punhos'?'':e.w);
+    $('log').textContent=logLine(e,names);
+    if(e.regen)floatText(e.a,'+'+e.regen,'good',-26);
+    const lunge=anim(A.fx,[{transform:'translateX(0px)'},{transform:'translateX('+dir*120+'px)',offset:.45},{transform:'translateX('+dir*120+'px)',offset:.6},{transform:'translateX(0px)'}],420);
+    await sleep(190);
+    if(e.hit){
+      D.fx.classList.add('hit');setTimeout(()=>D.fx.classList.remove('hit'),Math.max(40,170/speed));
+      anim(D.fx,[{transform:'translateX(0px)'},{transform:'translateX('+dir*16+'px)'},{transform:'translateX(0px)'}],200);
+      floatText(e.d,e.dmg>0?'-'+e.dmg:'Absorvido',e.dmg>0?(e.crit?'crit':''):'info');impact(e.d,e.crit);sfx(e.crit?'crit':'hit');
+      if(e.heal)floatText(e.a,'+'+e.heal,'good');
+      if(e.thorns)floatText(e.a,'-'+e.thorns,'',30);
+      if(e.stun)floatText(e.d,'Atordoado','info',30);
+      if(e.saved)floatText(e.d,'1 PV!','info',30);
+      if(e.second)floatText(e.d,'Fôlego','info',30);
+      if(e.phoenix)floatText(e.d,'Renasce','info',30);
+    }else{
+      anim(D.fx,[{transform:'translateX(0px)'},{transform:'translateX('+dir*34+'px)'},{transform:'translateX(0px)'}],280);
+      floatText(e.d,'Esquiva','miss');sfx('miss');
+    }
+    setBar('a',e.hpa,res.maxA);setBar('b',e.hpb,res.maxB);
+    await lunge;await sleep(120);
+  }
+  const W=res.winner,L=W==='a'?'b':'a';
+  await sleep(150);
+  fig[L].fx.animate([{transform:'rotate(0deg)',opacity:1},{transform:'rotate('+(L==='a'?-82:82)+'deg)',opacity:.45}],{duration:Math.max(30,500/speed),fill:'forwards',easing:'ease-in'});
+  await anim(fig[W].fx,[{transform:'translateY(0px)'},{transform:'translateY(-22px)'},{transform:'translateY(0px)'},{transform:'translateY(-22px)'},{transform:'translateY(0px)'}],700);
+}
+
+const TOUR_ROUNDS=['Quartos de final','Meias-finais','Final'],TOUR_IN=['nos quartos de final','nas meias-finais','na final'],TOUR_XP=[12,18,30];
+let tourQuit=false;
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function mkRound(ids){const m=[];for(let i=0;i<ids.length;i+=2)m.push({a:ids[i],b:ids[i+1],w:null});return m}
+function resolveNpc(t){
+  t.rounds[t.rd].forEach(m=>{
+    if(m.w===null&&m.a!==t.p&&m.b!==t.p)m.w=simulate(t.field[m.a],t.field[m.b]).winner==='a'?m.a:m.b;
+  });
+}
+function newTour(){
+  const L=S.f.level,used=[S.f.name];
+  const lv=shuffle([L-1,L-1,L,L,L,L+1,L+1].map(x=>Math.max(1,x)));
+  const npcs=lv.map(l=>{const o=makeOpponent(l,Math.random,used);used.push(o.name);return o});
+  const p=Math.floor(Math.random()*8),field=[];let k=0;
+  for(let i=0;i<8;i++)field.push(i===p?null:npcs[k++]);
+  const t={field,p,rd:0,rounds:[mkRound([0,1,2,3,4,5,6,7])],scs:[rndScene(),rndScene(),rndScene()]};
+  resolveNpc(t);S.tour=t;S.charge=Math.max(0,(S.charge||0)-tourCost());
+}
+function playerMatch(t){return t.rounds[t.rd].find(m=>m.a===t.p||m.b===t.p)}
+function tourOpp(t){const m=playerMatch(t);return t.field[m.a===t.p?m.b:m.a]}
+function matchBox(t,m){
+  const row=i=>{
+    const me=i===t.p,cls=(m.w===i?'w':'')+(m.w!==null&&m.w!==i?' l':'');
+    return '<div class="'+cls+'"><span>'+esc(me?S.f.name:t.field[i].name)+(me?' <small>(tu)</small>':'')+'</span><small>Nv '+(me?S.f.level:t.field[i].level)+'</small></div>';
+  };
+  return '<div class="mt'+((m.a===t.p||m.b===t.p)&&m.w===null?' mine':'')+'">'+row(m.a)+row(m.b)+'</div>';
+}
+function bracketHtml(t){
+  const cols=[4,2,1].map((n,r)=>{
+    const ms=t.rounds[r];
+    const boxes=ms?ms.map(m=>matchBox(t,m)).join(''):Array.from({length:n},()=>'<div class="mt"><div><span>A decidir</span></div><div><span>A decidir</span></div></div>').join('');
+    return '<div class="rdc"><div class="eyebrow">'+TOUR_ROUNDS[r]+'</div>'+boxes+'</div>';
+  }).join('');
+  return '<div class="brwrap"><div class="bracket">'+cols+'</div></div>';
+}
+function tourPanel(){
+  if(S.tour){
+    const t=S.tour,o=tourOpp(t);
+    return '<div class="tour"><div class="tour-h"><h2 class="right-h">Torneio</h2><span class="eyebrow">'+TOUR_ROUNDS[t.rd]+'</span></div>'+bracketHtml(t)+
+      '<p class="right-p" style="margin:12px 0">Próximo combate: <strong>'+esc(o.name)+'</strong>, nível '+o.level+', vitória estimada '+withScene((t.scs||[])[t.rd],()=>winEstimate(S.f,o))+'%.'+(SCENES.find(x=>x.id===(t.scs||[])[t.rd])?' Cenário: '+SCENES.find(x=>x.id===t.scs[t.rd]).nome+'.':'')+' Perder elimina-te.</p>'+
+      '<div class="row"><button class="btn" data-tfight="1">Lutar: '+TOUR_ROUNDS[t.rd]+'</button>'+
+      (tourQuit?'<button class="btn small" data-tquit="yes">Confirmar desistência</button><button class="btn ghost small" data-tquit="no">Cancelar</button>':'<button class="btn ghost small" data-tquit="ask">Desistir</button>')+'</div></div>';
+  }
+  const c=Math.min(5,S.charge||0);
+  return '<div class="tour"><h2 class="right-h">Torneio</h2><p class="right-p" style="margin-bottom:12px">8 lutadores, 3 rondas, eliminação direta. Quem ganha recebe uma recompensa: 2 pontos de atributo (83%), uma habilidade (10%), uma arma (5%) ou um animal (2%, menos se já tiveres animais). Entrar gasta '+tourCost()+' combates normais.</p>'+
+    '<div class="xp" role="progressbar" aria-valuemin="0" aria-valuemax="5" aria-valuenow="'+c+'" aria-label="Combates para o torneio"><i style="width:'+(c*20)+'%"></i></div>'+
+    '<small>'+c+' / 5 combates'+(S.titles?' · Torneios ganhos: '+S.titles:'')+'</small>'+
+    '<div class="row" style="margin-top:12px"><button class="btn" data-tenter="1"'+(c>=tourCost()?'':' disabled')+'>Entrar no torneio</button></div></div>';
+}
+function awardXp(gain){
+  const lv=S.f.level;S.f.xp+=gain;
+  while(S.f.xp>=xpNeed(S.f.level)){S.f.xp-=xpNeed(S.f.level);S.f.level++;S.pend++}
+  if(S.pend>0&&!S.opts)S.opts=nextOpts();
+  return S.f.level>lv;
+}
+function showResult(cls,title,text,found,achs,up,nums){
+  $('ctl').hidden=true;
+  $('res').innerHTML='<h3 class="'+cls+'">'+title+'</h3><p>'+text+'</p>'+
+    (found?'<div class="pet-row">'+petSvg(found)+'<div><strong>Novo animal de estimação: '+PETS[found].nome+'</strong><small>'+PETS[found].desc+'</small></div></div>':'')+
+    (nums||'')+
+    (achs.length?'<div class="tchips" style="margin-bottom:14px">'+achs.map(n=>'<span class="tc pos">Conquista: '+esc(n)+'</span>').join('')+'</div>':'')+
+    '<button class="btn" id="cont">Continuar</button>';
+  $('res').hidden=false;
+  $('cont').addEventListener('click',()=>{renderHub();window.scrollTo(0,0)});
+  $('cont').focus({preventScroll:true});
+  sfx(cls==='win'?'win':'lose');
+  if(up)setTimeout(()=>sfx('level'),650);
+  if(achs.length)setTimeout(()=>sfx('ach'),up?1150:700);
+}
+function recordFight(c){
+  const ev=c.res.events,last=ev[ev.length-1]||{};
+  const mine=ev.filter(e=>e.a==='a'&&e.hit);
+  const crits=mine.filter(e=>e.crit).length;
+  const maxHit=mine.reduce((m,e)=>Math.max(m,e.dmg||0),0);
+  const revived=ev.some(e=>e.d==='a'&&(e.saved||e.phoenix));
+  if(c.won){
+    S.streak=(S.streak||0)+1;S.bestStreak=Math.max(S.bestStreak||0,S.streak);
+    ACC.tw=(ACC.tw||0)+1;
+    const k=dayStr();
+    if(!ACC.day||ACC.day.k!==k)ACC.day={k,n:0};
+    ACC.day.n++;
+  }else S.streak=0;
+  S.maxHit=Math.max(S.maxHit||0,maxHit);
+  S.hist=S.hist||[];
+  S.hist.unshift({k:c.kind,r:c.rn||'',n:c.opp.f.name,l:c.opp.f.level,w:c.won?1:0,x:c.gain,d:dateLabel()});
+  S.hist=S.hist.slice(0,25);
+  return checkAch({won:c.won,kind:c.kind,opp:c.opp,crits,hpEnd:last.hpa===undefined?0:last.hpa,hpMax:c.res.maxA,revived,champion:!!c.champion,tries:c.tries||0},true);
+}
+function finishTour(res,opp){
+  const t=S.tour,fa=S.f,fb=opp.f,won=res.winner==='a',mult=derive(fa).xp,rd=t.rd;
+  const m=playerMatch(t);
+  let gain,found=null,champion=false,next='',rewardText='';
+  if(won){
+    S.wins++;gain=Math.max(1,Math.round(TOUR_XP[rd]*mult));m.w=t.p;
+    if(rd<2){
+      const winners=t.rounds[rd].map(x=>x.w);
+      t.rd=rd+1;t.rounds.push(mkRound(winners));resolveNpc(t);
+      next=' Próxima ronda: '+TOUR_ROUNDS[t.rd]+', contra '+esc(tourOpp(t).name)+'.';
+    }else{
+      champion=true;S.titles=(S.titles||0)+1;S.tour=null;
+      const rw=tourReward(S.f,curEv().pet||1);found=rw.found;rewardText=rw.text;
+    }
+  }else{S.losses++;gain=Math.max(1,Math.round(4*mult));S.tour=null}
+  const up=awardXp(gain);
+  const achs=recordFight({won,kind:'tour',rn:TOUR_ROUNDS[rd],opp,res,gain,champion});
+  saveAcc();
+  showResult(won?'win':'lose',champion?'Campeão do torneio!':won?'Ronda ganha':'Eliminado',
+    (won?esc(fa.name)+' venceu '+esc(fb.name)+' ('+TOUR_ROUNDS[rd].toLowerCase()+'). ':esc(fb.name)+' eliminou '+esc(fa.name)+' '+TOUR_IN[rd]+'. ')+'+'+gain+' XP.'+
+    (champion?' Ganhaste o torneio. '+rewardText:'')+next+(up?' Subiste para o nível '+S.f.level+'!':''),
+    found,achs,up,numbersHtml(res,fa,fb));
+}
+
+function startFight(i){return runFight(S.opps[i],false)}
+function startRival(i){const r=ACC.rivals[i];if(r)return runFight(rivalOpp(r),false)}
+function startChallenge(){return runFight(chalOpp(),false,true)}
+async function runFight(opp,tour,chal){
+  const prev=_sceneForce;
+  _sceneForce=chal?null:(SCENES.find(x=>x.id===opp.scene)||null);
+  try{return await runFight0(opp,tour,chal)}finally{_sceneForce=prev}
+}
+async function runFight0(opp,tour,chal){
+  if(busy)return;
+  if(chal&&weekly().won)return;
+  busy=true;
+  const fa=S.f,fb=opp.f;
+  const prevEv=_evForce;
+  if(chal)_evForce={id:'semana',nome:'',desc:'',m:{}};
+  let res;
+  try{res=simulate(fa,fb)}finally{_evForce=prevEv}
+  res_max.a=res.maxA;res_max.b=res.maxB;
+  speed=userSpeed;setSpeedUI();
+  $('na').textContent=fa.name;$('la').textContent='Nv. '+fa.level;
+  $('nb').textContent=fb.name;$('lb').textContent='Nv. '+fb.level;
+  setBar('a',res.maxA,res.maxA);setBar('b',res.maxB,res.maxB);
+  $('log').textContent='';$('res').hidden=true;$('ctl').hidden=false;
+  show('s-fight');buildArena(fa,fb,chal?'semana':curEv().id,curScene().id);
+  {const sc=curScene(),bo=[];[fa,fb].forEach(f=>petsOf(f).forEach(id=>{const t=sceneTag(sc,id);if(t)bo.push(PETS[id].nome+' de '+f.name+' ('+t+')')}));$('log').textContent='Cenário: '+sc.nome+(bo.length?'. '+bo.join('; ')+'.':'.')}
+  await sleep(500);
+  await playback(res,fa,fb);
+  if(tour){finishTour(res,opp);busy=false;return}
+  const won=res.winner==='a',mult=derive(fa).xp,lvBefore=S.f.level;
+  const wk=chal?weekly():null,firstChalWin=!!(chal&&won&&!wk.won);
+  const gain=Math.max(1,Math.round((won?opp.xp:3)*mult));
+  S.f.xp+=gain;if(won)S.wins++;else S.losses++;
+  let found=null;
+  if(!chal&&won&&Math.random()<petChance(S.f,opp.diff==='Difícil'?PET_WIN_HARD:PET_WIN)*(curEv().pet||1)){found=rollPet(Math.random,petsOf(S.f));if(found){S.f.pets=petsOf(S.f).concat(found);delete S.f.pet}}
+  let bonusStat=null;
+  if(firstChalWin){
+    bonusStat=['vida','forca','agi','vel'][Math.floor(Math.random()*4)];
+    addBonusStat(S.f,bonusStat);
+    wk.stat=bonusStat;
+  }
+  while(S.f.xp>=xpNeed(S.f.level)){S.f.xp-=xpNeed(S.f.level);S.f.level++;S.pend++}
+  if(S.pend>0&&!S.opts)S.opts=nextOpts();
+  if(opp.rival){const rv=ACC.rivals.find(x=>x.f===opp.f);if(rv)rv.scene=null}
+  else if(!chal){
+    const i=S.opps.indexOf(opp);
+    if(i<0||S.f.level!==lvBefore)S.opps=newOpps(S);
+    else S.opps[i]=newOpp(S,i,S.opps.map(x=>x.f.name));
+  }
+  S.charge=Math.min(5,(S.charge||0)+1);
+  if(chal){
+    wk.tries++;
+    if(firstChalWin){const last=res.events[res.events.length-1]||{hpa:0};wk.won=true;wk.who=fa.name;wk.lvl=fa.level;wk.tryWon=wk.tries;wk.hp=Math.round(last.hpa/res.maxA*100)}
+  }
+  const up=S.f.level>lvBefore;
+  const achs=recordFight({won,kind:chal?'chal':opp.rival?'rival':'normal',opp,res,gain,found,tries:chal?wk.tries:0});
+  saveAcc();
+  showResult(won?'win':'lose',won?'Vitória':'Derrota',
+    (won?esc(fa.name)+' venceu '+esc(fb.name)+'. ':esc(fb.name)+' foi mais forte desta vez. ')+'+'+gain+' XP.'+
+    (bonusStat?' Desafio diário vencido: +1 de '+STATS[bonusStat].nome+'.':'')+(up?' Subiste para o nível '+S.f.level+'!':''),
+    found,achs,up,numbersHtml(res,fa,fb));
+  busy=false;
+}
+
+let rr={pos:3,neg:3},stRoll={vida:1,forca:1,agi:1,vel:1};
+function rollStart(rng=Math.random){const o={vida:1,forca:1,agi:1,vel:1},ks=Object.keys(o);for(let i=0;i<START_TOTAL-4;i++)o[ks[Math.floor(rng()*ks.length)]]++;return o}
+function drawStart(){
+  $('st-roll').innerHTML=['vida','forca','agi','vel'].map(k=>'<span class="trait" style="flex-direction:column;min-width:74px"><b>'+STATS[k].nome+'</b><span>'+stRoll[k]+'</span></span>').join('');
+}
+function drawTraits(){
+  $('tr-pos').innerHTML=traitCard(tr.pos);$('tr-neg').innerHTML=traitCard(tr.neg);
+  document.querySelectorAll('[data-roll]').forEach(b=>{const k=b.dataset.roll;b.disabled=!rr[k];b.textContent=(k==='pos'?'Sortear outro bom':'Sortear outro mau')+' ('+rr[k]+')'});
+}
+function drawPreview(){$('pv').style.setProperty('--acc',pickedColor);$('pv').innerHTML=figure('moca',{h:$('in-h').value,e:$('in-e').value})}
+function showCreate(){
+  if(ACC.chars.length>=MAXC){renderAccount();return}
+  $('sw').innerHTML=COLORS.map((c,i)=>'<label><input type="radio" name="cor" value="'+c.hex+'" aria-label="'+c.nome+'"'+(i===0?' checked':'')+'><span style="--c:'+c.hex+'"></span></label>').join('');
+  $('in-h').innerHTML=optsHtml(COS_H,'nenhum');$('in-e').innerHTML=optsHtml(COS_E,'nenhum');
+  pickedColor=COLORS[0].hex;drawPreview();
+  rr={pos:3,neg:3};tr.pos=rollTrait('pos');tr.neg=rollTrait('neg');drawTraits();stRoll=rollStart();drawStart();
+  $('in-name').value='';$('err').textContent='';$('pv-name').textContent='Sem nome';
+  $('cancel-create').hidden=ACC.chars.length===0;
+  show('s-create');
+}
+$('sw').addEventListener('change',e=>{pickedColor=e.target.value;drawPreview()});
+$('in-h').addEventListener('change',drawPreview);$('in-e').addEventListener('change',drawPreview);
+$('in-name').addEventListener('input',e=>{$('pv-name').textContent=e.target.value.trim()||'Sem nome';$('err').textContent=''});
+$('f-create').addEventListener('click',e=>{
+  const b=e.target.closest('[data-roll]');if(!b)return;
+  const k=b.dataset.roll;if(!rr[k])return;
+  rr[k]--;tr[k]=rollTrait(k,tr[k]);drawTraits();
+});
+$('cancel-create').addEventListener('click',renderAccount);
+$('f-create').addEventListener('submit',e=>{
+  e.preventDefault();
+  const name=$('in-name').value.trim();
+  if(!name){$('err').textContent='Escreve um nome para o lutador.';$('in-name').focus();return}
+  if(ACC.chars.length>=MAXC){$('err').textContent='A conta já tem 5 lutadores.';return}
+  const nf=newFighter(name,pickedColor,[tr.pos,tr.neg],{h:$('in-h').value,e:$('in-e').value});
+  nf.stats={vida:stRoll.vida,forca:stRoll.forca,agi:stRoll.agi,vel:stRoll.vel};nf.z=[stRoll.vida,stRoll.forca,stRoll.agi,stRoll.vel];
+  S={f:nf,pend:0,opts:null,wins:0,losses:0,opps:[],charge:5,titles:0,tour:null};
+  S.opps=newOpps(S);
+  ACC.chars.push(S);ACC.active=ACC.chars.length-1;
+  checkAch({});saveAcc();renderHub();
+});
+
+function petShape(id){
+  switch(id){
+    case 'cao':return '<rect class="fg-pet" x="-24" y="-32" width="42" height="17" rx="7"/><circle class="fg-pet" cx="24" cy="-36" r="11"/><path class="fg-pet" d="M30 -46L40 -36L32 -34Z"/><rect class="fg-pet" x="-20" y="-17" width="7" height="17"/><rect class="fg-pet" x="8" y="-17" width="7" height="17"/><path class="fg-pet" d="M-24 -30L-38 -44L-30 -26Z"/><circle class="fg-pe" cx="27" cy="-39" r="2"/>';
+    case 'gato':return '<ellipse class="fg-pet" cx="-2" cy="-20" rx="22" ry="12"/><circle class="fg-pet" cx="22" cy="-30" r="10"/><path class="fg-pet" d="M14 -37L16 -52L23 -39Z"/><path class="fg-pet" d="M24 -39L31 -52L32 -36Z"/><rect class="fg-pet" x="-16" y="-12" width="6" height="12"/><rect class="fg-pet" x="6" y="-12" width="6" height="12"/><path d="M-22 -22Q-44 -24 -38 -50" fill="none" stroke="var(--muted)" stroke-width="5" stroke-linecap="round"/><circle class="fg-pe" cx="26" cy="-32" r="2"/>';
+    case 'corvo':return '<ellipse class="fg-pet" cx="0" cy="-20" rx="18" ry="11"/><circle class="fg-pet" cx="18" cy="-28" r="8"/><path class="fg-pet" d="M24 -30L38 -26L25 -24Z"/><path class="fg-pet" d="M-4 -26L-26 -52L8 -30Z"/><path class="fg-pet" d="M-16 -20L-36 -12L-14 -14Z"/><circle class="fg-pe" cx="20" cy="-30" r="2"/>';
+    case 'urso':return '<rect class="fg-pet" x="-34" y="-50" width="64" height="34" rx="14"/><circle class="fg-pet" cx="36" cy="-52" r="15"/><circle class="fg-pet" cx="30" cy="-66" r="5"/><circle class="fg-pet" cx="44" cy="-66" r="5"/><rect class="fg-pet" x="-30" y="-20" width="12" height="20"/><rect class="fg-pet" x="12" y="-20" width="12" height="20"/><circle class="fg-pe" cx="41" cy="-55" r="2.5"/>';
+    case 'fenix':return '<path class="fg-wp" d="M-6 -14Q-40 -30 -44 -62Q-22 -44 -6 -34Z"/><path class="fg-wp" d="M6 -14Q40 -30 44 -62Q22 -44 6 -34Z"/><ellipse class="fg-wp" cx="0" cy="-22" rx="12" ry="18"/><circle class="fg-wp" cx="0" cy="-46" r="9"/><path class="fg-wp" d="M-8 -8L-12 0L0 -4L12 0L8 -8Z"/>';
+    case 'tartaruga':return '<path class="fg-pet" d="M-32 -12Q-32 -48 0 -48Q32 -48 32 -12Z"/><circle class="fg-pet" cx="38" cy="-22" r="9"/><rect class="fg-pet" x="-24" y="-13" width="9" height="13"/><rect class="fg-pet" x="12" y="-13" width="9" height="13"/><path d="M-14 -40L-9 -16M4 -44L8 -16M20 -36L22 -16" fill="none" stroke="var(--bg)" stroke-width="3" stroke-linecap="round" opacity=".7"/><circle class="fg-pe" cx="41" cy="-24" r="2"/>';
+    case 'coruja':return '<ellipse class="fg-pet" cx="0" cy="-30" rx="18" ry="26"/><circle class="fg-pet" cx="0" cy="-58" r="13"/><path class="fg-pet" d="M-12 -66L-14 -78L-5 -70Z"/><path class="fg-pet" d="M12 -66L14 -78L5 -70Z"/><path class="fg-pet" d="M-18 -36L-32 -20L-16 -18Z"/><path class="fg-pet" d="M18 -36L32 -20L16 -18Z"/><circle class="fg-pe" cx="-5" cy="-59" r="4"/><circle class="fg-pe" cx="6" cy="-59" r="4"/><path class="fg-wp" d="M-2 -54L8 -54L3 -48Z"/><rect class="fg-pet" x="-9" y="-6" width="5" height="6"/><rect class="fg-pet" x="4" y="-6" width="5" height="6"/>';
+    case 'lobo':return '<rect class="fg-pet" x="-30" y="-38" width="52" height="20" rx="9"/><path class="fg-pet" d="M16 -52L36 -44L50 -34L30 -28L18 -30Z"/><path class="fg-pet" d="M18 -52L22 -66L30 -50Z"/><path class="fg-pet" d="M28 -50L36 -64L38 -46Z"/><rect class="fg-pet" x="-26" y="-20" width="7" height="20"/><rect class="fg-pet" x="-8" y="-20" width="7" height="20"/><rect class="fg-pet" x="6" y="-20" width="7" height="20"/><path d="M-30 -34Q-50 -34 -46 -54" fill="none" stroke="var(--muted)" stroke-width="7" stroke-linecap="round"/><circle class="fg-pe" cx="35" cy="-42" r="2"/>';
+    case 'dragao':return '<ellipse class="fg-pet" cx="-2" cy="-24" rx="24" ry="14"/><path class="fg-pet" d="M14 -30L32 -46L44 -42L40 -30L22 -22Z"/><path class="fg-pet" d="M-6 -34Q-26 -62 -48 -58Q-34 -42 -14 -26Z"/><path class="fg-pet" d="M-24 -20Q-48 -14 -52 -30Q-36 -22 -22 -26Z"/><path class="fg-pet" d="M30 -46L36 -58L38 -44Z"/><rect class="fg-pet" x="-14" y="-12" width="7" height="12"/><rect class="fg-pet" x="6" y="-12" width="7" height="12"/><path class="fg-wp" d="M44 -40L58 -44L52 -36L60 -32L46 -34Z"/><circle class="fg-pe" cx="36" cy="-42" r="2"/>';
+    default:return '';
+  }
+}
+function petSvg(id){return '<svg viewBox="-50 -75 110 85" aria-hidden="true">'+petShape(id)+'</svg>'}
+function petBlock(f){
+  const pl=petsOf(f);
+  if(!pl.length)return '<p class="rec" style="margin-top:6px">Ainda sem animais. Aparecem raramente depois de vitórias (mais contra adversários difíceis) e no torneio. Podes ter até '+MAX_PETS+', mas cada novo animal é mais difícil de encontrar.</p>';
+  return pl.map(id=>{const p=PETS[id];return '<div class="pet-row">'+petSvg(id)+'<div><strong>'+p.nome+'</strong><small>'+p.desc+'</small><small>'+petScenes(id)+'</small></div></div>'}).join('')+'<p class="rec" style="margin-top:6px">Animais: '+pl.length+'/'+MAX_PETS+'.'+(pl.filter(id=>PETS[id].cd).length>1?' Os animais atacantes depois do primeiro fazem menos dano (75% e 55%).':'')+'</p>';
+}
+async function petPlay(e,names){
+  const P=fig[e.a].pets[e.pet],D=fig[e.d],dir=e.a==='a'?1:-1,pn=PETS[e.pet].nome;
+  $('log').textContent=e.hit
+    ?pn+' de '+names[e.a]+' ataca: '+e.dmg+' de dano.'+(e.saved?' '+names[e.d]+' aguenta com 1 PV!':'')+(e.second?' '+names[e.d]+' recupera o fôlego.':'')+(e.phoenix?' '+names[e.d]+' renasce das cinzas!':'')
+    :pn+' de '+names[e.a]+' ataca e falha.';
+  const run=P?anim(P,[{transform:'translateX(0px)'},{transform:'translateX('+dir*240+'px)',offset:.45},{transform:'translateX('+dir*240+'px)',offset:.6},{transform:'translateX(0px)'}],460):Promise.resolve();
+  await sleep(210);
+  if(e.hit){
+    D.fx.classList.add('hit');setTimeout(()=>D.fx.classList.remove('hit'),Math.max(40,170/speed));
+    anim(D.fx,[{transform:'translateX(0px)'},{transform:'translateX('+dir*12+'px)'},{transform:'translateX(0px)'}],180);
+    floatText(e.d,e.dmg>0?'-'+e.dmg:'Absorvido',e.dmg>0?'':'info');impact(e.d,false);sfx('pet');
+    if(e.saved)floatText(e.d,'1 PV!','info',30);
+    if(e.second)floatText(e.d,'Fôlego','info',30);
+    if(e.phoenix)floatText(e.d,'Renasce','info',30);
+  }else{floatText(e.d,'Esquiva','miss');sfx('miss')}
+  setBar('a',e.hpa,res_max.a);setBar('b',e.hpb,res_max.b);
+  await run;await sleep(100);
+}
+const res_max={a:1,b:1};
+
+function gcard(cls,name,desc,stat,own,extra,tag){
+  return '<div class="gc '+cls+(own?' own':'')+'">'+(extra||'')+'<div class="top2"><strong>'+name+'</strong>'+(own?'<span class="chip o">'+(tag||'Tens')+'</span>':'')+'</div><span class="d">'+desc+'</span>'+(stat?'<span class="st">'+stat+'</span>':'')+'</div>';
+}
+function reqText(r){
+  const k=r[0],ids=r.slice(1);
+  if(k==='skill')return 'Habilidade: '+ids.map(i=>SKILLS[i].nome).join(' ou ');
+  if(k==='weapon')return 'Arma: '+ids.map(i=>WEAPONS[i].nome).join(' ou ');
+  if(k==='pet')return 'Animal: '+ids.map(i=>PETS[i].nome).join(' ou ');
+  return 'Traço: '+ids.map(i=>TRAITS[i].nome).join(' ou ');
+}
+function renderGuide(){
+  const f=S?S.f:null;
+  document.querySelectorAll('[data-gt]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.gt===guideTab)));
+  let h='';
+  if(guideTab==='weapons'){
+    h='<p class="lead" style="margin:4px 0 12px">Quando tens várias armas, cada ataque usa uma ao acaso, e cada arma extra dá +8% de dano (até +24%). A Força aumenta mais o dano das armas pesadas.</p><div class="gcards">'+Object.keys(WEAPONS).filter(id=>id!=='punhos').map(id=>{const w=WEAPONS[id];return gcard('',w.nome,w.desc,'Dano '+w.min+'–'+w.max+' · precisão '+Math.min(100,Math.round(w.acc*100))+'%',f&&f.weapons.includes(id))}).join('')+'</div>';
+  }else if(guideTab==='skills'){
+    h='<div class="gcards">'+Object.keys(SKILLS).map(id=>gcard('',SKILLS[id].nome,SKILLS[id].desc,'',f&&f.skills.includes(id))).join('')+'</div>';
+  }else if(guideTab==='traits'){
+    const grp=(k,t)=>'<h3 class="gh">'+t+'</h3><div class="gcards">'+Object.keys(TRAITS).filter(id=>TRAITS[id].k===k).map(id=>gcard(k,TRAITS[id].nome,TRAITS[id].desc,'',f&&f.traits.includes(id))).join('')+'</div>';
+    h=grp('pos','Traços bons')+grp('neg','Traços maus');
+  }else if(guideTab==='combos'){
+    h='<div class="gcards">'+Object.keys(COMBOS).map(id=>gcard('',COMBOS[id].nome,COMBOS[id].desc,COMBOS[id].req.map(reqText).join(' + '),!!f&&activeCombos(f).includes(id),'','Ativo')).join('')+'</div>';
+  }else if(guideTab==='ach'){
+    const got=Object.keys(ACC.ach||{}).length;
+    h='<p class="lead" style="margin:4px 0 12px">'+got+' de '+ACHS.length+' desbloqueadas.</p><div class="gcards">'+ACHS.map(a=>gcard(ACC.ach[a.id]?'':'locked',a.nome,a.desc,'',!!ACC.ach[a.id],'','Feita')).join('')+'</div>';
+  }else if(guideTab==='scenes'){
+    h='<p class="lead" style="margin:4px 0 12px">Cada combate tem um cenário sorteado, que vês na carta do adversário. Cada animal tem um cenário que lhe dá bónus e outro que o penaliza, para quem os tiver (tu ou o adversário). No desafio diário não há cenário.</p><div class="gcards">'+SCENES.map(sc=>gcard('',sc.nome,sceneDesc(sc),'',false,sceneThumb(sc.id))).join('')+'</div>';
+  }else if(guideTab==='events'){
+    h='<p class="lead" style="margin:4px 0 12px">Cada dia tem um evento que muda as regras para todos. Muda à meia-noite.</p><div class="gcards">'+EVENTS.map(ev=>gcard('',ev.nome,ev.desc,'',ev.id===curEv().id,'','Hoje')).join('')+'</div>';
+  }else{
+    h='<p class="lead" style="margin:4px 0 12px">Podes ter até '+MAX_PETS+' animais. Os que atacam depois do primeiro fazem 75% e 55% do dano, e cada novo animal é mais difícil de encontrar. Os animais ficam mais fortes à medida que o dono sobe de nível.</p><div class="gcards">'+Object.keys(PETS).map(id=>gcard('',PETS[id].nome,PETS[id].desc,'Raridade: '+PETS[id].rar+(petScenes(id)?' · '+petScenes(id):''),f&&petsOf(f).includes(id),petSvg(id))).join('')+'</div>';
+  }
+  $('guide-body').innerHTML=h;
+  $('guide-sub').textContent=f||guideTab==='ach'||guideTab==='events'||guideTab==='scenes'?'As cartas com contorno grosso estão ativas ou desbloqueadas.':'Cria um lutador para veres o que ele tem.';
+  show('s-guide');
+}
+$('btn-guide').addEventListener('click',()=>{if(!busy)renderGuide()});
+$('guide-back').addEventListener('click',()=>show(lastScreen));
+document.querySelectorAll('[data-gt]').forEach(b=>b.addEventListener('click',()=>{guideTab=b.dataset.gt;renderGuide()}));
+
+let AC=null;
+function sfx(n){
+  if(ACC&&ACC.mute)return;
+  if(speed>8&&(n==='hit'||n==='crit'||n==='miss'||n==='pet'))return;
+  try{
+    const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return;
+    AC=AC||new Ctx();
+    if(AC.state==='suspended')AC.resume();
+    const t0=AC.currentTime;
+    const tone=(f0,f1,d,type,v,delay)=>{
+      const o=AC.createOscillator(),g=AC.createGain(),t=t0+(delay||0);
+      o.type=type;o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(Math.max(30,f1),t+d);
+      g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);
+      o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.02);
+    };
+    const noise=(d,v,delay,freq)=>{
+      const len=Math.floor(AC.sampleRate*d),buf=AC.createBuffer(1,len,AC.sampleRate),a=buf.getChannelData(0);
+      for(let i=0;i<len;i++)a[i]=(Math.random()*2-1)*(1-i/len);
+      const src=AC.createBufferSource(),fl=AC.createBiquadFilter(),g=AC.createGain(),t=t0+(delay||0);
+      src.buffer=buf;fl.type='bandpass';fl.frequency.value=freq||1200;g.gain.value=v;
+      src.connect(fl);fl.connect(g);g.connect(AC.destination);src.start(t);
+    };
+    if(n==='hit'){noise(.09,.5,0,900);tone(180,60,.12,'square',.12)}
+    else if(n==='crit'){noise(.12,.6,0,1400);tone(220,50,.16,'square',.16);tone(700,300,.18,'triangle',.1,.02)}
+    else if(n==='miss'){noise(.14,.18,0,3000)}
+    else if(n==='pet'){tone(380,760,.12,'sine',.14);tone(760,520,.1,'sine',.1,.1)}
+    else if(n==='win'){[523,659,784,1047].forEach((f,i)=>tone(f,f,.22,'triangle',.14,i*.12))}
+    else if(n==='lose'){[392,330,262,196].forEach((f,i)=>tone(f,f*.97,.26,'sawtooth',.08,i*.16))}
+    else if(n==='level'){[523,659,784,1047,1319].forEach((f,i)=>tone(f,f,.14,'square',.07,i*.07))}
+    else if(n==='ach'){tone(880,880,.14,'sine',.14);tone(1319,1319,.3,'sine',.14,.12)}
+  }catch(e){}
+}
+$('btn-snd').addEventListener('click',()=>{ACC.mute=!ACC.mute;saveAcc();refreshSnd();sfx('ach')});
+
+function toast(msg){
+  const t=$('toast');
+  t.innerHTML='<span>'+esc(msg)+'</span>';t.hidden=false;
+  clearTimeout(toast.h);toast.h=setTimeout(()=>{t.hidden=true},3800);
+}
+
+const ACHS=[
+  {id:'v1',nome:'Primeiro sangue',desc:'Ganha o teu primeiro combate.',ck:c=>!!c.won},
+  {id:'v10',nome:'Veterano',desc:'Ganha 10 combates.',ck:c=>ACC.tw>=10},
+  {id:'v50',nome:'Lenda da arena',desc:'Ganha 50 combates.',ck:c=>ACC.tw>=50},
+  {id:'n5',nome:'Em ascensão',desc:'Chega ao nível 5.',ck:c=>!!S&&S.f.level>=5},
+  {id:'n10',nome:'Mestre bruto',desc:'Chega ao nível 10.',ck:c=>!!S&&S.f.level>=10},
+  {id:'fio',nome:'Por um fio',desc:'Ganha um combate com 3 PV ou menos.',ck:c=>!!c.won&&c.hpEnd<=3},
+  {id:'limpo',nome:'Intocável',desc:'Ganha um combate sem perder PV.',ck:c=>!!c.won&&c.hpEnd>=c.hpMax},
+  {id:'crit3',nome:'Mão pesada',desc:'Acerta 3 críticos no mesmo combate.',ck:c=>c.crits>=3},
+  {id:'serie5',nome:'Em chamas',desc:'Ganha 5 combates seguidos com o mesmo lutador.',ck:c=>!!S&&S.streak>=5},
+  {id:'dia3',nome:'Jornada',desc:'Ganha 3 combates no mesmo dia.',ck:c=>!!ACC.day&&ACC.day.k===dayStr()&&ACC.day.n>=3},
+  {id:'bicho',nome:'Melhor amigo',desc:'Encontra um animal de estimação.',ck:c=>!!S&&petsOf(S.f).length>0},
+  {id:'zoo',nome:'Pequeno jardim zoológico',desc:'Tem 3 animais de estimação no mesmo lutador.',ck:c=>!!S&&petsOf(S.f).length>=MAX_PETS},
+  {id:'cacada',nome:'Caçador de bichos',desc:'Vence um adversário com animal.',ck:c=>!!c.won&&!!c.opp&&petsOf(c.opp.f).length>0},
+  {id:'renasce',nome:'Das cinzas',desc:'Sobrevive a um golpe fatal com a Fénix ou o Último fôlego.',ck:c=>!!c.revived},
+  {id:'camp',nome:'Campeão',desc:'Ganha um torneio.',ck:c=>!!c.champion},
+  {id:'camp3',nome:'Tricampeão',desc:'Ganha 3 torneios com o mesmo lutador.',ck:c=>!!S&&(S.titles||0)>=3},
+  {id:'combo',nome:'Combinação perfeita',desc:'Ativa um combo.',ck:c=>!!S&&activeCombos(S.f).length>0},
+  {id:'arm3',nome:'Arsenal',desc:'Tem 3 armas no mesmo lutador.',ck:c=>!!S&&S.f.weapons.length>=3},
+  {id:'equipa',nome:'Equipa completa',desc:'Tem 5 lutadores na conta.',ck:c=>ACC.chars.length>=5},
+  {id:'rival',nome:'Rival derrotado',desc:'Vence um rival importado de um amigo.',ck:c=>!!c.won&&c.kind==='rival'},
+  {id:'semana',nome:'Desafio cumprido',desc:'Vence o desafio diário.',ck:c=>!!c.won&&c.kind==='chal'},
+  {id:'semana1',nome:'À primeira',desc:'Vence o desafio diário à primeira tentativa.',ck:c=>!!c.won&&c.kind==='chal'&&c.tries===1}
+];
+function checkAch(ctx,quiet){
+  const got=[];
+  ACHS.forEach(a=>{
+    if(ACC.ach[a.id])return;
+    let ok=false;try{ok=!!a.ck(ctx||{})}catch(e){}
+    if(ok){ACC.ach[a.id]=dayStr();got.push(a.nome)}
+  });
+  if(got.length&&!quiet){toast('Conquista desbloqueada: '+got.join(', '));sfx('ach')}
+  return got;
+}
+
+function kindLabel(x){return x.k==='tour'?'Torneio, '+String(x.r||'').toLowerCase():x.k==='rival'?'Rival':x.k==='chal'?'Desafio diário':'Combate normal'}
+function renderHistory(){
+  const f=S.f,h=S.hist||[];
+  $('hist-sub').textContent=f.name+(h.length?' · '+(h.length===1?'1 combate registado':h.length+' combates registados'):'');
+  const tile=(l,v)=>'<div class="tile"><div class="eyebrow">'+l+'</div><div class="tv">'+v+'</div></div>';
+  $('hist-body').innerHTML='<div class="tiles">'+tile('Vitórias',S.wins)+tile('Derrotas',S.losses)+tile('Melhor série',S.bestStreak||0)+tile('Maior golpe',S.maxHit||0)+tile('Torneios ganhos',S.titles||0)+tile('Combos ativos',activeCombos(f).length)+'</div>'+
+    (h.length?'<div class="hlist">'+h.map(x=>'<div class="hrow"><span class="chip '+(x.w?'f':'d')+'">'+(x.w?'Vitória':'Derrota')+'</span><div><strong>'+esc(x.n)+'</strong> <small>nível '+x.l+' · '+esc(kindLabel(x))+'</small></div><small class="hx">+'+x.x+' XP · '+esc(x.d)+'</small></div>').join('')+'</div>':'<p class="lead" style="margin-top:18px">Ainda não lutaste. Os combates aparecem aqui.</p>');
+  show('s-history');
+}
+$('btn-hist').addEventListener('click',()=>{if(!busy&&S)renderHistory()});
+$('hist-back').addEventListener('click',()=>show(lastScreen));
+
+
+function renderRivals(){
+  const el=$('rivals');
+  if(!ACC.rivals.length){el.innerHTML='';return}
+  el.innerHTML='<h3 class="gh">Rivais importados</h3><div class="gcards">'+ACC.rivals.map((r,i)=>
+    '<div class="gc"><div class="top2"><strong>'+esc(r.f.name)+'</strong><small>Nível '+r.f.level+'</small></div><div class="tchips">'+r.f.traits.map(traitChip).join('')+'</div><div class="row" style="margin-top:6px"><button class="btn ghost small" data-rmr="'+i+'">Remover</button></div></div>').join('')+'</div>';
+}
+$('rivals').addEventListener('click',e=>{
+  const b=e.target.closest('[data-rmr]');if(!b)return;
+  ACC.rivals.splice(+b.dataset.rmr,1);saveAcc();renderRivals();
+});
+let pendingImport=null;
+$('ie-import').addEventListener('click',()=>{
+  const r=importFighter($('ie-code').value);
+  if(r.err){pendingImport=null;$('ie-out').innerHTML='<p class="err">'+esc(r.err)+'</p>';return}
+  pendingImport=r.f;
+  const f=r.f,free=ACC.chars.length<MAXC;
+  $('ie-out').innerHTML='<div class="panel" style="margin-top:12px"><div class="top">'+miniSvg(f)+'<div><div class="eyebrow">Nível '+f.level+'</div><h3>'+esc(f.name)+'</h3></div></div><div class="tchips" style="margin:10px 0">'+f.traits.map(traitChip).join('')+'</div><div class="row"><button class="btn small" data-imp="rival">Usar como rival</button>'+(free?'<button class="btn ghost small" data-imp="char">Adicionar como lutador</button>':'<small>Sem vaga livre para o adicionar como lutador.</small>')+'</div></div>';
+});
+$('ie-out').addEventListener('click',e=>{
+  const b=e.target.closest('[data-imp]');if(!b||!pendingImport)return;
+  const f=pendingImport;pendingImport=null;
+  if(b.dataset.imp==='rival'){
+    ACC.rivals.unshift({f});ACC.rivals=ACC.rivals.slice(0,8);
+    saveAcc();renderAccount();
+    $('ie-out').innerHTML='<p class="msg">'+esc(f.name)+' foi adicionado aos teus rivais. Aparece no ecrã do lutador.</p>';
+  }else if(ACC.chars.length<MAXC){
+    const c={f,pend:0,opts:null,wins:0,losses:0,opps:[],charge:5,titles:0,tour:null,hist:[]};
+    c.opps=newOpps(c);ACC.chars.push(c);
+    checkAch({});saveAcc();renderAccount();
+    $('ie-out').innerHTML='<p class="msg">'+esc(f.name)+' foi adicionado como um dos teus lutadores.</p>';
+  }
+});
+$('ie-copy').addEventListener('click',async()=>{
+  const v=$('ie-code').value;
+  if(!v){$('ie-out').innerHTML='<p class="msg">Não há código para copiar. Usa "Exportar" numa vaga.</p>';return}
+  try{await navigator.clipboard.writeText(v);$('ie-out').innerHTML='<p class="msg">Código copiado.</p>'}
+  catch(e){$('ie-code').focus();$('ie-code').select();$('ie-out').innerHTML='<p class="msg">Seleciona o código e copia-o com Ctrl+C.</p>'}
+});
+
+function mulberry(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function winEstimate(fa,fb,n){
+  n=n||150;const r=mulberry(12345);let w=0;
+  for(let i=0;i<n;i++)if(simulate(fa,fb,r).winner==='a')w++;
+  return Math.round(w/n*100);
+}
+function neutral(fn){const p=_evForce;_evForce={id:'semana',nome:'',desc:'',m:{}};try{return fn()}finally{_evForce=p}}
+function dayKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function fmtDay(k){const p=k.split('-');return p[2]+'/'+p[1]}
+const CHAL_OFF=2;
+function chalTier(){return Math.min(30,Math.ceil(((S&&S.f.level)||1)/3)*3)}
+function weekly(){
+  const k=dayKey();
+  if(!S.daily||S.daily.k!==k)S.daily={k,tries:0,won:false};
+  S.daily.tier=chalTier();
+  return S.daily;
+}
+let _chal=null;
+function chalFighter(){
+  const key=dayKey()+'/'+chalTier();
+  if(!_chal||_chal.key!==key){
+    let h=7;for(let i=0;i<key.length;i++)h=(h*31+key.charCodeAt(i))>>>0;
+    const r=mulberry(h),f=makeOpponent(Math.max(2,chalTier()-CHAL_OFF),r,[]);
+    if(!petsOf(f).length)f.pets=[rollPet(r)];
+    _chal={key,f};
+  }
+  return _chal.f;
+}
+function chalOpp(){const f=chalFighter();return{f,chal:true,diff:'Difícil',xp:20}}
+function chalShareText(){
+  const w=weekly(),f=chalFighter();
+  return 'Desafio diário de Chance & Claw ('+fmtDay(w.k)+') contra '+f.name+', nível '+f.level+' (categoria dos níveis '+(w.tier-2)+' a '+w.tier+'): '+
+    (w.won?'vitória à tentativa '+w.tryWon+' com '+w.who+' (nível '+w.lvl+', '+w.hp+'% dos PV no fim).':(w.tries?'ainda sem vitória ao fim de '+w.tries+(w.tries===1?' tentativa.':' tentativas.'):'ainda sem tentativas.'))+
+    ' Consegues fazer melhor?';
+}
+function challengePanel(){
+  const w=weekly(),f=chalFighter(),o=chalOpp();
+  o.est=neutral(()=>winEstimate(S.f,f));
+  const stat=w.stat&&STATS[w.stat]?STATS[w.stat].nome:'';
+  const status=w.won?'Vencido hoje à tentativa '+w.tryWon+' por '+esc(w.who)+(stat?': +1 de '+stat+'.':'.')+' Volta amanhã para um novo desafio.'
+    :(w.tries?'Ainda sem vitória hoje. Tentativas: '+w.tries+'.':'Ainda sem tentativas hoje.')+(o.est<10?' Parece difícil para já. Podes voltar mais tarde, o desafio dura o dia todo.':'');
+  return '<div class="tour chal"><div class="tour-h"><h2 class="right-h">Desafio diário</h2><span class="eyebrow">Hoje, '+fmtDay(w.k)+'</span></div>'+
+    '<p class="right-p" style="margin-bottom:12px">Categoria dos níveis '+(w.tier-2)+' a '+w.tier+': quem estiver nela enfrenta o mesmo adversário hoje, sem evento do dia nem cenário. Vence-o para ganhares 20 XP (afetados pelos traços) e +1 ponto num atributo aleatório. Só se vence uma vez por dia.</p>'+
+    '<div class="opps">'+oppCard(o,'data-chal="1"'+(w.won?' disabled':''))+'</div>'+
+    '<p style="margin:12px 0 0;font-size:14px;color:var(--muted)">'+status+'</p>'+
+    '<div class="row" style="margin-top:10px"><button class="btn ghost small" data-cshare="1">Copiar resultado</button></div><div id="chal-msg" class="msg" role="status"></div></div>';
+}
+async function shareChal(){
+  const t=chalShareText(),el=$('chal-msg');
+  try{await navigator.clipboard.writeText(t);el.textContent='Resultado copiado. Envia-o ao teu amigo.'}
+  catch(e){el.textContent=t}
+}
+
+function fightStats(res){
+  const mk=()=>({swings:0,hits:0,dmg:0,max:0,crits:0,heal:0,thornsDealt:0,stuns:0,counters:0,doubles:0,petSwings:0,petHits:0,petDmg:0,saved:0,reborn:0});
+  const st={a:mk(),b:mk()},prev={a:res.maxA,b:res.maxB};
+  res.events.forEach(e=>{
+    const s=st[e.a],eff=e.hit?Math.min(e.dmg,prev[e.d]):0;
+    if(e.pet){s.petSwings++;if(e.hit){s.petHits++;s.petDmg+=eff}if(e.saved)st[e.d].saved++;if(e.phoenix)st[e.d].reborn++}
+    else{
+      s.swings++;if(e.counter)s.counters++;if(e.double)s.doubles++;
+      if(e.regen)s.heal+=e.regen;
+      if(e.hit){s.hits++;s.dmg+=eff;s.max=Math.max(s.max,e.dmg);if(e.crit)s.crits++;s.heal+=e.heal||0;if(e.stun)s.stuns++}
+      if(e.thorns)st[e.d].thornsDealt+=e.thorns;
+      if(e.saved)st[e.d].saved++;if(e.phoenix)st[e.d].reborn++;
+    }
+    prev.a=e.hpa;prev.b=e.hpb;
+  });
+  return st;
+}
+function numbersHtml(res,fa,fb){
+  const st=fightStats(res),A=st.a,B=st.b;
+  const pct=(x,y)=>y?Math.round(x/y*100)+'%':'–';
+  const row=(l,a,b)=>'<tr><th scope="row">'+l+'</th><td>'+a+'</td><td>'+b+'</td></tr>';
+  const opt=(l,a,b)=>(a||b)?row(l,a,b):'';
+  const fin=res.events.length?res.events[res.events.length-1]:{hpa:res.maxA,hpb:res.maxB};
+  const first=res.events.length?(res.events[0].a==='a'?fa.name:fb.name):'';
+  const tot=s=>s.dmg+s.petDmg+s.thornsDealt;
+  return '<details class="nums-d"><summary>Ver números do combate</summary><div class="tbl"><table><thead><tr><th></th><th>'+esc(fa.name)+'</th><th>'+esc(fb.name)+'</th></tr></thead><tbody>'+
+    row('PV máximo',res.maxA,res.maxB)+
+    row('PV no fim',fin.hpa,fin.hpb)+
+    row('Golpes',A.swings,B.swings)+
+    row('Acertos',A.hits+' ('+pct(A.hits,A.swings)+')',B.hits+' ('+pct(B.hits,B.swings)+')')+
+    row('Esquivas',(B.swings-B.hits)+(B.petSwings-B.petHits),(A.swings-A.hits)+(A.petSwings-A.petHits))+
+    row('Dano causado',tot(A),tot(B))+
+    row('Maior golpe',A.max,B.max)+
+    opt('Críticos',A.crits,B.crits)+
+    opt('Dano do animal',A.petDmg,B.petDmg)+
+    opt('Dano de espinhos',A.thornsDealt,B.thornsDealt)+
+    opt('PV recuperados',A.heal,B.heal)+
+    opt('Atordoamentos',A.stuns,B.stuns)+
+    opt('Contra-ataques',A.counters,B.counters)+
+    opt('Golpes duplos',A.doubles,B.doubles)+
+    opt('Golpes fatais evitados',A.saved+A.reborn,B.saved+B.reborn)+
+    '</tbody></table><p class="nums-note">Atacou primeiro: '+esc(first)+'. Duração: '+res.events.length+' ações.</p></div></details>';
+}
+
+/* ===== capacidades do claude.ai (opcionais) ===== */
+const CAPS={downloads:null};
+async function capUse(n){try{if(!window.claude||!window.claude.use)return null;return await window.claude.use(n)}catch(e){return null}}
+function fmtDT(t){const d=new Date(+t||0);return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+
+/* ===== cópia de segurança ===== */
+const BK_PREFIX='CC1';
+function bkLabel(){$('bk-last').textContent=ACC.bk?'Última cópia: '+fmtDT(ACC.bk)+'.':'Ainda não fizeste nenhuma cópia.'}
+function backupObj(){
+  return {v:1,t:Date.now(),name:ACC.name,active:ACC.active,ach:ACC.ach,tw:ACC.tw,mute:!!ACC.mute,day:ACC.day||null,rivals:ACC.rivals.slice(0,8),
+    chars:ACC.chars.map(c=>{const x=JSON.parse(JSON.stringify(c));x.opps=[];x.tour=null;return x})};
+}
+function backupCode(){
+  const o=backupObj();
+  const body=b64e(JSON.stringify(o));
+  return BK_PREFIX+'.'+body+'.'+chk(body);
+}
+function cleanF(f){
+  if(!f||typeof f!=='object'||typeof f.name!=='string'||!f.stats||typeof f.stats!=='object')return false;
+  for(const k of ['vida','forca','agi','vel'])if(!Number.isInteger(f.stats[k])||f.stats[k]<1||f.stats[k]>999)return false;
+  if(!Number.isInteger(f.level)||f.level<1||f.level>99)return false;
+  if(!Array.isArray(f.traits)||f.traits.length!==2||!f.traits.every(t=>typeof t==='string'&&TRAITS[t]))return false;
+  f.name=f.name.trim().slice(0,14);if(!f.name)return false;
+  f.xp=Number.isFinite(f.xp)&&f.xp>=0?Math.floor(f.xp):0;
+  f.weapons=(Array.isArray(f.weapons)?f.weapons:[]).filter((id,i,a)=>typeof id==='string'&&WEAPONS[id]&&id!=='punhos'&&a.indexOf(id)===i);
+  f.skills=(Array.isArray(f.skills)?f.skills:[]).filter((id,i,a)=>typeof id==='string'&&SKILLS[id]&&a.indexOf(id)===i);
+  const pets=petsOf(f).filter((id,i,a)=>typeof id==='string'&&PETS[id]&&a.indexOf(id)===i).slice(0,MAX_PETS);
+  delete f.pet;if(pets.length)f.pets=pets;else delete f.pets;
+  if(!COLORS.some(c=>c.hex===f.color))f.color=COLORS[0].hex;
+  return true;
+}
+function parseBackup(text){
+  const bad={err:'Código inválido ou incompleto. Confirma que o copiaste todo, ou usa o ficheiro guardado.'};
+  try{
+    const parts=String(text).trim().replace(/\s+/g,'').split('.');
+    if(parts.length!==3||parts[0]!==BK_PREFIX||chk(parts[1])!==parts[2])return bad;
+    return cleanBackupObj(JSON.parse(b64d(parts[1])))||bad;
+  }catch(e){return bad}
+}
+function cleanBackupObj(o){
+  try{
+    if(!o||typeof o!=='object'||!Array.isArray(o.chars))return null;
+    const chars=[];
+    for(const c of o.chars.slice(0,MAXC)){
+      if(!c||typeof c!=='object'||!cleanF(c.f))continue;
+      c.opps=[];c.tour=null;
+      for(const k of ['pend','wins','losses','titles'])c[k]=Number.isInteger(c[k])&&c[k]>=0?c[k]:0;
+      if(c.lgIn!==true)delete c.lgIn;
+      fixChar(c);chars.push(c);
+    }
+    if(!chars.length)return{err:'A cópia não tem nenhum lutador válido.'};
+    const lg=chars.filter(c=>c.lgIn);lg.slice(1).forEach(c=>delete c.lgIn);
+    const rivals=(Array.isArray(o.rivals)?o.rivals:[]).filter(x=>x&&cleanF(x.f)).slice(0,8).map(x=>({f:x.f}));
+    const acc={name:String(o.name||'Conta local').slice(0,20)||'Conta local',chars,
+      active:Number.isInteger(o.active)&&o.active>=0&&o.active<chars.length?o.active:null,
+      rivals,ach:o.ach&&typeof o.ach==='object'?o.ach:{},tw:Number.isInteger(o.tw)&&o.tw>=0?o.tw:0,mute:!!o.mute,bk:+o.t||0};
+    if(o.day&&typeof o.day==='object'&&typeof o.day.k==='string'&&Number.isInteger(o.day.n))acc.day={k:o.day.k,n:o.day.n};
+    return{acc,when:+o.t||0};
+  }catch(e){return null}
+}
+function bkMsg(h){$('bk-out').innerHTML=h}
+let pendingBk=null;
+$('bk-save').addEventListener('click',async()=>{
+  const code=backupCode();$('bk-code').value=code;
+  if(!CAPS.downloads){bkMsg('<p class="msg">Guardar ficheiros não está disponível aqui. O código está na caixa: copia-o e guarda-o num sítio seguro.</p>');return}
+  const d=new Date(),stamp=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  try{
+    await CAPS.downloads.save({filename:'chance-and-claw-copia-'+stamp+'.txt',data:code});
+    ACC.bk=Date.now();saveAcc();bkLabel();bkMsg('<p class="msg">Ficheiro guardado.</p>');
+  }catch(e){
+    bkMsg(e&&e.code==='declined'?'<p class="msg">Cancelaste. O código ficou na caixa, se o quiseres copiar.</p>':'<p class="msg">Não consegui guardar o ficheiro. O código está na caixa: usa "Copiar código".</p>');
+  }
+});
+$('bk-copy').addEventListener('click',async()=>{
+  const code=backupCode();$('bk-code').value=code;
+  try{await navigator.clipboard.writeText(code);ACC.bk=Date.now();saveAcc();bkLabel();bkMsg('<p class="msg">Código copiado. Guarda-o num sítio seguro.</p>')}
+  catch(e){$('bk-code').focus();$('bk-code').select();bkMsg('<p class="msg">Seleciona o código e copia-o com Ctrl+C.</p>')}
+});
+function bkRestore(){
+  const r=parseBackup($('bk-code').value);
+  if(r.err){pendingBk=null;bkMsg('<p class="err">'+esc(r.err)+'</p>');return}
+  pendingBk=r.acc;
+  const a=r.acc,vit=a.chars.reduce((n,c)=>n+c.wins,0);
+  bkMsg('<div class="panel" style="margin-top:12px"><p><strong>'+esc(a.name)+'</strong>: '+a.chars.length+(a.chars.length===1?' lutador':' lutadores')+' ('+a.chars.map(c=>esc(c.f.name)+' nv. '+c.f.level).join(', ')+'), '+vit+' vitórias no total.'+(r.when?' Cópia de '+fmtDT(r.when)+'.':'')+'</p><p class="msg">Restaurar substitui tudo o que está agora neste browser.</p><div class="row" style="margin-top:10px"><button class="btn small" data-bk="yes">Substituir a conta atual</button><button class="btn ghost small" data-bk="no">Cancelar</button></div></div>');
+}
+$('bk-restore').addEventListener('click',bkRestore);
+$('bk-file').addEventListener('change',e=>{
+  const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;
+  if(f.size>5e6){bkMsg('<p class="err">O ficheiro é grande demais para ser uma cópia.</p>');return}
+  const fr=new FileReader();
+  fr.onload=()=>{$('bk-code').value=String(fr.result||'');bkRestore()};
+  fr.onerror=()=>bkMsg('<p class="err">Não consegui ler o ficheiro.</p>');
+  fr.readAsText(f);
+});
+$('bk-out').addEventListener('click',e=>{
+  const b=e.target.closest('[data-bk]');if(!b)return;
+  if(b.dataset.bk==='no'||!pendingBk){pendingBk=null;bkMsg('');return}
+  ACC=pendingBk;pendingBk=null;S=ACC.active!==null?ACC.chars[ACC.active]:null;delIdx=-1;
+  saveAcc();refreshSnd();renderAccount();bkMsg('<p class="msg">Conta restaurada.</p>');
+});
+
+/* ===== liga entre amigos ===== */
+const LG={started:false,db:null,user:null,uid:null,canWrite:null,players:[],duels:[],loading:false,slow:false,err:'',unsubs:[],tok:0,leave:false,syncing:false,syncBad:'',q:Promise.resolve(),timer:0};
+const LG_DAILY=3,LG_WIN=3;
+function lgQueue(fn){LG.err='';LG.q=LG.q.then(fn).catch(e=>{LG.err=(e&&e.code)||'unavailable';if(e&&e.code==='invalid_argument')LG.canWrite=false});return LG.q}
+const lgMine=()=>LG.players.find(p=>p.id===LG.uid)||null;
+const lgChamp=()=>ACC.chars.find(c=>c.lgIn)||null;
+function lgLeft(){const m=lgMine();return Math.max(0,LG_DAILY-(m&&m.dd&&m.dd.k===dayStr()?(+m.dd.n||0):0))}
+async function lgInit(){
+  if(LG.started)return;LG.started=true;
+  LG.db=await capUse('db');LG.user=await capUse('user');
+  if(LG.user){
+    try{LG.uid=await LG.user.id()}catch(e){}
+    try{LG.canWrite=await LG.user.can('data.write')}catch(e){}
+  }
+  if(!LG.db||!LG.uid){lgRender();return}
+  LG.loading=true;lgRender();
+  LG.timer=setTimeout(()=>{if(LG.loading){LG.slow=true;lgRender()}},10000);
+  const done=()=>{LG.loading=false;LG.slow=false;clearTimeout(LG.timer)};
+  const onErr=e=>{LG.err=(e&&e.code)||'unavailable';done();lgRender()};
+  LG.unsubs.push(LG.db.collection('league').onSnapshot(snap=>{
+    LG.players=snap.docs.map(d=>Object.assign({id:d.id},d.data()));
+    if(!snap.metadata.fromCache)done();
+    lgSync();lgRender();
+  },onErr));
+  LG.unsubs.push(LG.db.collection('duels').orderBy('ts','desc').limit(200).onSnapshot(snap=>{
+    LG.duels=snap.docs.map(d=>Object.assign({id:d.id},d.data()));lgRender();
+  },onErr));
+}
+function lgSync(){
+  const m=lgMine(),c=lgChamp();
+  if(!m||!c||LG.canWrite===false||LG.syncing)return;
+  const code=exportFighter(c.f);
+  if(code===m.code||code===LG.syncBad)return;
+  LG.syncing=true;
+  lgQueue(()=>LG.db.doc('league/'+LG.uid).update({code,fn:c.f.name,lv:c.f.level,ts:Date.now()}).catch(e=>{LG.syncBad=code;throw e})).finally(()=>{LG.syncing=false;lgRender()});
+}
+async function lgJoin(idx){
+  const c=ACC.chars[idx];if(!c||!LG.db||!LG.uid||LG.canWrite===false)return;
+  const m=lgMine()||{};
+  await lgQueue(()=>LG.db.doc('league/'+LG.uid).set({v:1,code:exportFighter(c.f),fn:c.f.name,lv:c.f.level,pts:+m.pts||0,aw:+m.aw||0,al:+m.al||0,dd:m.dd||{k:'',n:0},ts:Date.now()}));
+  if(!LG.err){ACC.chars.forEach(x=>{delete x.lgIn});c.lgIn=true;LG.syncBad='';saveAcc()}
+  lgRender();
+}
+async function lgLeave(){
+  await lgQueue(()=>LG.db.doc('league/'+LG.uid).delete());
+  if(!LG.err){ACC.chars.forEach(x=>{delete x.lgIn});saveAcc()}
+  LG.leave=false;lgRender();
+}
+async function lgDuel(targetId){
+  if(busy)return;
+  const m=lgMine(),c=lgChamp(),t=LG.players.find(p=>p.id===targetId);
+  if(!m||!c||!t||targetId===LG.uid||lgLeft()<1||LG.canWrite===false||typeof t.code!=='string')return;
+  const r=importFighter(t.code);
+  if(r.err){toast('Este campeão não passou na verificação e não pode ser desafiado.');return}
+  ACC.active=ACC.chars.indexOf(c);S=c;saveAcc();
+  const opp={f:r.f,rival:true,league:true,diff:'Liga',xp:8,scene:rndScene()};
+  const h0=S.hist&&S.hist[0];
+  await runFight(opp,false);
+  if(!S.hist||S.hist[0]===h0)return;
+  const won=S.hist[0].w===1,k=dayStr();
+  await lgQueue(async()=>{
+    const ref=LG.db.doc('league/'+LG.uid),snap=await ref.get(),cur=snap.exists?snap.data():{};
+    const dd=cur.dd&&cur.dd.k===k?(+cur.dd.n||0):0;
+    await ref.set({v:1,code:exportFighter(c.f),fn:c.f.name,lv:c.f.level,pts:(+cur.pts||0)+(won?LG_WIN:0),aw:(+cur.aw||0)+(won?1:0),al:(+cur.al||0)+(won?0:1),dd:{k,n:dd+1},ts:Date.now()});
+    await LG.db.collection('duels').add({a:LG.uid,b:targetId,an:c.f.name,bn:String(t.fn||'').slice(0,14),al:c.f.level,bl:+t.lv||1,w:won?1:0,ts:Date.now()});
+  });
+  toast(LG.err?'Não consegui registar o duelo na liga.':'Duelo registado na liga.');
+}
+async function lgRender(){
+  const el=$('lg-body');if($('s-league').hidden)return;
+  const tok=++LG.tok;
+  if(!LG.started){el.innerHTML='<p class="msg">A ligar à liga...</p>';return}
+  if(!LG.db||!LG.uid){el.innerHTML='<div class="panel"><p>A liga só funciona quando o jogo está aberto no claude.ai, com a sessão iniciada. Aqui não está disponível.</p><p class="msg">O resto do jogo funciona normalmente.</p></div>';return}
+  const ro=LG.canWrite===false,m=lgMine(),c=lgChamp(),left=lgLeft();
+  const ids=[...new Set(LG.players.map(p=>p.id).concat(LG.duels.flatMap(d=>[d.a,d.b])).filter(x=>typeof x==='string'))];
+  let ps={};try{if(LG.user)ps=await LG.user.profiles(ids)}catch(e){}
+  if(tok!==LG.tok)return;
+  const nm=id=>id===LG.uid?'tu':((ps[id]&&ps[id].name)||'Jogador');
+  let h='';
+  if(LG.err){h+='<p class="err" role="alert">'+(LG.err==='quota_exceeded'?'A liga atingiu o limite de dados.':LG.err==='invalid_argument'?'Não tens permissão para escrever na liga. Pede ao dono do jogo acesso de Contribuidor.':'Não foi possível falar com a liga agora. Tenta outra vez daqui a pouco.')+'</p>'}
+  if(LG.loading)h+='<p class="msg">'+(LG.slow?'A liga está a demorar a responder. Os dados abaixo podem estar desatualizados.':'A carregar a liga...')+'</p>';
+  // painel do lutador
+  h+='<div class="panel"><h3>O teu lugar na liga</h3>';
+  if(ro){h+='<p class="msg">Tens acesso só de leitura. Para entrares na liga e desafiares, pede ao dono do jogo acesso de Contribuidor.</p>'}
+  else{
+    if(m){h+='<p>O teu campeão: <strong>'+esc(m.fn||'?')+'</strong> (nível '+(+m.lv||1)+'). Pontos: <strong>'+(+m.pts||0)+'</strong>. Duelos que ainda podes fazer hoje: <strong>'+left+'</strong> de '+LG_DAILY+'.</p>'+(c?'':'<p class="msg">Esse lutador já não está nesta conta. Escolhe outro para voltares a poder desafiar.</p>')+'<p class="msg">Quando o teu campeão sobe de nível ou muda, a liga atualiza sozinha quando abres este ecrã.</p>'}
+    else h+='<p>Ainda não entraste. Escolhe o lutador que vai defender o teu nome.</p>';
+    const sel=c?ACC.chars.indexOf(c):(ACC.active!==null?ACC.active:0);
+    h+='<div class="row" style="margin-top:10px"><select id="lg-pick" aria-label="Lutador para a liga">'+ACC.chars.map((x,i)=>'<option value="'+i+'"'+(i===sel?' selected':'')+'>'+esc(x.f.name)+' (nível '+x.f.level+')</option>').join('')+'</select>'+
+      '<button class="btn small" data-lg="join">'+(m?'Usar este campeão':'Entrar na liga')+'</button>'+
+      (m?(LG.leave?'<button class="btn ghost small" data-lg="leaveyes">Sim, sair da liga</button><button class="btn ghost small" data-lg="leaveno">Cancelar</button>':'<button class="btn ghost small" data-lg="leave">Sair da liga</button>'):'')+'</div>';
+  }
+  h+='</div>';
+  // ranking
+  const rows=LG.players.filter(p=>typeof p.code==='string'&&typeof p.fn==='string'&&!importFighter(p.code).err).sort((a,b)=>(+b.pts||0)-(+a.pts||0)||(+b.aw||0)-(+a.aw||0)||String(a.id).localeCompare(String(b.id)));
+  h+='<h3 class="gh" style="margin-top:22px">Ranking</h3><p class="msg" style="margin:0">Cada vitória a atacar vale '+LG_WIN+' pontos. Podes fazer '+LG_DAILY+' duelos por dia.</p>';
+  if(!rows.length)h+='<p class="msg">Ainda ninguém entrou na liga. Sê o primeiro.</p>';
+  else h+='<div class="lg-list">'+rows.map((p,i)=>{
+    const me=p.id===LG.uid,dw=LG.duels.filter(d=>d.b===p.id&&d.w===0).length,dl=LG.duels.filter(d=>d.b===p.id&&d.w===1).length;
+    const can=!ro&&!me&&m&&c&&left>0&&!busy;
+    return '<div class="lg-r'+(me?' me':'')+'"><div class="lg-rk">'+(i+1)+'</div><div><h3>'+esc(p.fn)+' <small>nível '+(+p.lv||1)+'</small></h3><small>'+esc(nm(p.id))+' · '+(+p.pts||0)+' pts · ataques '+(+p.aw||0)+'V '+(+p.al||0)+'D · defesas '+dw+'V '+dl+'D</small></div>'+
+      '<div class="go">'+(me?'':'<button class="btn small" data-lg="duel" data-id="'+esc(p.id)+'"'+(can?'':' disabled')+'>Desafiar</button>')+'</div></div>';
+  }).join('')+'</div>';
+  if(rows.length&&!ro&&(!m||!c))h+='<p class="msg">Entra na liga com um lutador para poderes desafiar os outros.</p>';
+  else if(rows.length&&!ro&&left<1)h+='<p class="msg">Já fizeste os '+LG_DAILY+' duelos de hoje. Volta amanhã.</p>';
+  // últimos duelos
+  const fd=LG.duels.filter(d=>d&&typeof d.an==='string'&&typeof d.bn==='string').slice(0,12);
+  if(fd.length)h+='<h3 class="gh" style="margin-top:22px">Últimos duelos</h3><ul class="lg-feed">'+fd.map(d=>'<li><strong>'+esc(d.an)+'</strong> ('+esc(nm(d.a))+') '+(d.w===1?'venceu':'perdeu contra')+' <strong>'+esc(d.bn)+'</strong> ('+esc(nm(d.b))+') <small>'+fmtDT(d.ts)+'</small></li>').join('')+'</ul>';
+  el.innerHTML=h;
+}
+$('lg-body').addEventListener('click',async e=>{
+  const b=e.target.closest('[data-lg]');if(!b||b.disabled)return;
+  const a=b.dataset.lg;
+  if(a==='join'){const v=$('lg-pick');if(v)await lgJoin(+v.value)}
+  else if(a==='leave'){LG.leave=true;lgRender()}
+  else if(a==='leaveno'){LG.leave=false;lgRender()}
+  else if(a==='leaveyes')await lgLeave();
+  else if(a==='duel')await lgDuel(b.dataset.id);
+});
+function lgOpen(){
+  LG.leave=false;show('s-league');lgInit();lgRender();lgSync();
+}
+$('btn-league').addEventListener('click',()=>{if(!busy)lgOpen()});
+$('lg-back').addEventListener('click',()=>{
+  if(lastScreen==='s-hub'&&S)renderHub();else if(lastScreen==='s-account')renderAccount();else show(lastScreen);
+});
+capUse('downloads').then(d=>{
+  if(!d&&window.CC_CLOUD)d={save:({filename,data})=>{const u=URL.createObjectURL(new Blob([data],{type:'text/plain'})),a=document.createElement('a');a.href=u;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);return Promise.resolve({status:'saved'})}};
+  CAPS.downloads=d;if(!d)$('bk-save').hidden=true;
+});
+
+/* ===== nuvem (Supabase) ===== */
+const CL={on:false,sb:null,user:null,state:'',msg:'',timer:0,busy:false,again:false,syncing:false,conf:null,sent:'',last:0,ver:0};
+const _saveLocal=saveAcc;
+saveAcc=function(){if(CL.on)ACC.dirty=true;CL.ver++;_saveLocal();clSchedule()};
+function clErr(e){
+  const c=(e&&(e.code||e.status))||'';
+  if(c===429||c==='over_email_send_rate_limit'||c==='over_request_rate_limit')return 'Pediste emails a mais. Espera uns minutos e tenta outra vez.';
+  if(c==='otp_expired'||c==='invalid_otp'||/expired|invalid/i.test((e&&e.message)||''))return 'Esse código ou link já não é válido. Pede um novo.';
+  if(c==='too_large'||/too_large/.test((e&&e.message)||''))return 'A conta ficou grande demais para guardar online.';
+  return 'Não consegui ligar ao serviço online. O jogo continua a guardar neste browser.';
+}
+function clMsg(t){$('cl-msg').textContent=t||''}
+function clTime(t){return new Date(t).toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'})}
+function clRender(){
+  if(!window.CC_CLOUD)return;
+  $('cl').hidden=false;
+  const inn=!!CL.user,conf=!!CL.conf;
+  $('cl-out').hidden=inn||!CL.on;$('cl-in').hidden=!inn||conf;$('cl-conf').hidden=!conf;
+  if(inn){
+    $('cl-who').textContent='Sessão iniciada: '+(CL.user.email||'conta online');
+    const st={ok:'Guardado online'+(CL.last?' às '+clTime(CL.last):'')+'.',pending:'Alterações por guardar…',saving:'A guardar…',sync:'A sincronizar…',err:CL.msg||'Não consegui guardar online. Vou tentar outra vez.'}[CL.state]||'';
+    $('cl-state').textContent=st;
+  }
+  $('cl-google').hidden=!(window.CC_CLOUD.google&&CL.on);
+  $('cl-goto').hidden=!window.CC_CLOUD||!!CL.user;
+  const ld=document.querySelector('#s-account .acc-head .lead');if(ld)ld.textContent=inn?'Até 5 lutadores. Ficam guardados na tua conta online e neste browser.':'Até 5 lutadores. Ficam guardados neste browser.';
+}
+function clSchedule(){
+  if(!CL.on||!CL.user||CL.conf||CL.syncing)return;
+  clearTimeout(CL.timer);CL.state='pending';clRender();CL.timer=setTimeout(clPush,1500);
+}
+async function clPush(){
+  if(!CL.on||!CL.user||CL.conf||CL.syncing)return;
+  if(CL.busy){CL.again=true;return}
+  clearTimeout(CL.timer);CL.busy=true;CL.state='saving';clRender();
+  const v=CL.ver;
+  try{
+    const uid=CL.user.id,rev=ACC.cloudUid===uid?(ACC.cloudRev||0):0;
+    const {data,error}=await CL.sb.rpc('save_game',{p_data:backupObj(),p_rev:rev});
+    if(error)throw error;
+    if(data===-1){CL.busy=false;await clSync();return}
+    ACC.cloudRev=data;ACC.cloudUid=uid;ACC.dirty=CL.ver!==v;CL.last=Date.now();CL.state='ok';CL.msg='';_saveLocal();
+  }catch(e){CL.state='err';CL.msg=clErr(e)}
+  CL.busy=false;
+  if(CL.again){CL.again=false;clSchedule()}
+  clRender();
+}
+const clNames=a=>a&&a.chars&&a.chars.length?a.chars.map(c=>c.f.name+' (nv. '+c.f.level+')').join(', '):'nenhum lutador';
+function clAdopt(cloud,rev,uid){
+  ACC=cloud;ACC.tut=true;
+  ACC.cloudUid=uid;ACC.cloudRev=rev;ACC.dirty=false;
+  S=ACC.active!==null?ACC.chars[ACC.active]:null;delIdx=-1;
+  _saveLocal();refreshSnd();
+  if(!busy){if(S)renderHub();else renderAccount()}
+}
+async function clSync(){
+  if(!CL.on||!CL.user||CL.syncing)return;
+  CL.syncing=true;CL.state='sync';clRender();
+  try{
+    const uid=CL.user.id;
+    const {data:row,error}=await CL.sb.from('saves').select('data,rev').maybeSingle();
+    if(error)throw error;
+    const localHas=ACC.chars.length>0;
+    let cloud=row?cleanBackupObj(row.data):null;if(cloud&&cloud.err)cloud=null;
+    const cloudAcc=cloud?cloud.acc:null;
+    CL.syncing=false;
+    if(!row||!cloudAcc){
+      ACC.cloudUid=uid;ACC.cloudRev=row?row.rev:0;
+      CL.state='ok';CL.last=Date.now();
+      if(localHas)await clPush();else clRender();
+      return;
+    }
+    const sameLine=ACC.cloudUid===uid;
+    if(sameLine&&ACC.cloudRev===row.rev){CL.state='ok';CL.last=Date.now();if(ACC.dirty)await clPush();else clRender();return}
+    if(!localHas||(sameLine&&!ACC.dirty)){clAdopt(cloudAcc,row.rev,uid);CL.state='ok';CL.last=Date.now();clRender();return}
+    CL.conf={cloudAcc,rev:row.rev,uid};
+    $('cl-cmp').innerHTML='<div><strong>Neste dispositivo:</strong> '+esc(clNames(ACC))+'</div><div><strong>Na conta online:</strong> '+esc(clNames(cloudAcc))+'</div>';
+    clRender();clShowConf();
+  }catch(e){CL.syncing=false;CL.state='err';CL.msg=clErr(e);clRender()}
+}
+function clShowConf(){if(CL.conf&&!busy&&$('s-account').hidden)renderAccount()}
+function clDiscard(code){
+  try{localStorage.setItem('arena-dos-brutos-v2-outra-versao',code)}catch(e){}
+  $('bk-code').value=code;
+}
+function clChoose(useCloud){
+  const c=CL.conf;if(!c)return;
+  CL.conf=null;
+  if(useCloud){clDiscard(backupCode());clAdopt(c.cloudAcc,c.rev,c.uid)}
+  else{
+    const old=ACC;ACC=c.cloudAcc;const code=backupCode();ACC=old;clDiscard(code);
+    ACC.cloudUid=c.uid;ACC.cloudRev=c.rev;ACC.dirty=true;_saveLocal();
+  }
+  CL.state='pending';clRender();
+  if(!useCloud)clPush();
+}
+async function clInit(){
+  if(!window.CC_CLOUD){return}
+  $('cl').hidden=false;
+  if(!(window.supabase&&window.supabase.createClient)){clMsg('Não consegui ligar ao serviço online. O jogo continua a guardar neste browser.');$('cl-out').hidden=true;return}
+  CL.sb=window.supabase.createClient(window.CC_CLOUD.url,window.CC_CLOUD.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  CL.on=true;setInterval(clShowConf,1500);
+  CL.sb.auth.onAuthStateChange((ev,sess)=>{
+    const prev=CL.user;CL.user=sess&&sess.user?sess.user:null;
+    if(CL.user&&(!prev||prev.id!==CL.user.id)){setTimeout(clSync,0)}
+    if(!CL.user){CL.conf=null;CL.state='';clearTimeout(CL.timer)}
+    clRender();
+  });
+  const {data}=await CL.sb.auth.getSession();
+  if(data&&data.session&&!CL.user){CL.user=data.session.user;clSync()}
+  clRender();
+}
+const clBase=()=>location.origin+location.pathname;
+$('cl-send').addEventListener('click',async()=>{
+  if(!CL.on)return;
+  const email=$('cl-email').value.trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){clMsg('Escreve um email válido.');return}
+  clMsg('A enviar…');$('cl-send').disabled=true;
+  const {error}=await CL.sb.auth.signInWithOtp({email,options:{emailRedirectTo:clBase(),shouldCreateUser:true}});
+  $('cl-send').disabled=false;
+  if(error){clMsg(clErr(error));return}
+  CL.sent=email;$('cl-codebox').hidden=false;
+  clMsg('Enviámos um email para '+email+'. Abre o link que lá está. Se o email trouxer um código, escreve-o aqui em baixo.');
+});
+$('cl-verify').addEventListener('click',async()=>{
+  const token=$('cl-code').value.replace(/\s+/g,'');
+  if(!/^\d{6,8}$/.test(token)){clMsg('O código tem 6 a 8 números.');return}
+  clMsg('A confirmar…');
+  const {error}=await CL.sb.auth.verifyOtp({email:CL.sent||$('cl-email').value.trim(),token,type:'email'});
+  if(error){clMsg(clErr(error));return}
+  clMsg('');
+});
+$('cl-google').addEventListener('click',async()=>{
+  if(!CL.on)return;
+  const {error}=await CL.sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:clBase()}});
+  if(error)clMsg(clErr(error));
+});
+$('cl-now').addEventListener('click',()=>{ACC.dirty=true;clPush()});
+$('cl-logout').addEventListener('click',async()=>{
+  if(!CL.on)return;
+  await CL.sb.auth.signOut();clMsg('Saíste. Os lutadores continuam guardados neste browser.');
+});
+$('cl-del').addEventListener('click',()=>{$('cl-delbox').hidden=false;$('cl-del').hidden=true});
+$('cl-delno').addEventListener('click',()=>{$('cl-delbox').hidden=true;$('cl-del').hidden=false});
+$('cl-delyes').addEventListener('click',async()=>{
+  $('cl-delbox').hidden=true;$('cl-del').hidden=false;
+  if(!CL.on||!CL.user)return;
+  const {error}=await CL.sb.rpc('delete_my_save');
+  if(error){clMsg(clErr(error));return}
+  ACC.cloudRev=0;ACC.cloudUid=CL.user.id;CL.state='';clMsg('A gravação online foi apagada. Os lutadores deste browser continuam aqui.');clRender();
+});
+$('cl-usecloud').addEventListener('click',()=>clChoose(true));
+$('cl-uselocal').addEventListener('click',()=>clChoose(false));
+$('cl-goto').addEventListener('click',()=>renderAccount());
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&CL.on&&CL.user&&ACC&&ACC.dirty)clPush()});
+window.addEventListener('online',()=>{if(CL.on&&CL.user&&ACC&&ACC.dirty)clPush()});
+
+/* ===== tutorial ===== */
+const TUT=[
+  {t:'Cria o teu lutador',b:'<p>Cada lutador nasce com atributos sorteados (Vida, Força, Agilidade e Velocidade) e com dois traços: um bom e um mau. Podes sortear os traços outra vez, até 3 vezes cada.</p><ul><li>Os combates são <strong>automáticos</strong>: tu escolhes o adversário e a sorte decide.</li><li>Podes ter até 5 lutadores na mesma conta.</li></ul>'},
+  {t:'Evolui com a sorte',b:'<p>Cada combate dá XP. Ao subir de nível recebes uma melhoria sorteada (atributo, habilidade ou arma), e podes trocá-la uma vez.</p><ul><li><strong>6 adversários</strong> por escolher, 2 fáceis, 2 iguais e 2 difíceis. Os difíceis dão mais XP.</li><li>Cada combate tem um <strong>cenário</strong> sorteado e há um <strong>evento</strong> novo todos os dias.</li><li>O <strong>desafio diário</strong> dá 1 ponto de atributo, uma vez por dia.</li><li>Os <strong>torneios</strong> custam alguns combates normais e dão pontos de atributo, uma habilidade, uma arma ou, com muita sorte, um animal.</li></ul>'},
+  {t:'Joga com amigos',b:'<p>O jogo é mais giro contra pessoas de verdade.</p><ul><li><strong>Liga:</strong> entra com o teu campeão, desafia os dos outros e sobe no ranking. Tens 3 duelos por dia. Funciona quando o jogo está aberto no claude.ai.</li><li><strong>Rivais:</strong> em "A tua conta" exportas um lutador para um código e o teu amigo importa-o para lutar contra ele.</li><li><strong>Cópia de segurança:</strong> também em "A tua conta". Guarda uma cópia para não perderes os lutadores.</li><li>O botão <strong>Guia</strong> mostra todas as armas, habilidades, animais e cenários.</li></ul>'}
+];
+let tutI=0,tutBack='';
+function renderTut(back){
+  if(back!==undefined)tutBack=back;
+  const d=TUT[tutI];
+  $('tut-dots').innerHTML=TUT.map((_,i)=>'<i'+(i<=tutI?' class="on"':'')+'></i>').join('');
+  $('tut-step').textContent='Passo '+(tutI+1)+' de '+TUT.length;
+  $('tut-title').textContent=d.t;$('tut-body').innerHTML=d.b;
+  $('tut-prev').hidden=tutI===0;
+  $('tut-next').textContent=tutI===TUT.length-1?(tutBack==='guide'?'Fechar':'Começar'):'Seguinte';
+  $('tut-skip').hidden=tutI===TUT.length-1;
+  show('s-tut');
+}
+function tutDone(){
+  ACC.tut=true;saveAcc();
+  if(tutBack==='guide')renderGuide();
+  else if(ACC.active!==null&&S)renderHub();
+  else if(ACC.chars.length)renderAccount();
+  else showCreate();
+}
+function tutOpen(back){tutI=0;renderTut(back)}
+$('tut-prev').addEventListener('click',()=>{if(tutI>0){tutI--;renderTut()}});
+$('tut-next').addEventListener('click',()=>{if(tutI<TUT.length-1){tutI++;renderTut()}else tutDone()});
+$('tut-skip').addEventListener('click',tutDone);
+$('guide-tut').addEventListener('click',()=>tutOpen('guide'));
+
+ACC=loadAcc();
+if(ACC.active!==null){S=ACC.chars[ACC.active];saveAcc();renderHub()}
+else if(ACC.chars.length)renderAccount();
+else if(!ACC.tut)tutOpen('');
+else showCreate();
+clInit();
+</script>
+</body></html>
