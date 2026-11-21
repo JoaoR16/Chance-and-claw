@@ -1038,6 +1038,14 @@ function rivalOpp(r){
 function addBonusStat(f,k){f.stats[k]++;f.bp=f.bp||{};f.bp[k]=(f.bp[k]||0)+1}
 const TOUR_PET=.02,TOUR_SKILL=.10,TOUR_WEAPON=.05,PET_WIN=.015,PET_WIN_HARD=.04,PET_SCALE=[1,.5,.25];
 function petChance(f,base){const n=petsOf(f).length;return n>=MAX_PETS?0:base*PET_SCALE[n]}
+function tourRewardFx(f,fx){
+  if(fx.type==='pet'){f.pets=petsOf(f).concat(fx.id);delete f.pet;return{found:fx.id,text:'Recompensa do torneio: um animal de estimação, '+PETS[fx.id].nome+'!'}}
+  if(fx.type==='skill'){f.skills.push(fx.id);f.bs=(f.bs||0)+1;return{found:null,text:'Recompensa do torneio: a habilidade '+SKILLS[fx.id].nome+'!'}}
+  if(fx.type==='weapon'){f.weapons.push(fx.id);f.bs=(f.bs||0)+1;return{found:null,text:'Recompensa do torneio: a arma '+WEAPONS[fx.id].nome+'!'}}
+  const got=fx.ks.slice();got.forEach(k=>addBonusStat(f,k));
+  const txt=got[0]===got[1]?'+2 de '+STATS[got[0]].nome:'+1 de '+STATS[got[0]].nome+' e +1 de '+STATS[got[1]].nome;
+  return{found:null,text:'Recompensa do torneio: '+txt+'.'}
+}
 function tourReward(f,mult){
   const r=Math.random(),petP=petChance(f,TOUR_PET)*(mult||1);
   if(r<petP){const id=rollPet(Math.random,petsOf(f));if(id){f.pets=petsOf(f).concat(id);delete f.pet;return{found:id,text:'Recompensa do torneio: um animal de estimação, '+PETS[id].nome+'!'}}}
@@ -1125,11 +1133,11 @@ $('hub-r').addEventListener('click',e=>{
   else if(b.dataset.rival!==undefined)startRival(+b.dataset.rival);
   else if(b.dataset.chal!==undefined)startChallenge();
   else if(b.dataset.cshare!==undefined)shareChal();
-  else if(b.dataset.tenter!==undefined){if((S.charge||0)>=tourCost()&&!S.tour){newTour();tourQuit=false;saveAcc();renderHub()}}
+  else if(b.dataset.tenter!==undefined){if((S.charge||0)>=tourCost()&&!S.tour&&!busy)tourEnter()}
   else if(b.dataset.tfight!==undefined&&S.tour){tourQuit=false;runFight({f:tourOpp(S.tour),diff:'',xp:0,scene:(S.tour.scs||[])[S.tour.rd]},true)}
   else if(b.dataset.tquit!==undefined){
     const v=b.dataset.tquit;
-    if(v==='ask')tourQuit=true;else if(v==='no')tourQuit=false;else{S.tour=null;tourQuit=false;saveAcc()}
+    if(v==='ask')tourQuit=true;else if(v==='no')tourQuit=false;else{S.tour=null;tourQuit=false;saveAcc();if(srvOn())lsCall('tquit').catch(()=>{})}
     renderHub();
   }
 });
@@ -1295,6 +1303,16 @@ function resolveNpc(t){
     if(m.w===null&&m.a!==t.p&&m.b!==t.p)m.w=simulate(t.field[m.a],t.field[m.b]).winner==='a'?m.a:m.b;
   });
 }
+async function tourEnter(){
+  let j=null;
+  if(srvOn()){
+    busy=true;
+    try{j=await lsCall('tstart')}catch(e){busy=false;toast(PVE_ERR[e.code]||PVE_ERR.net);return}
+    busy=false;
+  }
+  newTour();if(j&&j.charge!=null)S.charge=j.charge;
+  tourQuit=false;saveAcc();renderHub();
+}
 function newTour(){
   const L=S.f.level,used=[S.f.name];
   const lv=shuffle([L-1,L-1,L,L,L,L+1,L+1].map(x=>Math.max(1,x)));
@@ -1380,16 +1398,16 @@ function finishTour(res,opp){
   const m=playerMatch(t);
   let gain,found=null,champion=false,next='',rewardText='';
   if(won){
-    S.wins++;gain=Math.max(1,Math.round(TOUR_XP[rd]*mult));m.w=t.p;
+    S.wins++;gain=opp.sv?opp.sv.gain:Math.max(1,Math.round(TOUR_XP[rd]*mult));m.w=t.p;
     if(rd<2){
       const winners=t.rounds[rd].map(x=>x.w);
       t.rd=rd+1;t.rounds.push(mkRound(winners));resolveNpc(t);
       next=' Próxima ronda: '+TOUR_ROUNDS[t.rd]+', contra '+esc(tourOpp(t).name)+'.';
     }else{
       champion=true;S.titles=(S.titles||0)+1;S.tour=null;
-      const rw=tourReward(S.f,curEv().pet||1);found=rw.found;rewardText=rw.text;
+      const rw=opp.sv&&opp.sv.reward?tourRewardFx(S.f,opp.sv.reward):tourReward(S.f,curEv().pet||1);found=rw.found;rewardText=rw.text;
     }
-  }else{S.losses++;gain=Math.max(1,Math.round(4*mult));S.tour=null}
+  }else{S.losses++;gain=opp.sv?opp.sv.gain:Math.max(1,Math.round(4*mult));S.tour=null}
   const up=awardXp(gain);
   const achs=recordFight({won,kind:'tour',rn:TOUR_ROUNDS[rd],opp,res,gain,champion});
   saveAcc();
@@ -1402,7 +1420,23 @@ function finishTour(res,opp){
 function startFight(i){return runFight(S.opps[i],false)}
 function startRival(i){const r=ACC.rivals[i];if(r)return runFight(rivalOpp(r),false)}
 function startChallenge(){return runFight(chalOpp(),false,true)}
+const srvOn=()=>!!(window.CC_CLOUD&&typeof CL!=='undefined'&&CL&&CL.user&&CL.sb);
+const PVE_ERR={unverified:'Este lutador tem progresso que o servidor não conseguiu confirmar.',too_fast:'Calma, espera um segundo entre lutas.',daily_cap:'Chegaste ao limite de lutas de hoje.',no_tour:'O torneio já não existe no servidor. Desiste e entra outra vez.',no_charge:'Ainda não tens combates suficientes para o torneio (o servidor só conta os feitos com sessão iniciada).',chal_done:'O desafio de hoje já foi ganho.',bad_opp:'Adversário inválido. Atualiza a página e tenta outra vez.',net:'Sem ligação ao servidor. Tenta outra vez daqui a pouco.',auth:'A tua sessão expirou. Volta a entrar na conta online.',invalid_fighter:'O servidor não aceitou este lutador.'};
 async function runFight(opp,tour,chal){
+  if(busy)return;
+  if(chal&&weekly().won)return;
+  if(!opp.pre&&!opp.friendly&&srvOn()){
+    busy=true;
+    let sv;
+    try{sv=await lsCall('pve',{kind:chal?'chal':tour?'tour':opp.rival?'rival':'normal',code:exportFighter(S.f),opp:exportFighter(opp.f),scene:chal?null:(opp.scene||null)})}
+    catch(e){
+      busy=false;
+      if(e.code==='no_tour'&&S.tour){S.tour=null;saveAcc();renderHub()}
+      toast(PVE_ERR[e.code]||PVE_ERR.net);return;
+    }
+    busy=false;
+    opp=Object.assign({},opp,{pre:sv.res,scene:sv.scene,ev:sv.ev,sv});
+  }
   const prev=_sceneForce,prevE=_evForce;
   _sceneForce=chal?null:(SCENES.find(x=>x.id===opp.scene)||null);
   if(opp.ev)_evForce=EVENTS.find(x=>x.id===opp.ev)||_evForce;
@@ -1435,15 +1469,16 @@ async function runFight0(opp,tour,chal){
   if(tour){finishTour(res,opp);busy=false;return}
   const won=res.winner==='a',mult=derive(fa).xp,lvBefore=S.f.level;
   const wk=chal?weekly():null,firstChalWin=!!(chal&&won&&!wk.won);
-  const gain=Math.max(1,Math.round((won?opp.xp:3)*mult));
+  const sv=opp.sv||null;
+  const gain=sv?sv.gain:Math.max(1,Math.round((won?opp.xp:3)*mult));
   S.f.xp+=gain;if(won)S.wins++;else S.losses++;
   let found=null;
-  if(!chal&&won&&Math.random()<petChance(S.f,opp.diff==='Difícil'?PET_WIN_HARD:PET_WIN)*(curEv().pet||1)){found=rollPet(Math.random,petsOf(S.f));if(found){S.f.pets=petsOf(S.f).concat(found);delete S.f.pet}}
+  if(sv){found=sv.found||null;if(found){S.f.pets=petsOf(S.f).concat(found);delete S.f.pet}}
+  else if(!chal&&won&&Math.random()<petChance(S.f,opp.diff==='Difícil'?PET_WIN_HARD:PET_WIN)*(curEv().pet||1)){found=rollPet(Math.random,petsOf(S.f));if(found){S.f.pets=petsOf(S.f).concat(found);delete S.f.pet}}
   let bonusStat=null;
   if(firstChalWin){
-    bonusStat=['vida','forca','agi','vel'][Math.floor(Math.random()*4)];
-    addBonusStat(S.f,bonusStat);
-    wk.stat=bonusStat;
+    bonusStat=sv?(sv.bonusStat||null):['vida','forca','agi','vel'][Math.floor(Math.random()*4)];
+    if(bonusStat){addBonusStat(S.f,bonusStat);wk.stat=bonusStat}
   }
   while(S.f.xp>=xpNeed(S.f.level)){S.f.xp-=xpNeed(S.f.level);S.f.level++;S.pend++}
   if(S.pend>0&&!S.opts)S.opts=nextOpts();
@@ -1453,7 +1488,7 @@ async function runFight0(opp,tour,chal){
     if(i<0||S.f.level!==lvBefore)S.opps=newOpps(S);
     else S.opps[i]=newOpp(S,i,S.opps.map(x=>x.f.name));
   }
-  S.charge=Math.min(5,(S.charge||0)+1);
+  S.charge=sv&&sv.charge!=null?sv.charge:Math.min(5,(S.charge||0)+1);
   if(chal){
     wk.tries++;
     if(firstChalWin){const last=res.events[res.events.length-1]||{hpa:0};wk.won=true;wk.who=fa.name;wk.lvl=fa.level;wk.tryWon=wk.tries;wk.hp=Math.round(last.hpa/res.maxA*100)}
@@ -2044,7 +2079,7 @@ const lsUid=()=>(CL&&CL.user&&CL.user.id)||null;
 const lsDay=()=>new Date().toISOString().slice(0,10);
 const lsMine=()=>LS.rows.find(r=>r.user_id===lsUid())||null;
 const lsLeft=()=>{const m=lsMine();return m&&m.dd_day===lsDay()?Math.max(0,LS_DAILY-(+m.dd_n||0)):LS_DAILY};
-const LS_ERR={daily_limit:'Já fizeste os 3 duelos de hoje. Volta amanhã.',same_target:'Já desafiaste este campeão hoje. Escolhe outro.',target_gone:'Esse campeão saiu da liga.',target_invalid:'Esse campeão não passou na verificação e não pode ser desafiado.',invalid_fighter:'O teu campeão não passou na verificação do servidor. Escolhe outro lutador.',not_in_league:'Ainda não entraste na liga.',auth:'A tua sessão expirou. Volta a entrar na conta online.',bad_code:'Código inválido. Tem 8 letras e números (por exemplo ABCD-EFGH).',code_unknown:'Não encontrei esse código.',self:'Esse é o teu próprio código.',already:'Já são amigos.',already_sent:'Já enviaste um pedido a essa pessoa.',too_many:'Chegaste ao limite de amigos.',target_not_in_league:'O teu amigo ainda não tem lutadores disponíveis para lutar.',not_found:'Esse pedido já não existe.',net:'Não foi possível falar com a liga agora. Tenta outra vez daqui a pouco.'};
+const LS_ERR={daily_limit:'Já fizeste os 3 duelos de hoje. Volta amanhã.',same_target:'Já desafiaste este campeão hoje. Escolhe outro.',target_gone:'Esse campeão saiu da liga.',target_invalid:'Esse campeão não passou na verificação e não pode ser desafiado.',invalid_fighter:'O teu campeão não passou na verificação do servidor. Escolhe outro lutador.',not_in_league:'Ainda não entraste na liga.',auth:'A tua sessão expirou. Volta a entrar na conta online.',bad_code:'Código inválido. Tem 8 letras e números (por exemplo ABCD-EFGH).',code_unknown:'Não encontrei esse código.',self:'Esse é o teu próprio código.',already:'Já são amigos.',already_sent:'Já enviaste um pedido a essa pessoa.',too_many:'Chegaste ao limite de amigos.',target_not_in_league:'O teu amigo ainda não tem lutadores disponíveis para lutar.',not_found:'Esse pedido já não existe.',unverified:'Este lutador tem nível, animais ou recompensas que o servidor não conseguiu confirmar. Só conta o progresso feito com a sessão iniciada. Escolhe outro lutador.',net:'Não foi possível falar com a liga agora. Tenta outra vez daqui a pouco.'};
 async function lsCall(action,extra){
   const r0=await CL.sb.auth.getSession();const s=r0&&r0.data&&r0.data.session;
   if(!s)throw Object.assign(new Error('auth'),{code:'auth'});
@@ -2071,7 +2106,8 @@ async function lsRoster(){
   try{
     const codes=ACC.chars.map(c=>exportFighter(c.f)),sig=codes.join('|');
     if(sig===LS.rsig)return;
-    await lsCall('roster',{codes});LS.rsig=sig;
+    const rj=await lsCall('roster',{codes});LS.rsig=sig;
+    if(rj&&rj.dropped>0)toast(rj.dropped+(rj.dropped>1?' lutadores não ficam visíveis aos amigos':' lutador não fica visível aos amigos')+': o servidor não confirmou o progresso deles.');
   }catch(e){}
 }
 async function lsOpen(){
@@ -2103,7 +2139,7 @@ async function lsDuel(tid){
   try{j=await lsCall('duel',{target:tid,code:exportFighter(c.f)})}
   catch(e){LS.err=e.code||'net';LS.busy=false;await lsLoad();return}
   ACC.active=ACC.chars.indexOf(c);S=c;saveAcc();
-  const opp={f:rb.f,rival:true,league:true,diff:'Liga',xp:8,scene:j.scene,ev:j.ev,pre:j.res};
+  const opp={f:rb.f,rival:true,league:true,diff:'Liga',xp:8,scene:j.scene,ev:j.ev,pre:j.res,sv:{gain:j.gain,charge:j.charge}};
   LS.busy=false;
   await runFight(opp,false);
   toast('Duelo registado na liga.');
