@@ -2422,6 +2422,16 @@ function clAdopt(cloud,rev,uid){
   _saveLocal();refreshSnd();
   if(!busy){if(S)renderHub();else renderAccount()}
 }
+// os lutadores deste aparelho pertencem à conta que os guardou: ao mudar de conta ficam guardados à parte
+function clStash(){
+  if(ACC&&ACC.cloudUid&&ACC.chars.length){try{localStorage.setItem('arena-dos-brutos-v2-conta-'+ACC.cloudUid,backupCode())}catch(e){}}
+}
+function clFresh(){
+  clStash();
+  ACC={name:'Conta local',chars:[],active:null,rivals:[],ach:{},tw:0,mute:!!(ACC&&ACC.mute),tut:true};
+  S=null;delIdx=-1;_saveLocal();refreshSnd();
+  if(!busy)showCreate();
+}
 async function clSync(){
   if(!CL.on||!CL.user||CL.syncing)return;
   CL.syncing=true;CL.state='sync';clRender();
@@ -2471,12 +2481,12 @@ async function clInit(){
   CL.on=true;setInterval(clShowConf,1500);
   CL.sb.auth.onAuthStateChange((ev,sess)=>{
     const prev=CL.user;CL.user=sess&&sess.user?sess.user:null;
-    if(CL.user&&(!prev||prev.id!==CL.user.id)){setTimeout(clSync,0)}
+    if(CL.user&&(!prev||prev.id!==CL.user.id)){if(ACC&&ACC.cloudUid&&ACC.cloudUid!==CL.user.id)clFresh();setTimeout(clSync,0)}
     if(!CL.user){CL.conf=null;CL.state='';clearTimeout(CL.timer)}
     clRender();
   });
   const {data}=await CL.sb.auth.getSession();
-  if(data&&data.session&&!CL.user){CL.user=data.session.user;clSync()}
+  if(data&&data.session&&!CL.user){CL.user=data.session.user;if(ACC&&ACC.cloudUid&&ACC.cloudUid!==CL.user.id)clFresh();clSync()}
   clRender();
 }
 const clBase=()=>location.origin+location.pathname;
@@ -2507,7 +2517,11 @@ $('cl-google').addEventListener('click',async()=>{
 $('cl-now').addEventListener('click',()=>{ACC.dirty=true;clPush()});
 $('cl-logout').addEventListener('click',async()=>{
   if(!CL.on)return;
-  await CL.sb.auth.signOut();clMsg('Saíste. Os lutadores continuam guardados neste browser.');
+  const had=!!(ACC&&ACC.cloudUid);
+  if(had&&ACC.dirty&&CL.user)await clPush();
+  await CL.sb.auth.signOut();
+  if(had){clFresh();clMsg('Saíste. Os lutadores ficam guardados na tua conta online. Volta a entrar para os ver.')}
+  else clMsg('Saíste. Os lutadores continuam guardados neste browser.');
 });
 $('cl-del').addEventListener('click',()=>{$('cl-delbox').hidden=false;$('cl-del').hidden=true});
 $('cl-delno').addEventListener('click',()=>{$('cl-delbox').hidden=true;$('cl-del').hidden=false});
