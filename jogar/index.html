@@ -878,10 +878,21 @@ const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: redu
 let ACC=null,S=null,speed=1,userSpeed=reduce?4:1,busy=false,fig={},pickedColor=COLORS[0].hex,tr={pos:'',neg:''},delIdx=-1;
 
 const OPP_CATS=['Fácil','Fácil','Igual','Igual','Difícil','Difícil'];
+const OPP_TARGET=[78,82,58,62,30,40];
+function oppLevels(cat,L){return cat==='Fácil'?[Math.max(1,L-1),Math.max(1,L-2),Math.max(1,L-3)]:cat==='Igual'?[L]:[L+1,L+1,L+2]}
 function newOpp(c,i,used){
-  const L=c.f.level,cat=OPP_CATS[i],l=cat==='Fácil'?Math.max(1,L-1):cat==='Igual'?L:L+1;
-  const o=makeOpponent(l,Math.random,used);used.push(o.name);
-  return{f:o,diff:cat,xp:(cat==='Fácil'?6:cat==='Igual'?10:16)+(petsOf(o).length?4:0),scene:rndScene()};
+  // escolhe, entre vários candidatos, o adversário cuja probabilidade de vitória fica mais perto do alvo da dificuldade
+  const L=c.f.level,cat=OPP_CATS[i],t=OPP_TARGET[i],lv=oppLevels(cat,L);
+  let best=null;
+  for(let k=0;k<30;k++){
+    const l=lv[Math.min(lv.length-1,Math.floor(k/10))];
+    const o=makeOpponent(l,Math.random,used),sc=rndScene();
+    const e=withScene(sc,()=>winEstimate(c.f,o,240));
+    if(!best||Math.abs(e-t)<Math.abs(best.e-t))best={o,e,sc};
+    if(Math.abs(e-t)<=3)break;
+  }
+  const o=best.o,l=o.level;used.push(o.name);
+  return{f:o,diff:cat,xp:(l<L?6:l===L?10:16)+(petsOf(o).length?4:0),scene:best.sc};
 }
 function newOpps(c){const used=[];return OPP_CATS.map((_,i)=>newOpp(c,i,used))}
 function fixChar(c){
@@ -1757,7 +1768,7 @@ $('ie-copy').addEventListener('click',async()=>{
 
 function mulberry(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function winEstimate(fa,fb,n){
-  n=n||150;const r=mulberry(12345);let w=0;
+  n=n||240;const r=mulberry(12345);let w=0;
   for(let i=0;i<n;i++)if(simulate(fa,fb,r).winner==='a')w++;
   return Math.round(w/n*100);
 }
