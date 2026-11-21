@@ -298,7 +298,7 @@ section:not([hidden]){animation:enter .28s ease-out}
       <p class="tagline">Os combates são automáticos. A sorte decide como o lutador evolui.</p>
       <p class="evtag" id="evtag"></p>
     </div>
-    <nav class="row"><button class="btn ghost small" id="btn-acc" hidden>A tua conta</button><button class="btn ghost small" id="btn-league" hidden>Liga</button><button class="btn ghost small" id="btn-hist" hidden>Histórico</button><button class="btn ghost small" id="btn-guide">Guia</button><button class="btn ghost small" id="btn-snd" aria-pressed="true">Som: ligado</button></nav>
+    <nav class="row"><button class="btn ghost small" id="btn-acc" hidden>A tua conta</button><button class="btn ghost small" id="btn-league" hidden>Liga</button><button class="btn ghost small" id="btn-friends" hidden>Amigos</button><button class="btn ghost small" id="btn-hist" hidden>Histórico</button><button class="btn ghost small" id="btn-guide">Guia</button><button class="btn ghost small" id="btn-snd" aria-pressed="true">Som: ligado</button></nav>
   </header>
 
   <section id="s-account" hidden>
@@ -937,8 +937,9 @@ function show(id){
   $('btn-acc').hidden=!(ACC&&ACC.chars.length)||id==='s-fight'||id==='s-account';
   $('btn-guide').hidden=id==='s-fight'||id==='s-guide';
   $('btn-league').hidden=!(ACC&&ACC.chars.length)||id==='s-fight'||id==='s-league'||id==='s-create';
+  $('btn-friends').hidden=!(window.CC_CLOUD&&ACC&&ACC.chars.length)||id==='s-fight'||id==='s-league'||id==='s-create';
   $('btn-hist').hidden=!S||id==='s-fight'||id==='s-create'||id==='s-history';
-  if(id==='s-tut')['btn-acc','btn-hist','btn-league','btn-guide'].forEach(b=>{$(b).hidden=true});
+  if(id==='s-tut')['btn-acc','btn-hist','btn-league','btn-friends','btn-guide'].forEach(b=>{$(b).hidden=true});
   refreshSnd();
   const ev=curEv();$('evtag').textContent='Evento de hoje: '+ev.nome+'. '+ev.desc;
 }
@@ -2036,14 +2037,14 @@ $('lg-body').addEventListener('click',async e=>{
   else if(a==='duel')await lgDuel(b.dataset.id);
 });
 /* ===== liga no servidor (site com conta online) ===== */
-const LS={rows:[],duels:[],loading:false,err:'',leave:false,busy:false,fr:null,frMsg:'',frErr:''};
+const LS={rows:[],duels:[],loading:false,err:'',leave:false,busy:false,fr:null,frMsg:'',frErr:'',tab:'liga',rsig:'',fsel:0};
 const LS_DAILY=3,LS_WIN=3;
 const lgSrv=()=>!!window.CC_CLOUD;
 const lsUid=()=>(CL&&CL.user&&CL.user.id)||null;
 const lsDay=()=>new Date().toISOString().slice(0,10);
 const lsMine=()=>LS.rows.find(r=>r.user_id===lsUid())||null;
 const lsLeft=()=>{const m=lsMine();return m&&m.dd_day===lsDay()?Math.max(0,LS_DAILY-(+m.dd_n||0)):LS_DAILY};
-const LS_ERR={daily_limit:'Já fizeste os 3 duelos de hoje. Volta amanhã.',same_target:'Já desafiaste este campeão hoje. Escolhe outro.',target_gone:'Esse campeão saiu da liga.',target_invalid:'Esse campeão não passou na verificação e não pode ser desafiado.',invalid_fighter:'O teu campeão não passou na verificação do servidor. Escolhe outro lutador.',not_in_league:'Ainda não entraste na liga.',auth:'A tua sessão expirou. Volta a entrar na conta online.',bad_code:'Código inválido. Tem 8 letras e números (por exemplo ABCD-EFGH).',code_unknown:'Não encontrei esse código.',self:'Esse é o teu próprio código.',already:'Já são amigos.',already_sent:'Já enviaste um pedido a essa pessoa.',too_many:'Chegaste ao limite de amigos.',target_not_in_league:'O teu amigo ainda não pôs um lutador na liga, por isso não pode ser desafiado.',not_found:'Esse pedido já não existe.',net:'Não foi possível falar com a liga agora. Tenta outra vez daqui a pouco.'};
+const LS_ERR={daily_limit:'Já fizeste os 3 duelos de hoje. Volta amanhã.',same_target:'Já desafiaste este campeão hoje. Escolhe outro.',target_gone:'Esse campeão saiu da liga.',target_invalid:'Esse campeão não passou na verificação e não pode ser desafiado.',invalid_fighter:'O teu campeão não passou na verificação do servidor. Escolhe outro lutador.',not_in_league:'Ainda não entraste na liga.',auth:'A tua sessão expirou. Volta a entrar na conta online.',bad_code:'Código inválido. Tem 8 letras e números (por exemplo ABCD-EFGH).',code_unknown:'Não encontrei esse código.',self:'Esse é o teu próprio código.',already:'Já são amigos.',already_sent:'Já enviaste um pedido a essa pessoa.',too_many:'Chegaste ao limite de amigos.',target_not_in_league:'O teu amigo ainda não tem lutadores disponíveis para lutar.',not_found:'Esse pedido já não existe.',net:'Não foi possível falar com a liga agora. Tenta outra vez daqui a pouco.'};
 async function lsCall(action,extra){
   const r0=await CL.sb.auth.getSession();const s=r0&&r0.data&&r0.data.session;
   if(!s)throw Object.assign(new Error('auth'),{code:'auth'});
@@ -2066,8 +2067,16 @@ async function lsLoad(){
   try{LS.fr=await lsCall('friends')}catch(e){LS.frErr=e.code||'net'}
   LS.loading=false;lsRender();
 }
+async function lsRoster(){
+  try{
+    const codes=ACC.chars.map(c=>exportFighter(c.f)),sig=codes.join('|');
+    if(sig===LS.rsig)return;
+    await lsCall('roster',{codes});LS.rsig=sig;
+  }catch(e){}
+}
 async function lsOpen(){
   LS.err='';LS.leave=false;lsRender();
+  await lsRoster();
   await lsLoad();
   const m=lsMine(),c=lgChamp();
   if(m&&c&&exportFighter(c.f)!==m.code){try{await lsCall('sync',{code:exportFighter(c.f)});await lsLoad()}catch(e){LS.err=e.code||'net';lsRender()}}
@@ -2107,11 +2116,11 @@ async function lsFriendAct(action,extra,okMsg){
 }
 async function lsFDuel(id){
   if(busy||LS.busy)return;
-  const v=$('fr-pick'),c=v?ACC.chars[+v.value]:(lgChamp()||S);
+  const v=$('fr-me'),w=$('fr-them'),c=v?ACC.chars[+v.value]:(lgChamp()||S),t=w?+w.value:0;
   if(!c)return;
   LS.busy=true;LS.frErr='';LS.frMsg='';lsRender();
   let j;
-  try{j=await lsCall('fduel',{id:+id,code:exportFighter(c.f)})}
+  try{j=await lsCall('fduel',{id:+id,t,code:exportFighter(c.f)})}
   catch(e){LS.frErr=e.code||'net';LS.busy=false;await lsLoad();return}
   LS.busy=false;
   const rb=importFighter(j.tcode||'');
@@ -2133,13 +2142,14 @@ function lsRender(){
   h+='<div class="row" style="margin-top:10px"><select id="lg-pick" aria-label="Lutador para a liga">'+ACC.chars.map((x,i)=>'<option value="'+i+'"'+(i===sel?' selected':'')+'>'+esc(x.f.name)+' (nível '+x.f.level+')</option>').join('')+'</select>'+
     '<button class="btn small" data-ls="join"'+(LS.busy?' disabled':'')+'>'+(m?'Usar este campeão':'Entrar na liga')+'</button>'+
     (m?(LS.leave?'<button class="btn ghost small" data-ls="leaveyes">Sim, sair da liga</button><button class="btn ghost small" data-ls="leaveno">Cancelar</button>':'<button class="btn ghost small" data-ls="leave">Sair da liga</button>'):'')+'</div></div>';
+  h+='<!--FR-->';
   // amigos
   const fr=LS.fr,fl=fr?fr.list:[];
   h+='<div class="panel" style="margin-top:14px"><h3>Amigos</h3>';
   if(LS.frErr)h+='<p class="err" role="alert">'+esc(LS_ERR[LS.frErr]||LS_ERR.net)+'</p>';
   if(LS.frMsg)h+='<p class="msg" role="status">'+esc(LS.frMsg)+'</p>';
   if(fr){
-    h+='<p>O teu código de amigo: <strong>'+esc(fr.code)+'</strong> <button class="btn ghost small" data-ls="copy">Copiar</button></p><p class="msg" style="margin:0">Dá este código a quem queres ter como amigo. Para lutar contra um amigo, ele tem de ter um lutador na liga.</p>';
+    h+='<p>O teu código de amigo: <strong>'+esc(fr.code)+'</strong> <button class="btn ghost small" data-ls="copy">Copiar</button></p><p class="msg" style="margin:0">Dá este código a quem queres ter como amigo. Os teus amigos aceites podem ver os teus lutadores e lutar contra eles. Mais ninguém.</p>';
     h+='<div class="row" style="margin-top:10px"><input id="fr-code" type="text" maxlength="9" autocomplete="off" autocapitalize="characters" placeholder="Código do amigo" aria-label="Código do amigo"><button class="btn small" data-ls="fadd"'+(LS.busy?' disabled':'')+'>Adicionar</button></div>';
     const inc=fl.filter(x=>x.status==='in'),out=fl.filter(x=>x.status==='out'),fs=fl.filter(x=>x.status==='friend');
     if(inc.length)h+='<h4 style="margin:14px 0 4px">Pedidos recebidos</h4>'+inc.map(x=>'<div class="row" style="margin:4px 0"><span>Pedido de <strong>'+esc(x.code)+'</strong></span><button class="btn small" data-ls="facc" data-id="'+x.id+'">Aceitar</button><button class="btn ghost small" data-ls="frem" data-id="'+x.id+'">Recusar</button></div>').join('');
@@ -2147,11 +2157,16 @@ function lsRender(){
     h+='<h4 style="margin:14px 0 4px">Os teus amigos</h4>';
     if(!fs.length)h+='<p class="msg" style="margin:0">Ainda não tens amigos adicionados.</p>';
     else{
-      h+='<div class="row" style="margin:6px 0"><label for="fr-pick" class="msg" style="margin:0">Lutar com:</label><select id="fr-pick" aria-label="Lutador para a luta amigável">'+ACC.chars.map((x,i)=>'<option value="'+i+'"'+(i===(c?ACC.chars.indexOf(c):(ACC.active!==null?ACC.active:0))?' selected':'')+'>'+esc(x.f.name)+' (nível '+x.f.level+')</option>').join('')+'</select></div>';
-      h+='<div class="lg-list">'+fs.map(x=>'<div class="lg-r"><div class="lg-rk">·</div><div><h3>'+(x.fname?esc(x.fname)+' <small>nível '+(+x.lv||1)+'</small>':'<small>Sem lutador na liga</small>')+'</h3><small>'+esc(x.code)+'</small></div><div class="go"><button class="btn small" data-ls="fduel" data-id="'+x.id+'"'+(x.fname&&!busy&&!LS.busy&&ACC.chars.length?'':' disabled')+'>Lutar</button> <button class="btn ghost small" data-ls="frem" data-id="'+x.id+'">Remover</button></div></div>').join('')+'</div>';
+      h+='<div class="lg-list">'+fs.map(x=>{
+        const ro=x.roster||[],open=LS.fsel===x.id;
+        return '<div class="lg-r" style="grid-template-columns:minmax(0,1fr) auto"><div><h3>'+(ro.length?esc(ro.map(r=>r.n).join(', ')):'<small>Sem lutadores disponíveis</small>')+'</h3><small>'+esc(x.code)+(ro.length?' · '+ro.map(r=>'nível '+(+r.lv||1)).join(', '):'')+'</small></div>'+
+        '<div class="go"><button class="btn small" data-ls="fduel" data-id="'+x.id+'"'+(ro.length&&!busy&&!LS.busy&&ACC.chars.length?'':' disabled')+' aria-expanded="'+open+'">Lutar</button> <button class="btn ghost small" data-ls="frem" data-id="'+x.id+'">Remover</button></div>'+
+        (open&&ro.length?'<div style="grid-column:1/-1;display:grid;gap:8px;padding-top:10px;border-top:1px solid var(--line)"><label class="msg" style="margin:0" for="fr-me">O teu lutador</label><select id="fr-me">'+ACC.chars.map((y,i)=>'<option value="'+i+'"'+(i===(c?ACC.chars.indexOf(c):(ACC.active!==null?ACC.active:0))?' selected':'')+'>'+esc(y.f.name)+' (nível '+y.f.level+')</option>').join('')+'</select><label class="msg" style="margin:0" for="fr-them">Lutador do teu amigo</label><select id="fr-them">'+ro.map((r,i)=>'<option value="'+i+'">'+esc(r.n)+' (nível '+(+r.lv||1)+')</option>').join('')+'</select><button class="btn" data-ls="fgo" data-id="'+x.id+'">Começar a luta</button></div>':'')+
+        '</div>';
+      }).join('')+'</div>';
     }
   }else if(!LS.frErr)h+='<p class="msg">A carregar...</p>';
-  h+='</div>';
+  h+='</div><!--/FR-->';
   const rows=LS.rows.filter(p=>typeof p.code==='string'&&typeof p.fname==='string'&&!importFighter(p.code).err).sort((a,b)=>(+b.pts||0)-(+a.pts||0)||(+b.aw||0)-(+a.aw||0)||String(a.user_id).localeCompare(String(b.user_id)));
   h+='<h3 class="gh" style="margin-top:22px">Ranking</h3><p class="msg" style="margin:0">Cada vitória a atacar vale '+LS_WIN+' pontos. Podes fazer '+LS_DAILY+' duelos por dia, no máximo um por adversário. Os duelos são calculados no servidor.</p>';
   if(!rows.length)h+='<p class="msg">Ainda ninguém entrou na liga. Sê o primeiro.</p>';
@@ -2166,20 +2181,29 @@ function lsRender(){
   else if(rows.length&&left<1)h+='<p class="msg">Já fizeste os '+LS_DAILY+' duelos de hoje. Volta amanhã.</p>';
   const fd=LS.duels.slice(0,12);
   if(fd.length)h+='<h3 class="gh" style="margin-top:22px">Últimos duelos</h3><ul class="lg-feed">'+fd.map(d=>'<li><strong>'+esc(d.an)+'</strong>'+(d.a===uid?' (tu)':'')+' '+(d.won?'venceu':'perdeu contra')+' <strong>'+esc(d.bn)+'</strong>'+(d.b===uid?' (tu)':'')+' <small>'+fmtDT(Date.parse(d.created_at))+'</small></li>').join('')+'</ul>';
-  const keep=($('fr-code')||{}).value||'',pk=($('fr-pick')||{}).value;
-  el.innerHTML=h;
+  const fa=h.indexOf('<!--FR-->'),fb=h.indexOf('<!--/FR-->'),fch=h.slice(fa+9,fb),rest=h.slice(0,fa)+h.slice(fb+10);
+  const nin=LS.fr?LS.fr.list.filter(x=>x.status==='in').length:0;
+  const tabs='<div class="row" role="tablist" style="margin-bottom:14px"><button class="btn small'+(LS.tab==='liga'?'':' ghost')+'" role="tab" aria-selected="'+(LS.tab==='liga')+'" data-ls="tab" data-t="liga">Liga</button><button class="btn small'+(LS.tab==='amigos'?'':' ghost')+'" role="tab" aria-selected="'+(LS.tab==='amigos')+'" data-ls="tab" data-t="amigos">Amigos'+(nin?' ('+nin+')':'')+'</button></div>';
+  const h2=document.querySelector('#s-league h2'),ld=document.querySelector('#s-league .lead');
+  if(h2)h2.textContent=LS.tab==='amigos'?'Amigos':'Liga';
+  if(ld)ld.textContent=LS.tab==='amigos'?'Adiciona amigos com o código deles e luta contra os lutadores que eles partilham. As lutas amigáveis não dão XP nem pontos.':'Entra com um dos teus lutadores. Os outros jogadores podem desafiá-lo e tu podes desafiar os deles. Os duelos são automáticos, mesmo que o dono não esteja online.';
+  const keep=($('fr-code')||{}).value||'',pm=($('fr-me')||{}).value,pt=($('fr-them')||{}).value;
+  el.innerHTML=tabs+(LS.tab==='amigos'?fch:rest);
   if($('fr-code'))$('fr-code').value=keep;
-  if($('fr-pick')&&pk!==undefined)$('fr-pick').value=pk;
+  if($('fr-me')&&pm!==undefined)$('fr-me').value=pm;
+  if($('fr-them')&&pt!==undefined)$('fr-them').value=pt;
 }
 $('lg-body').addEventListener('click',async e=>{
   const b=e.target.closest('[data-ls]');if(!b||b.disabled)return;
   const a=b.dataset.ls;
   if(a==='acc')renderAccount();
+  else if(a==='tab'){LS.tab=b.dataset.t==='amigos'?'amigos':'liga';lsRender()}
   else if(a==='copy'){try{await navigator.clipboard.writeText(LS.fr.code.replace('-',''));LS.frMsg='Código copiado.'}catch(e){LS.frMsg='Seleciona o código e copia-o à mão.'}lsRender()}
   else if(a==='fadd'){const v=($('fr-code')||{}).value||'';await lsFriendAct('fadd',{code:v},j=>j.accepted?'Pedido cruzado: agora são amigos.':'Pedido enviado.')}
   else if(a==='facc')await lsFriendAct('faccept',{id:+b.dataset.id},()=>'Amigo adicionado.')
   else if(a==='frem')await lsFriendAct('fremove',{id:+b.dataset.id},()=>'Feito.')
-  else if(a==='fduel')await lsFDuel(b.dataset.id);
+  else if(a==='fduel'){LS.fsel=LS.fsel===+b.dataset.id?0:+b.dataset.id;lsRender()}
+  else if(a==='fgo')await lsFDuel(b.dataset.id);
   else if(a==='join'){const v=$('lg-pick');if(v)await lsJoin(+v.value)}
   else if(a==='leave'){LS.leave=true;lsRender()}
   else if(a==='leaveno'){LS.leave=false;lsRender()}
@@ -2190,7 +2214,8 @@ function lgOpen(){
   if(lgSrv()){LS.leave=false;show('s-league');lsOpen();return}
   LG.leave=false;show('s-league');lgInit();lgRender();lgSync();
 }
-$('btn-league').addEventListener('click',()=>{if(!busy)lgOpen()});
+$('btn-league').addEventListener('click',()=>{if(!busy){LS.tab='liga';lgOpen()}});
+$('btn-friends').addEventListener('click',()=>{if(!busy){LS.tab='amigos';lgOpen()}});
 $('lg-back').addEventListener('click',()=>{
   if(lastScreen==='s-hub'&&S)renderHub();else if(lastScreen==='s-account')renderAccount();else show(lastScreen);
 });
