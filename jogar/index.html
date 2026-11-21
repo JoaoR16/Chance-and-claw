@@ -1446,7 +1446,7 @@ async function runFight0(opp,tour,chal){
   if(busy)return;
   if(chal&&weekly().won)return;
   busy=true;
-  const fa=S.f,fb=opp.f;
+  const fa=opp.fa||S.f,fb=opp.f;
   const prevEv=_evForce;
   if(chal)_evForce={id:'semana',nome:'',desc:'',m:{}};
   let res;
@@ -1463,7 +1463,9 @@ async function runFight0(opp,tour,chal){
   await playback(res,fa,fb);
   if(opp.friendly){
     const won=res.winner==='a';RES_BACK=()=>lgOpen();
-    showResult(won?'win':'lose',won?'Vitória amigável':'Derrota amigável',(won?esc(fa.name)+' venceu '+esc(fb.name)+'.':esc(fb.name)+' foi mais forte desta vez.')+' Luta amigável: sem XP nem pontos.',null,[],false,numbersHtml(res,fa,fb));
+    if(opp.replay)showResult(won?'win':'lose','Combate do torneio',esc((won?fa:fb).name)+' venceu '+esc((won?fb:fa).name)+'.',null,[],false,numbersHtml(res,fa,fb));
+    else if(opp.bet)showResult(won?'win':'lose',won?'Vitória de orgulho':'Derrota de orgulho',(won?esc(fa.name)+' venceu '+esc(fb.name)+'.':esc(fb.name)+' foi mais forte desta vez.')+(opp.stake?' Aposta: «'+esc(opp.stake)+'».':'')+(opp.score?' Placar contra este amigo: tu '+opp.score.w+' – '+opp.score.l+'.':'')+' Sem XP nem pontos.',null,[],false,numbersHtml(res,fa,fb));
+    else showResult(won?'win':'lose',won?'Vitória amigável':'Derrota amigável',(won?esc(fa.name)+' venceu '+esc(fb.name)+'.':esc(fb.name)+' foi mais forte desta vez.')+' Luta amigável: sem XP nem pontos.',null,[],false,numbersHtml(res,fa,fb));
     busy=false;return;
   }
   if(tour){finishTour(res,opp);busy=false;return}
@@ -2072,7 +2074,7 @@ $('lg-body').addEventListener('click',async e=>{
   else if(a==='duel')await lgDuel(b.dataset.id);
 });
 /* ===== liga no servidor (site com conta online) ===== */
-const LS={rows:[],duels:[],loading:false,err:'',leave:false,busy:false,fr:null,frMsg:'',frErr:'',tab:'liga',rsig:'',fsel:0};
+const LS={tn:{list:[],titles:0,sel:null,detail:null,msg:'',err:'',loading:false,name:'',size:4,me:'',code:''},bet:true,stake:'',rows:[],duels:[],loading:false,err:'',leave:false,busy:false,fr:null,frMsg:'',frErr:'',tab:'liga',rsig:'',fsel:0};
 const LS_DAILY=3,LS_WIN=3;
 const lgSrv=()=>!!window.CC_CLOUD;
 const lsUid=()=>(CL&&CL.user&&CL.user.id)||null;
@@ -2080,6 +2082,7 @@ const lsDay=()=>new Date().toISOString().slice(0,10);
 const lsMine=()=>LS.rows.find(r=>r.user_id===lsUid())||null;
 const lsLeft=()=>{const m=lsMine();return m&&m.dd_day===lsDay()?Math.max(0,LS_DAILY-(+m.dd_n||0)):LS_DAILY};
 const LS_ERR={daily_limit:'Já fizeste os 3 duelos de hoje. Volta amanhã.',same_target:'Já desafiaste este campeão hoje. Escolhe outro.',target_gone:'Esse campeão saiu da liga.',target_invalid:'Esse campeão não passou na verificação e não pode ser desafiado.',invalid_fighter:'O teu campeão não passou na verificação do servidor. Escolhe outro lutador.',not_in_league:'Ainda não entraste na liga.',auth:'A tua sessão expirou. Volta a entrar na conta online.',bad_code:'Código inválido. Tem 8 letras e números (por exemplo ABCD-EFGH).',code_unknown:'Não encontrei esse código.',self:'Esse é o teu próprio código.',already:'Já são amigos.',already_sent:'Já enviaste um pedido a essa pessoa.',too_many:'Chegaste ao limite de amigos.',target_not_in_league:'O teu amigo ainda não tem lutadores disponíveis para lutar.',not_found:'Esse pedido já não existe.',unverified:'Este lutador tem nível, animais ou recompensas que o servidor não conseguiu confirmar. Só conta o progresso feito com a sessão iniciada. Escolhe outro lutador.',net:'Não foi possível falar com a liga agora. Tenta outra vez daqui a pouco.'};
+Object.assign(LS_ERR,{too_fast:'Calma, espera um segundo entre lutas.',bad_name:'O nome do torneio precisa de pelo menos 3 letras.',bad_size:'Escolhe 4 ou 8 jogadores.',tn_limit:'Chegaste ao limite de torneios abertos. Cancela um ou espera que comece.',closed:'Esse torneio já começou ou terminou.',full:'Esse torneio já está cheio.',already:'Já estás neste torneio.',owner:'O criador não pode sair. Cancela o torneio.',db:'Erro no servidor. Tenta outra vez.'});
 async function lsCall(action,extra){
   const r0=await CL.sb.auth.getSession();const s=r0&&r0.data&&r0.data.session;
   if(!s)throw Object.assign(new Error('auth'),{code:'auth'});
@@ -2114,6 +2117,7 @@ async function lsOpen(){
   LS.err='';LS.leave=false;lsRender();
   await lsRoster();
   await lsLoad();
+  if(LS.tab==='torneios')tnLoad();
   const m=lsMine(),c=lgChamp();
   if(m&&c&&exportFighter(c.f)!==m.code){try{await lsCall('sync',{code:exportFighter(c.f)});await lsLoad()}catch(e){LS.err=e.code||'net';lsRender()}}
 }
@@ -2154,15 +2158,93 @@ async function lsFDuel(id){
   if(busy||LS.busy)return;
   const v=$('fr-me'),w=$('fr-them'),c=v?ACC.chars[+v.value]:(lgChamp()||S),t=w?+w.value:0;
   if(!c)return;
+  const bet=!!($('fr-bet')&&$('fr-bet').checked),stake=bet?(($('fr-stake')||{}).value||'').slice(0,40):'';
+  LS.bet=bet;LS.stake=stake;
   LS.busy=true;LS.frErr='';LS.frMsg='';lsRender();
   let j;
-  try{j=await lsCall('fduel',{id:+id,t,code:exportFighter(c.f)})}
+  try{j=await lsCall('fduel',{id:+id,t,code:exportFighter(c.f),bet,stake})}
   catch(e){LS.frErr=e.code||'net';LS.busy=false;await lsLoad();return}
   LS.busy=false;
   const rb=importFighter(j.tcode||'');
   if(rb.err){LS.frErr='target_invalid';await lsLoad();return}
   ACC.active=ACC.chars.indexOf(c);S=c;saveAcc();
-  await runFight({f:rb.f,rival:true,friendly:true,diff:'Amigo',xp:0,scene:j.scene,ev:j.ev,pre:j.res},false);
+  await runFight({f:rb.f,rival:true,friendly:true,bet,stake:j.stake||'',score:j.score||null,diff:'Amigo',xp:0,scene:j.scene,ev:j.ev,pre:j.res},false);
+}
+function scoreLine(sc){
+  if(!sc||sc.w+sc.l===0)return '<br><small>Ainda sem lutas de orgulho.</small>';
+  const st=sc.streak>=2?' · '+sc.streak+' vitórias seguidas':sc.streak<=-2?' · '+(-sc.streak)+' derrotas seguidas':'';
+  const l=sc.last&&sc.last[0]&&sc.last[0].stake?' · última aposta: «'+esc(sc.last[0].stake)+'»':'';
+  return '<br><small><strong>Placar: tu '+sc.w+' – '+sc.l+'</strong>'+st+l+'</small>';
+}
+const TN_ROUNDS={4:['Meias-finais','Final'],8:['Quartos de final','Meias-finais','Final']};
+const TN_ERR={code_unknown:'Não encontrei esse torneio. Confirma o código (6 letras e números).',bad_code:'O código do torneio tem 6 letras e números.',not_found:'Esse torneio já não existe.'};
+function tnErr(c){return TN_ERR[c]||LS_ERR[c]||LS_ERR.net}
+async function tnLoad(){
+  if(!CL.sb||!CL.user)return;
+  LS.tn.loading=true;
+  try{const j=await lsCall('tn_list');LS.tn.list=j.list||[];LS.tn.titles=j.titles||0;if(LS.tn.sel&&!LS.tn.list.some(t=>t.id===LS.tn.sel)){LS.tn.sel=null;LS.tn.detail=null}else if(LS.tn.sel){try{LS.tn.detail=(await lsCall('tn_get',{id:LS.tn.sel})).t}catch(e){}}}
+  catch(e){LS.tn.err=e.code||'net'}
+  LS.tn.loading=false;lsRender();
+}
+async function tnAct(action,extra,okMsg){
+  if(LS.busy)return;LS.busy=true;LS.tn.err='';LS.tn.msg='';
+  let j=null;
+  try{j=await lsCall(action,extra);LS.tn.msg=okMsg?okMsg(j):''}catch(e){LS.tn.err=e.code||'net'}
+  LS.busy=false;
+  if(j&&LS.tn.sel){try{const d=await lsCall('tn_get',{id:LS.tn.sel});LS.tn.detail=d.t}catch(e){}}
+  await tnLoad();return j;
+}
+async function tnOpenDetail(id){
+  LS.tn.sel=id;LS.tn.detail=null;LS.tn.err='';lsRender();
+  try{const d=await lsCall('tn_get',{id});LS.tn.detail=d.t}catch(e){LS.tn.err=e.code||'net';LS.tn.sel=null}
+  lsRender();
+}
+function tnWatch(r,m){
+  const d=LS.tn.detail;if(!d||busy)return;
+  const mt=d.rounds&&d.rounds[r]&&d.rounds[r][m];if(!mt||!mt.res)return;
+  const pa=d.players[mt.a],pb=d.players[mt.b];
+  const fa=importFighter(pa.code||''),fb=importFighter(pb.code||'');
+  if(fa.err||fb.err){LS.tn.err='net';lsRender();return}
+  runFight({fa:fa.f,f:fb.f,friendly:true,replay:true,diff:'',xp:0,scene:mt.scene,ev:mt.ev,pre:mt.res},false);
+}
+function tnHtml(){
+  const T=LS.tn,uid=lsUid();
+  let h='';
+  if(T.err)h+='<p class="err" role="alert">'+esc(tnErr(T.err))+'</p>';
+  if(T.msg)h+='<p class="msg" role="status">'+esc(T.msg)+'</p>';
+  if(T.sel&&T.detail){
+    const d=T.detail,names=d.rounds?TN_ROUNDS[d.size]:null;
+    h+='<div class="row" style="margin-bottom:10px"><button class="btn ghost small" data-ls="tback">‹ Torneios</button></div>';
+    h+='<div class="panel"><h3>'+esc(d.name)+'</h3><p class="msg" style="margin:0">'+d.size+' jogadores · '+(d.status==='done'?'terminado':d.status==='running'?'a decorrer':'à espera de jogadores ('+d.players.length+'/'+d.size+')')+'</p>';
+    if(d.status==='open')h+='<p>Código para convidar: <strong>'+esc(d.code)+'</strong> <button class="btn ghost small" data-ls="tcopy" data-c="'+esc(d.code)+'">Copiar</button></p><p class="msg" style="margin:0">Quem tiver o código pode entrar com um lutador. Quando o último entra, o torneio joga-se logo no servidor e todos podem ver as lutas.</p>';
+    h+='<h4 style="margin:14px 0 4px">Jogadores</h4><div class="lg-list">'+d.players.map(p=>'<div class="lg-r" style="grid-template-columns:minmax(0,1fr) auto"><div><h3>'+esc(p.n)+' <small>nível '+(+p.lv||1)+'</small></h3><small>'+(p.me?'tu':'jogador '+(p.i+1))+(p.owner?' · criador':'')+(d.winner===p.i?' · 🏆 campeão':'')+'</small></div></div>').join('')+'</div>';
+    if(d.rounds){
+      if(d.winner!==null&&d.players[d.winner])h+='<p style="margin:14px 0 0"><strong>Campeão: '+esc(d.players[d.winner].n)+(d.players[d.winner].me?' (tu!)':'')+'</strong></p>';
+      d.rounds.forEach((rd,ri)=>{
+        h+='<h4 style="margin:14px 0 4px">'+esc((names||[])[ri]||'Ronda '+(ri+1))+'</h4><div class="lg-list">'+rd.map((m,mi)=>{
+          const A=d.players[m.a],B=d.players[m.b];
+          return '<div class="lg-r" style="grid-template-columns:minmax(0,1fr) auto"><div><h3>'+(m.w===m.a?'<strong>':'')+esc(A.n)+(A.me?' (tu)':'')+(m.w===m.a?'</strong>':'')+' vs '+(m.w===m.b?'<strong>':'')+esc(B.n)+(B.me?' (tu)':'')+(m.w===m.b?'</strong>':'')+'</h3><small>Venceu '+esc(d.players[m.w].n)+'</small></div><div class="go"><button class="btn small" data-ls="twatch" data-r="'+ri+'" data-m="'+mi+'"'+(busy?' disabled':'')+'>Ver luta</button></div></div>';
+        }).join('')+'</div>';
+      });
+    }
+    h+='</div>';
+    return h;
+  }
+  if(T.sel&&!T.detail)return h+'<p class="msg">A carregar o torneio...</p>';
+  const chars=ACC.chars;
+  const me=T.me!==''&&chars[+T.me]?+T.me:(ACC.active!==null?ACC.active:0);
+  h+='<div class="panel"><h3>Criar ou entrar num torneio</h3><p class="msg" style="margin:0">Torneios de 4 ou 8 jogadores, só por orgulho (sem XP nem pontos). O lutador fica fixo no momento em que entras. Joga-se logo no servidor quando enche, por isso ninguém precisa de estar online.</p>';
+  h+='<div style="display:grid;gap:8px;margin-top:10px"><label class="msg" style="margin:0" for="tn-me">O teu lutador</label><select id="tn-me">'+chars.map((y,i)=>'<option value="'+i+'"'+(i===me?' selected':'')+'>'+esc(y.f.name)+' (nível '+y.f.level+')</option>').join('')+'</select>';
+  h+='<div class="row"><input id="tn-name" type="text" maxlength="24" autocomplete="off" placeholder="Nome do torneio" aria-label="Nome do torneio" value="'+esc(T.name)+'"><select id="tn-size" aria-label="Número de jogadores"><option value="4"'+(+T.size===4?' selected':'')+'>4 jogadores</option><option value="8"'+(+T.size===8?' selected':'')+'>8 jogadores</option></select><button class="btn small" data-ls="tcreate"'+(LS.busy||!chars.length?' disabled':'')+'>Criar</button></div>';
+  h+='<div class="row"><input id="tn-code" type="text" maxlength="7" autocomplete="off" autocapitalize="characters" placeholder="Código de um torneio" aria-label="Código do torneio" value="'+esc(T.code)+'"><button class="btn small" data-ls="tjoin"'+(LS.busy||!chars.length?' disabled':'')+'>Entrar</button></div></div></div>';
+  h+='<h3 class="gh" style="margin-top:22px">Os teus torneios'+(T.titles?' <small>· '+T.titles+(T.titles>1?' títulos':' título')+'</small>':'')+'</h3>';
+  if(T.loading&&!T.list.length)h+='<p class="msg">A carregar...</p>';
+  else if(!T.list.length)h+='<p class="msg">Ainda não estás em nenhum torneio. Cria um e partilha o código com os teus amigos.</p>';
+  else h+='<div class="lg-list">'+T.list.map(t=>{
+    const st=t.status==='done'?'terminado'+(t.winner!==null&&t.players[t.winner]?' · campeão '+esc(t.players[t.winner].n)+(t.players[t.winner].me?' (tu!)':''):''):t.status==='running'?'a decorrer':'à espera ('+t.players.length+'/'+t.size+')';
+    return '<div class="lg-r" style="grid-template-columns:minmax(0,1fr) auto"><div><h3>'+esc(t.name)+' <small>'+t.size+' jogadores</small></h3><small>'+st+(t.status==='open'?' · código <strong>'+esc(t.code)+'</strong>':'')+'</small></div><div class="go"><button class="btn small" data-ls="topen" data-id="'+t.id+'">Abrir</button>'+(t.status==='open'?(t.mine?' <button class="btn ghost small" data-ls="tcancel" data-id="'+t.id+'">Cancelar</button>':' <button class="btn ghost small" data-ls="tleave" data-id="'+t.id+'">Sair</button>'):'')+'</div></div>';
+  }).join('')+'</div>';
+  return h;
 }
 function lsRender(){
   const el=$('lg-body');if($('s-league').hidden)return;
@@ -2195,9 +2277,9 @@ function lsRender(){
     else{
       h+='<div class="lg-list">'+fs.map(x=>{
         const ro=x.roster||[],open=LS.fsel===x.id;
-        return '<div class="lg-r" style="grid-template-columns:minmax(0,1fr) auto"><div><h3>'+(ro.length?esc(ro.map(r=>r.n).join(', ')):'<small>Sem lutadores disponíveis</small>')+'</h3><small>'+esc(x.code)+(ro.length?' · '+ro.map(r=>'nível '+(+r.lv||1)).join(', '):'')+'</small></div>'+
+        return '<div class="lg-r" style="grid-template-columns:minmax(0,1fr) auto"><div><h3>'+(ro.length?esc(ro.map(r=>r.n).join(', ')):'<small>Sem lutadores disponíveis</small>')+'</h3><small>'+esc(x.code)+(ro.length?' · '+ro.map(r=>'nível '+(+r.lv||1)).join(', '):'')+'</small>'+scoreLine(x.score)+'</div>'+
         '<div class="go"><button class="btn small" data-ls="fduel" data-id="'+x.id+'"'+(ro.length&&!busy&&!LS.busy&&ACC.chars.length?'':' disabled')+' aria-expanded="'+open+'">Lutar</button> <button class="btn ghost small" data-ls="frem" data-id="'+x.id+'">Remover</button></div>'+
-        (open&&ro.length?'<div style="grid-column:1/-1;display:grid;gap:8px;padding-top:10px;border-top:1px solid var(--line)"><label class="msg" style="margin:0" for="fr-me">O teu lutador</label><select id="fr-me">'+ACC.chars.map((y,i)=>'<option value="'+i+'"'+(i===(c?ACC.chars.indexOf(c):(ACC.active!==null?ACC.active:0))?' selected':'')+'>'+esc(y.f.name)+' (nível '+y.f.level+')</option>').join('')+'</select><label class="msg" style="margin:0" for="fr-them">Lutador do teu amigo</label><select id="fr-them">'+ro.map((r,i)=>'<option value="'+i+'">'+esc(r.n)+' (nível '+(+r.lv||1)+')</option>').join('')+'</select><button class="btn" data-ls="fgo" data-id="'+x.id+'">Começar a luta</button></div>':'')+
+        (open&&ro.length?'<div style="grid-column:1/-1;display:grid;gap:8px;padding-top:10px;border-top:1px solid var(--line)"><label class="msg" style="margin:0" for="fr-me">O teu lutador</label><select id="fr-me">'+ACC.chars.map((y,i)=>'<option value="'+i+'"'+(i===(c?ACC.chars.indexOf(c):(ACC.active!==null?ACC.active:0))?' selected':'')+'>'+esc(y.f.name)+' (nível '+y.f.level+')</option>').join('')+'</select><label class="msg" style="margin:0" for="fr-them">Lutador do teu amigo</label><select id="fr-them">'+ro.map((r,i)=>'<option value="'+i+'">'+esc(r.n)+' (nível '+(+r.lv||1)+')</option>').join('')+'</select><label class="msg" style="margin:0;display:flex;gap:8px;align-items:center"><input type="checkbox" id="fr-bet"'+(LS.bet?' checked':'')+'> Valendo orgulho (conta para o placar)</label>'+(LS.bet?'<input id="fr-stake" type="text" maxlength="40" autocomplete="off" placeholder="Aposta (opcional): quem perder paga um café" value="'+esc(LS.stake)+'" aria-label="Aposta">':'')+'<button class="btn" data-ls="fgo" data-id="'+x.id+'">Começar a luta</button></div>':'')+
         '</div>';
       }).join('')+'</div>';
     }
@@ -2219,21 +2301,35 @@ function lsRender(){
   if(fd.length)h+='<h3 class="gh" style="margin-top:22px">Últimos duelos</h3><ul class="lg-feed">'+fd.map(d=>'<li><strong>'+esc(d.an)+'</strong>'+(d.a===uid?' (tu)':'')+' '+(d.won?'venceu':'perdeu contra')+' <strong>'+esc(d.bn)+'</strong>'+(d.b===uid?' (tu)':'')+' <small>'+fmtDT(Date.parse(d.created_at))+'</small></li>').join('')+'</ul>';
   const fa=h.indexOf('<!--FR-->'),fb=h.indexOf('<!--/FR-->'),fch=h.slice(fa+9,fb),rest=h.slice(0,fa)+h.slice(fb+10);
   const nin=LS.fr?LS.fr.list.filter(x=>x.status==='in').length:0;
-  const tabs='<div class="row" role="tablist" style="margin-bottom:14px"><button class="btn small'+(LS.tab==='liga'?'':' ghost')+'" role="tab" aria-selected="'+(LS.tab==='liga')+'" data-ls="tab" data-t="liga">Liga</button><button class="btn small'+(LS.tab==='amigos'?'':' ghost')+'" role="tab" aria-selected="'+(LS.tab==='amigos')+'" data-ls="tab" data-t="amigos">Amigos'+(nin?' ('+nin+')':'')+'</button></div>';
+  const tabs='<div class="row" role="tablist" style="margin-bottom:14px"><button class="btn small'+(LS.tab==='liga'?'':' ghost')+'" role="tab" aria-selected="'+(LS.tab==='liga')+'" data-ls="tab" data-t="liga">Liga</button><button class="btn small'+(LS.tab==='amigos'?'':' ghost')+'" role="tab" aria-selected="'+(LS.tab==='amigos')+'" data-ls="tab" data-t="amigos">Amigos'+(nin?' ('+nin+')':'')+'</button><button class="btn small'+(LS.tab==='torneios'?'':' ghost')+'" role="tab" aria-selected="'+(LS.tab==='torneios')+'" data-ls="tab" data-t="torneios">Torneios</button></div>';
   const h2=document.querySelector('#s-league h2'),ld=document.querySelector('#s-league .lead');
-  if(h2)h2.textContent=LS.tab==='amigos'?'Amigos':'Liga';
-  if(ld)ld.textContent=LS.tab==='amigos'?'Adiciona amigos com o código deles e luta contra os lutadores que eles partilham. As lutas amigáveis não dão XP nem pontos.':'Entra com um dos teus lutadores. Os outros jogadores podem desafiá-lo e tu podes desafiar os deles. Os duelos são automáticos, mesmo que o dono não esteja online.';
+  if(h2)h2.textContent=LS.tab==='amigos'?'Amigos':LS.tab==='torneios'?'Torneios':'Liga';
+  if(ld)ld.textContent=LS.tab==='torneios'?'Cria um torneio de 4 ou 8 jogadores, partilha o código e vê quem fica com o título.':LS.tab==='amigos'?'Adiciona amigos com o código deles e luta contra os lutadores que eles partilham. As lutas amigáveis não dão XP nem pontos.':'Entra com um dos teus lutadores. Os outros jogadores podem desafiá-lo e tu podes desafiar os deles. Os duelos são automáticos, mesmo que o dono não esteja online.';
   const keep=($('fr-code')||{}).value||'',pm=($('fr-me')||{}).value,pt=($('fr-them')||{}).value;
-  el.innerHTML=tabs+(LS.tab==='amigos'?fch:rest);
+  const keepT={n:($('tn-name')||{}).value,s:($('tn-size')||{}).value,m:($('tn-me')||{}).value,c:($('tn-code')||{}).value};
+  el.innerHTML=tabs+(LS.tab==='torneios'?tnHtml():LS.tab==='amigos'?fch:rest);
+  if($('tn-name')&&keepT.n!==undefined)LS.tn.name=keepT.n,$('tn-name').value=keepT.n;
+  if($('tn-size')&&keepT.s!==undefined)$('tn-size').value=keepT.s;
+  if($('tn-me')&&keepT.m!==undefined)$('tn-me').value=keepT.m;
+  if($('tn-code')&&keepT.c!==undefined)$('tn-code').value=keepT.c;
   if($('fr-code'))$('fr-code').value=keep;
   if($('fr-me')&&pm!==undefined)$('fr-me').value=pm;
   if($('fr-them')&&pt!==undefined)$('fr-them').value=pt;
 }
+$('lg-body').addEventListener('change',e=>{if(e.target&&e.target.id==='fr-bet'){LS.bet=e.target.checked;LS.stake=($('fr-stake')||{}).value||'';lsRender()}});
 $('lg-body').addEventListener('click',async e=>{
   const b=e.target.closest('[data-ls]');if(!b||b.disabled)return;
   const a=b.dataset.ls;
   if(a==='acc')renderAccount();
-  else if(a==='tab'){LS.tab=b.dataset.t==='amigos'?'amigos':'liga';lsRender()}
+  else if(a==='tab'){LS.tab=b.dataset.t==='amigos'?'amigos':b.dataset.t==='torneios'?'torneios':'liga';lsRender();if(LS.tab==='torneios')tnLoad()}
+  else if(a==='tback'){LS.tn.sel=null;LS.tn.detail=null;lsRender()}
+  else if(a==='topen')await tnOpenDetail(+b.dataset.id)
+  else if(a==='twatch')tnWatch(+b.dataset.r,+b.dataset.m)
+  else if(a==='tcopy'){try{await navigator.clipboard.writeText(b.dataset.c);LS.tn.msg='Código copiado.'}catch(e){LS.tn.msg='Seleciona o código e copia-o à mão.'}lsRender()}
+  else if(a==='tcreate'){const c=ACC.chars[+($('tn-me')||{}).value];if(c){LS.tn.name=($('tn-name')||{}).value||'';LS.tn.size=+($('tn-size')||{}).value||4;const j=await tnAct('tn_create',{name:LS.tn.name,size:LS.tn.size,code:exportFighter(c.f)},j=>'Torneio criado. Código: '+j.code);if(j&&j.ok){LS.tn.name='';await tnOpenDetail(j.id)}}}
+  else if(a==='tjoin'){const c=ACC.chars[+($('tn-me')||{}).value];if(c){LS.tn.code=($('tn-code')||{}).value||'';const j=await tnAct('tn_join',{tcode:LS.tn.code,code:exportFighter(c.f)},j=>j.full?'O torneio encheu e já foi jogado!':'Entraste no torneio.');if(j&&j.ok){LS.tn.code='';await tnOpenDetail(j.id)}}}
+  else if(a==='tleave')await tnAct('tn_leave',{id:+b.dataset.id},()=>'Saíste do torneio.')
+  else if(a==='tcancel')await tnAct('tn_cancel',{id:+b.dataset.id},()=>'Torneio cancelado.')
   else if(a==='copy'){try{await navigator.clipboard.writeText(LS.fr.code.replace('-',''));LS.frMsg='Código copiado.'}catch(e){LS.frMsg='Seleciona o código e copia-o à mão.'}lsRender()}
   else if(a==='fadd'){const v=($('fr-code')||{}).value||'';await lsFriendAct('fadd',{code:v},j=>j.accepted?'Pedido cruzado: agora são amigos.':'Pedido enviado.')}
   else if(a==='facc')await lsFriendAct('faccept',{id:+b.dataset.id},()=>'Amigo adicionado.')
