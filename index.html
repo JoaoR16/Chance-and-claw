@@ -118,6 +118,7 @@ function tr(s){
   if(s.indexOf('pts · attacks')>=0)for(var i2=0;i2<PATS.length;i2++)s=s.replace(PATS[i2][0],PATS[i2][1]);
   return s;
 }
+window.TR=tr;
 function doAttr(el,a){var v=el.getAttribute(a);if(v==null)return;var r=tr(v);if(r!==v)el.setAttribute(a,r)}
 function doNode(n){
   if(n.nodeType===3){var pt=n.parentNode&&n.parentNode.tagName;if(pt==='SCRIPT'||pt==='STYLE'||pt==='TEXTAREA')return;var v=n.nodeValue;if(n.__tv===v)return;var r=tr(v);if(r!==v)n.nodeValue=r;n.__tv=n.nodeValue;return}

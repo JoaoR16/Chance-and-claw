@@ -559,6 +559,7 @@ function tr(s){
   if(s.indexOf('pts · attacks')>=0)for(var i2=0;i2<PATS.length;i2++)s=s.replace(PATS[i2][0],PATS[i2][1]);
   return s;
 }
+window.TR=tr;
 function doAttr(el,a){var v=el.getAttribute(a);if(v==null)return;var r=tr(v);if(r!==v)el.setAttribute(a,r)}
 function doNode(n){
   if(n.nodeType===3){var pt=n.parentNode&&n.parentNode.tagName;if(pt==='SCRIPT'||pt==='STYLE'||pt==='TEXTAREA')return;var v=n.nodeValue;if(n.__tv===v)return;var r=tr(v);if(r!==v)n.nodeValue=r;n.__tv=n.nodeValue;return}
@@ -818,7 +819,9 @@ function b64e(s){return btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-')
 function b64d(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return decodeURIComponent(escape(atob(s)))}
 function chk(s){let h=7;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h.toString(36)}
 function exportFighter(f){
+  const gg=f.g||0;
   const o={n:f.name,c:f.color,l:f.level,s:[f.stats.vida,f.stats.forca,f.stats.agi,f.stats.vel],w:f.weapons,k:f.skills,t:f.traits,p:petsOf(f),h:(f.cos&&f.cos.h)||'nenhum',e:(f.cos&&f.cos.e)||'nenhum',b:['vida','forca','agi','vel'].map(k=>(f.bp&&f.bp[k])||0).concat([f.bs||0]),z:f.z||[5,3,3,3]};
+  if(gg)o.g=gg;
   const body=b64e(JSON.stringify(o));
   return 'AB1.'+body+'.'+chk(body);
 }
@@ -844,14 +847,17 @@ function importFighter(code){
     const t=o.t;
     if(!Array.isArray(t)||t.length!==2||!t.every(x=>typeof x==='string'&&TRAITS[x])||TRAITS[t[0]].k===TRAITS[t[1]].k)return bad;
     const ups=v0/3+f0/2+a0/2+l0/2+o.w.length+o.k.length;
-    if(ups>level-1+bb[4])return bad;
+    const g=o.g===undefined?0:Number(o.g);if(g!==0&&g!==1&&g!==2)return bad;
+    if(ups>level-1+bb[4]+(g===1?1:0))return bad;
     const pets=Array.isArray(o.p)?o.p:(o.p?[o.p]:[]);
+    if(g===2&&!pets.length)return bad;
     if(pets.length>MAX_PETS||new Set(pets).size!==pets.length||!pets.every(x=>typeof x==='string'&&PETS[x]))return bad;
     const f=newFighter(name,COLORS.some(c=>c.hex===o.c)?o.c:COLORS[0].hex,t,{h:o.h,e:o.e});
     f.level=level;f.stats={vida,forca,agi,vel};if(o.z!==undefined)f.z=z.slice();f.weapons=o.w.slice();f.skills=o.k.slice();
     if(bb.slice(0,4).some(x=>x))f.bp={vida:bb[0],forca:bb[1],agi:bb[2],vel:bb[3]};
     if(bb[4])f.bs=bb[4];
     if(pets.length)f.pets=pets.slice();
+    if(g)f.g=g;
     return{f};
   }catch(e){return bad}
 }
@@ -887,6 +893,26 @@ function pickOptions(f,rng=Math.random){
   return out;
 }
 const UP_W={stat:.75,skill:.18,weapon:.07};
+
+const GIFT_SW={tenaz:3,contra:3,certeiro:3,esquiva:3,primeiro:3,escudo:3,regen:3,pele:3,segundo:3,
+  foco:6,coura:6,concentra:6,intimida:6,adrenalina:6,ritmo:6,aposta:6,sujo:6,espinhos:6,domador:6,cacador:6,
+  execucao:1,furia:1,vampiro:1,duplo:1,ultimo:1,supera:1,dom:1,trevo:1};
+function giftPick(ids,wf,rng){const t=ids.reduce((s,i)=>s+wf(i),0);let r=rng()*t;for(const i of ids){r-=wf(i);if(r<0)return i}return ids[ids.length-1]}
+function rollGift(f,rng=Math.random){
+  const r=rng()*100;
+  if(r<50){const id=Object.keys(STATS)[Math.floor(rng()*4)];applyUpgrade(f,{type:'stat',id});f.g=1;return{type:'stat',id}}
+  if(r<75){const ids=Object.keys(WEAPONS).filter(i=>i!=='punhos');const id=ids[Math.floor(rng()*ids.length)];f.weapons.push(id);f.g=1;return{type:'weapon',id}}
+  if(r<99.5){const id=giftPick(Object.keys(SKILLS),i=>GIFT_SW[i]||3,rng);f.skills.push(id);f.g=1;return{type:'skill',id}}
+  const id=rollPet(rng);f.pets=[id];f.g=2;return{type:'pet',id};
+}
+function giftText(g){
+  const T=s=>window.TR?window.TR(s):s;
+  const pre=EN?'Birth gift: ':'Presente de nascença: ';
+  if(g.type==='stat')return pre+'+'+STATS[g.id].inc+' '+T(STATS[g.id].nome);
+  if(g.type==='weapon')return pre+(EN?'the weapon ':'a arma ')+T(WEAPONS[g.id].nome);
+  if(g.type==='skill')return pre+(EN?'the skill ':'a habilidade ')+T(SKILLS[g.id].nome);
+  return pre+(EN?'a pet, ':'um animal, ')+T(PETS[g.id].nome)+'!';
+}
 function rollUpgrade(f,rng=Math.random,not=null){
   let p=pool(f);if(not)p=p.filter(o=>!(o.type===not.type&&o.id===not.id));
   const w=Object.assign({},UP_W);
@@ -1703,10 +1729,11 @@ $('f-create').addEventListener('submit',e=>{
   if(ACC.chars.length>=MAXC){$('err').textContent='A conta já tem 5 lutadores.';return}
   const nf=newFighter(name,pickedColor,[tr.pos,tr.neg],{h:$('in-h').value,e:$('in-e').value});
   nf.stats={vida:stRoll.vida,forca:stRoll.forca,agi:stRoll.agi,vel:stRoll.vel};nf.z=[stRoll.vida,stRoll.forca,stRoll.agi,stRoll.vel];
+  const gift=rollGift(nf);
   S={f:nf,pend:0,opts:null,wins:0,losses:0,opps:[],charge:5,titles:0,tour:null};
   S.opps=newOpps(S);
   ACC.chars.push(S);ACC.active=ACC.chars.length-1;
-  checkAch({});saveAcc();renderHub();
+  checkAch({});saveAcc();renderHub();toast(giftText(gift));
 });
 
 function petShape(id){
