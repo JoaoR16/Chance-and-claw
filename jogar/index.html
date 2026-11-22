@@ -37,7 +37,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--focus);outline-
 .create{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,300px);gap:28px;align-items:start}
 .create label.lbl,.create legend{display:block;font:600 14px var(--f-body);margin-bottom:6px;padding:0}
 .create fieldset{border:0;padding:0;margin:18px 0}
-input[type=text],input[type=email]{width:100%;max-width:360px;min-height:44px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:16px var(--f-body)}
+input[type=text],input[type=email],input[type=password]{width:100%;max-width:360px;min-height:44px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:16px var(--f-body)}
 .err{color:var(--bad);font-size:14px;margin-top:6px;min-height:20px}
 .sw{display:flex;gap:12px;flex-wrap:wrap}
 .sw label{position:relative;display:block}
@@ -301,6 +301,32 @@ section:not([hidden]){animation:enter .28s ease-out}
     <nav class="row"><button class="btn ghost small" id="btn-acc" hidden>A tua conta</button><button class="btn ghost small" id="btn-league" hidden>Liga</button><button class="btn ghost small" id="btn-friends" hidden>Amigos</button><button class="btn ghost small" id="btn-hist" hidden>Histórico</button><button class="btn ghost small" id="btn-guide">Guia</button><button class="btn ghost small" id="btn-snd" aria-pressed="true">Som: ligado</button></nav>
   </header>
 
+  <section id="s-login" hidden>
+    <div class="panel" style="max-width:440px;margin:12px auto">
+      <h2 id="lg-title">Entrar</h2>
+      <p class="lead" id="lg-lead" style="margin:6px 0 12px">Entra para guardares os lutadores na nuvem e jogares em qualquer dispositivo.</p>
+      <div class="row" id="lg-tabs"><button class="btn small" type="button" id="lg-tin">Entrar</button><button class="btn ghost small" type="button" id="lg-tup">Criar conta</button></div>
+      <form id="lg-form" novalidate style="margin-top:12px">
+        <div id="lg-emailbox"><label class="lbl2" for="lg-email">Email</label>
+        <input type="email" id="lg-email" autocomplete="email" inputmode="email" placeholder="o.teu@email.com"></div>
+        <div id="lg-pwbox"><label class="lbl2" for="lg-pw" id="lg-pwlbl">Palavra-passe</label>
+        <input type="password" id="lg-pw" autocomplete="current-password" placeholder="mínimo 8 caracteres"></div>
+        <div class="row"><button class="btn" type="submit" id="lg-go">Entrar</button><button class="btn ghost" type="button" id="lg-google" hidden>Continuar com Google</button></div>
+      </form>
+      <div class="row" id="lg-alt"><button class="linkbtn" type="button" id="lg-forgot">Esqueci-me da palavra-passe</button><button class="linkbtn" type="button" id="lg-link">Receber link por email</button></div>
+      <div id="lg-codebox" hidden>
+        <label class="lbl2" for="lg-code">Código do email (se o email trouxer um)</label>
+        <input type="text" id="lg-code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="123456">
+        <div class="row"><button class="btn small" type="button" id="lg-verify">Confirmar código</button></div>
+      </div>
+      <p class="msg" id="lg-msg" role="status" style="margin-top:12px"></p>
+      <div id="lg-guestbox" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">
+        <button class="btn ghost" type="button" id="lg-guest">Continuar como convidado</button>
+        <p class="msg" id="lg-guesthint" style="margin-top:8px">Como convidado jogas já, e os lutadores ficam só neste browser.</p>
+      </div>
+    </div>
+  </section>
+
   <section id="s-account" hidden>
     <div class="acc-head">
       <div>
@@ -318,7 +344,7 @@ section:not([hidden]){animation:enter .28s ease-out}
         <p class="lead" style="margin:6px 0 12px">Entra para guardares os lutadores na nuvem e jogares em qualquer dispositivo. Sem entrar, continuas a jogar e a guardar neste browser.</p>
         <label class="lbl2" for="cl-email">Email</label>
         <input type="email" id="cl-email" autocomplete="email" inputmode="email" placeholder="o.teu@email.com">
-        <div class="row"><button class="btn small" id="cl-send">Enviar link de entrada</button><button class="btn ghost small" id="cl-google" hidden>Entrar com Google</button></div>
+        <div class="row"><button class="btn small" id="cl-send">Enviar link de entrada</button><button class="btn ghost small" id="cl-google" hidden>Entrar com Google</button><button class="btn ghost small" id="cl-login">Entrar com palavra-passe</button></div>
         <div id="cl-codebox" hidden>
           <label class="lbl2" for="cl-code">Código do email (se o email trouxer um)</label>
           <input type="text" id="cl-code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="123456">
@@ -329,7 +355,8 @@ section:not([hidden]){animation:enter .28s ease-out}
       <div id="cl-in" hidden>
         <p id="cl-who" style="margin-top:6px"></p>
         <p class="msg" id="cl-state" role="status"></p>
-        <div class="row"><button class="btn small" id="cl-now">Guardar agora</button><button class="btn ghost small" id="cl-logout">Sair</button><button class="linkbtn" id="cl-del" style="margin-left:6px">Apagar a gravação online</button></div>
+        <div class="row"><button class="btn small" id="cl-now">Guardar agora</button><button class="btn ghost small" id="cl-logout">Sair</button><button class="linkbtn" id="cl-pw" style="margin-left:6px">Definir palavra-passe</button><button class="linkbtn" id="cl-del" style="margin-left:6px">Apagar a gravação online</button></div>
+        <div id="cl-pwbox" hidden><label class="lbl2" for="cl-pw1">Nova palavra-passe (mínimo 8 caracteres)</label><input type="password" id="cl-pw1" autocomplete="new-password"><div class="row"><button class="btn small" id="cl-pwsave">Guardar palavra-passe</button><button class="btn ghost small" id="cl-pwno">Cancelar</button></div></div>
         <div id="cl-delbox" hidden class="row"><span>Apagar a gravação online? Os lutadores deste browser não são apagados.</span><button class="btn small" id="cl-delyes">Sim, apagar</button><button class="btn ghost small" id="cl-delno">Cancelar</button></div>
       </div>
       <div id="cl-conf" hidden>
@@ -943,14 +970,14 @@ function refreshSnd(){
   $('btn-snd').setAttribute('aria-pressed',String(!off));
 }
 function show(id){
-  ['s-account','s-create','s-hub','s-fight','s-guide','s-history','s-league','s-tut'].forEach(x=>{$(x).hidden=x!==id});
-  if(id!=='s-guide'&&id!=='s-history'&&id!=='s-league'&&id!=='s-tut')lastScreen=id;
+  ['s-login','s-account','s-create','s-hub','s-fight','s-guide','s-history','s-league','s-tut'].forEach(x=>{$(x).hidden=x!==id});
+  if(id!=='s-guide'&&id!=='s-history'&&id!=='s-league'&&id!=='s-tut'&&id!=='s-login')lastScreen=id;
   $('btn-acc').hidden=!(ACC&&ACC.chars.length)||id==='s-fight'||id==='s-account';
   $('btn-guide').hidden=id==='s-fight'||id==='s-guide';
   $('btn-league').hidden=!(ACC&&ACC.chars.length)||id==='s-fight'||id==='s-league'||id==='s-create';
   $('btn-friends').hidden=!(window.CC_CLOUD&&ACC&&ACC.chars.length)||id==='s-fight'||id==='s-league'||id==='s-create';
   $('btn-hist').hidden=!S||id==='s-fight'||id==='s-create'||id==='s-history';
-  if(id==='s-tut')['btn-acc','btn-hist','btn-league','btn-friends','btn-guide'].forEach(b=>{$(b).hidden=true});
+  if(id==='s-tut'||id==='s-login')['btn-acc','btn-hist','btn-league','btn-friends','btn-guide'].forEach(b=>{$(b).hidden=true});
   refreshSnd();
   const ev=curEv();$('evtag').textContent='Evento de hoje: '+ev.nome+'. '+ev.desc;
 }
@@ -2373,6 +2400,11 @@ const _saveLocal=saveAcc;
 saveAcc=function(){if(CL.on)ACC.dirty=true;CL.ver++;_saveLocal();clSchedule()};
 function clErr(e){
   const c=(e&&(e.code||e.status))||'';
+  if(c==='invalid_credentials')return 'Email ou palavra-passe errados. Se criaste a conta por link, usa "Esqueci-me da palavra-passe" ou "Receber link por email".';
+  if(c==='email_not_confirmed')return 'Ainda não confirmaste o email. Abre o link que te enviámos.';
+  if(c==='weak_password')return 'Palavra-passe fraca ou já exposta em fugas de dados. Escolhe outra, com pelo menos 8 caracteres.';
+  if(c==='same_password')return 'Essa já é a tua palavra-passe atual.';
+  if(c==='user_already_exists'||c==='email_exists')return 'Já existe uma conta com esse email. Usa "Entrar".';
   if(c===429||c==='over_email_send_rate_limit'||c==='over_request_rate_limit')return 'Pediste emails a mais. Espera uns minutos e tenta outra vez.';
   if(c==='otp_expired'||c==='invalid_otp'||/expired|invalid/i.test((e&&e.message)||''))return 'Esse código ou link já não é válido. Pede um novo.';
   if(c==='too_large'||/too_large/.test((e&&e.message)||''))return 'A conta ficou grande demais para guardar online.';
@@ -2480,10 +2512,12 @@ async function clInit(){
   CL.sb=window.supabase.createClient(window.CC_CLOUD.url,window.CC_CLOUD.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   CL.on=true;setInterval(clShowConf,1500);
   CL.sb.auth.onAuthStateChange((ev,sess)=>{
+    if(ev==='PASSWORD_RECOVERY'){LGN.recov=true;CL.user=sess&&sess.user?sess.user:null;showLogin('new');if(CL.user)setTimeout(clSync,0);return}
     const prev=CL.user;CL.user=sess&&sess.user?sess.user:null;
     if(CL.user&&(!prev||prev.id!==CL.user.id)){if(ACC&&ACC.cloudUid&&ACC.cloudUid!==CL.user.id)clFresh();setTimeout(clSync,0)}
     if(!CL.user){CL.conf=null;CL.state='';clearTimeout(CL.timer)}
     clRender();
+    if(CL.user&&!$('s-login').hidden&&LGN.mode!=='new')setTimeout(()=>{if(LGN.mode!=='new'&&!LGN.recov&&!$('s-login').hidden)lgDone()},120);
   });
   const {data}=await CL.sb.auth.getSession();
   if(data&&data.session&&!CL.user){CL.user=data.session.user;if(ACC&&ACC.cloudUid&&ACC.cloudUid!==CL.user.id)clFresh();clSync()}
@@ -2569,11 +2603,130 @@ $('tut-next').addEventListener('click',()=>{if(tutI<TUT.length-1){tutI++;renderT
 $('tut-skip').addEventListener('click',tutDone);
 $('guide-tut').addEventListener('click',()=>tutOpen('guide'));
 
+
+/* ===== login ===== */
+const LGN={mode:'in',pend:'',ptype:'',back:false,recov:false};
+const lgMsg=t=>{$('lg-msg').textContent=t||''};
+function lgMode(m){
+  LGN.mode=m;
+  const nw=m==='new',up=m==='up';
+  $('lg-title').textContent=nw?'Nova palavra-passe':up?'Criar conta':'Entrar';
+  $('lg-lead').textContent=nw?'Escolhe uma palavra-passe nova, com pelo menos 8 caracteres.':up?'Cria uma conta para guardares os lutadores na nuvem.':'Entra para guardares os lutadores na nuvem e jogares em qualquer dispositivo.';
+  $('lg-tabs').hidden=nw;$('lg-emailbox').hidden=nw;$('lg-alt').hidden=nw||up;$('lg-guestbox').hidden=nw;
+  $('lg-tin').className='btn small'+(m==='in'?'':' ghost');$('lg-tup').className='btn small'+(up?'':' ghost');
+  $('lg-go').textContent=nw?'Guardar palavra-passe':up?'Criar conta':'Entrar';
+  $('lg-pw').autocomplete=(nw||up)?'new-password':'current-password';
+  $('lg-pwlbl').textContent=nw?'Nova palavra-passe':'Palavra-passe';
+  $('lg-google').hidden=!(window.CC_CLOUD&&window.CC_CLOUD.google)||nw;
+  $('lg-codebox').hidden=true;lgMsg('');
+}
+function showLogin(m,back){
+  if(back!==undefined)LGN.back=!!back;
+  $('lg-guest').textContent=LGN.back?'Voltar':'Continuar como convidado';
+  $('lg-guesthint').hidden=LGN.back;
+  lgMode(m||'in');show('s-login');
+}
+function lgDone(){
+  LGN.recov=false;
+  if(LGN.back){LGN.back=false;renderAccount()}else startNormal();
+}
+function lgEmail(){
+  const e=$('lg-email').value.trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){lgMsg('Escreve um email válido.');return ''}
+  return e;
+}
+function lgAskCode(email,type,txt){LGN.pend=email;LGN.ptype=type;$('lg-codebox').hidden=false;lgMsg(txt)}
+$('lg-tin').addEventListener('click',()=>lgMode('in'));
+$('lg-tup').addEventListener('click',()=>lgMode('up'));
+$('lg-form').addEventListener('submit',async ev=>{
+  ev.preventDefault();
+  if(!CL.on){lgMsg('O serviço online não está disponível. Podes continuar como convidado.');return}
+  const pw=$('lg-pw').value;
+  $('lg-go').disabled=true;
+  try{
+    if(LGN.mode==='new'){
+      if(pw.length<8){lgMsg('A palavra-passe precisa de pelo menos 8 caracteres.');return}
+      lgMsg('A guardar…');
+      const {error}=await CL.sb.auth.updateUser({password:pw});
+      if(error){lgMsg(clErr(error));return}
+      $('lg-pw').value='';lgDone();return;
+    }
+    const email=lgEmail();if(!email)return;
+    if(!pw){lgMsg('Escreve a palavra-passe.');return}
+    if(LGN.mode==='up'){
+      if(pw.length<8){lgMsg('A palavra-passe precisa de pelo menos 8 caracteres.');return}
+      lgMsg('A criar conta…');
+      const {data,error}=await CL.sb.auth.signUp({email,password:pw,options:{emailRedirectTo:clBase()}});
+      if(error){lgMsg(clErr(error));return}
+      if(!(data&&data.session))lgAskCode(email,'signup','Enviámos um email para '+email+'. Abre o link para confirmar a conta. Se o email trouxer um código, escreve-o aqui em baixo. Se já tinhas conta, usa "Entrar".');
+      return;
+    }
+    lgMsg('A entrar…');
+    const {error}=await CL.sb.auth.signInWithPassword({email,password:pw});
+    if(error){lgMsg(clErr(error));return}
+    $('lg-pw').value='';lgMsg('');
+  }finally{$('lg-go').disabled=false}
+});
+$('lg-forgot').addEventListener('click',async()=>{
+  if(!CL.on)return;
+  const email=lgEmail();if(!email)return;
+  lgMsg('A enviar…');
+  const {error}=await CL.sb.auth.resetPasswordForEmail(email,{redirectTo:clBase()});
+  if(error){lgMsg(clErr(error));return}
+  lgAskCode(email,'recovery','Se existir uma conta com '+email+', enviámos um email. Abre o link para escolheres uma palavra-passe nova. Se o email trouxer um código, escreve-o aqui em baixo.');
+});
+$('lg-link').addEventListener('click',async()=>{
+  if(!CL.on)return;
+  const email=lgEmail();if(!email)return;
+  lgMsg('A enviar…');
+  const {error}=await CL.sb.auth.signInWithOtp({email,options:{emailRedirectTo:clBase(),shouldCreateUser:true}});
+  if(error){lgMsg(clErr(error));return}
+  lgAskCode(email,'email','Enviámos um email para '+email+'. Abre o link que lá está. Se o email trouxer um código, escreve-o aqui em baixo.');
+});
+$('lg-verify').addEventListener('click',async()=>{
+  const token=$('lg-code').value.replace(/\s+/g,'');
+  if(!/^\d{6,8}$/.test(token)){lgMsg('O código tem 6 a 8 números.');return}
+  lgMsg('A confirmar…');
+  const {error}=await CL.sb.auth.verifyOtp({email:LGN.pend,token,type:LGN.ptype||'email'});
+  if(error){lgMsg(clErr(error));return}
+  lgMsg('');
+});
+$('lg-google').addEventListener('click',async()=>{
+  if(!CL.on)return;
+  const {error}=await CL.sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:clBase()}});
+  if(error)lgMsg(clErr(error));
+});
+$('lg-guest').addEventListener('click',()=>{
+  if(!LGN.back){try{localStorage.setItem('cc-guest','1')}catch(e){}}
+  lgDone();
+});
+$('cl-login').addEventListener('click',()=>showLogin('in',true));
+$('cl-pw').addEventListener('click',()=>{$('cl-pwbox').hidden=false;$('cl-pw').hidden=true;$('cl-pw1').focus()});
+$('cl-pwno').addEventListener('click',()=>{$('cl-pwbox').hidden=true;$('cl-pw').hidden=false;$('cl-pw1').value=''});
+$('cl-pwsave').addEventListener('click',async()=>{
+  const pw=$('cl-pw1').value;
+  if(pw.length<8){clMsg('A palavra-passe precisa de pelo menos 8 caracteres.');return}
+  const {error}=await CL.sb.auth.updateUser({password:pw});
+  if(error){clMsg(clErr(error));return}
+  $('cl-pw1').value='';$('cl-pwbox').hidden=true;$('cl-pw').hidden=false;
+  clMsg('Palavra-passe guardada. Já podes entrar com email e palavra-passe.');
+});
+function needLogin(){
+  if(!window.CC_CLOUD)return false;
+  try{if(localStorage.getItem('cc-guest')==='1')return false}catch(e){}
+  try{for(let i=0;i<localStorage.length;i++){if(/^sb-.*-auth-token$/.test(localStorage.key(i)))return false}}catch(e){}
+  if(/access_token|refresh_token|[?&#]code=|type=(recovery|signup|magiclink|invite|email)|error_code/.test(location.hash+location.search))return false;
+  return true;
+}
+function startNormal(){
+  if(ACC.active!==null){S=ACC.chars[ACC.active];saveAcc();renderHub()}
+  else if(ACC.chars.length)renderAccount();
+  else if(!ACC.tut)tutOpen('');
+  else showCreate();
+}
+
 ACC=loadAcc();
-if(ACC.active!==null){S=ACC.chars[ACC.active];saveAcc();renderHub()}
-else if(ACC.chars.length)renderAccount();
-else if(!ACC.tut)tutOpen('');
-else showCreate();
+if(needLogin())showLogin('in');else startNormal();
 clInit();
 </script>
 </body></html>
