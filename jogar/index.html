@@ -1285,7 +1285,7 @@ function renderAccount(){
     const actions=delIdx===i
       ?'<p>Apagar '+esc(f.name)+' para sempre?</p><div class="row"><button class="btn small" data-delyes="'+i+'">Sim, apagar</button><button class="btn ghost small" data-delno="1">Cancelar</button></div>'
       :'<div class="row"><button class="btn small" data-play="'+i+'">Jogar</button><button class="btn ghost small" data-exp="'+i+'">Exportar</button><button class="btn ghost small" data-del="'+i+'">Apagar</button></div>';
-    out.push('<div class="panel slot"><div class="top">'+miniSvg(f)+'<div><div class="eyebrow">Vaga '+(i+1)+(ACC.active===i?' · em uso':'')+'</div><h3>'+esc(f.name)+'</h3><div class="rec">Nível '+f.level+' · '+c.wins+' V · '+c.losses+' D</div></div></div><div class="tchips">'+f.traits.map(traitChip).join('')+'</div>'+actions+'</div>');
+    out.push('<div class="panel slot"><div class="top">'+miniSvg(f)+'<div><div class="eyebrow">Vaga '+(i+1)+(ACC.active===i?' · em uso':'')+'</div><h3>'+esc(f.name)+'</h3><div class="rec">Nível '+f.level+' · '+c.wins+(EN?' W · ':' V · ')+c.losses+(EN?' L':' D')+'</div></div></div><div class="tchips">'+f.traits.map(traitChip).join('')+'</div>'+actions+'</div>');
   }
   if(ACC.chars.length<MAXC)out.push('<button type="button" class="panel slot add" data-new="1" aria-label="Criar lutador" title="Criar lutador">+</button>');
   $('slots').innerHTML=out.join('');
