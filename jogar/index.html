@@ -354,8 +354,66 @@ body.sk .create fieldset{margin:22px 0}
 body.sk #st-roll{margin-top:10px!important}
 @media (max-width:700px){body.sk{padding-top:60px}body.sk .panel,body.sk .create>div:first-child{padding:22px 18px}}
 @media (prefers-reduced-motion:reduce){body.sk .btn{transition:none}}
+
+/* ---- Gladiador + pele global ---- */
+.gl{transition:filter .1s}
+.fx.hit .gl{filter:sepia(1) saturate(7) hue-rotate(-35deg) brightness(.95)}
+#arena.night .fx:not(.hit) .gl{filter:brightness(.82) saturate(.9)}
+body.sk{--bg:#fbf3de;--good:#2f6b3a;--bad:#9c2216;--weapon:#8a5a14}
+body.sk .hub{gap:26px}
+body.sk .panel h2,body.sk .panel h3{color:var(--ink)}
+body.sk .top svg,body.sk .fcard .top svg,body.sk .opp svg,body.sk .gc svg{background:linear-gradient(180deg,#5a2e1c 0%,#a5612e 66%,#c89055 66.1%,#a8743c 100%);border:2px solid #8c6a3a;border-radius:8px;padding:4px 2px 0}
+body.sk .top svg{width:96px}
+body.sk .xp{height:16px;background:#d9c397;border:2px solid #8c6a3a;border-radius:8px}
+body.sk .xp i{background:linear-gradient(90deg,#8c2f1b,#e8a553)}
+body.sk .stats dt{font-family:Cinzel,serif;font-weight:700;letter-spacing:.14em;color:#5f4a32}
+body.sk .stats dd{font:900 30px Cinzel,serif;color:#8c2f1b}
+body.sk .stats dd small{font:400 17px 'EB Garamond',serif;color:#5f4a32}
+body.sk .stats>div{background:#fbf3de;border:2px solid #b99a62;border-radius:6px;padding:8px 12px}
+body.sk .trait{background:#fbf3de;font-size:17px;border-width:2px;border-radius:6px}
+body.sk .trait.pos{background:#e3efd3}body.sk .trait.neg{background:#f3d9d0}
+body.sk .trait strong{font-family:Cinzel,serif;font-weight:800}
+body.sk .tc{font:700 13px Cinzel,serif;letter-spacing:.06em;border-width:2px}
+body.sk .gear li small,body.sk .rec{font-size:16px}
+body.sk .sect h3,body.sk .right-h{font-family:Cinzel,serif;font-weight:800}
+body.sk .opp,body.sk .up,body.sk .gc,body.sk .tile,body.sk .hrow{background:#fbf3de;border:2px solid #b99a62;border-radius:8px}
+body.sk .opp h3,body.sk .up strong,body.sk .gc strong{font-family:Cinzel,serif;font-weight:800;color:var(--ink)}
+body.sk .up:hover{border-color:#8c2f1b;background:#f8edcf}
+body.sk .chip{font:800 11px Cinzel,serif;letter-spacing:.12em;border-width:2px}
+body.sk .opp .nums,body.sk .up span,body.sk .gc .d,body.sk .gc .st{font-size:16px}
+body.sk .tv{font-family:Cinzel,serif;color:#8c2f1b}
+body.sk .mt,body.sk .nums-d{background:#fbf3de}
+body.sk .tbl thead th{color:var(--ink)}
+body.sk .gtabs button[aria-pressed="true"],body.sk .seg button[aria-pressed="true"]{background:#8c2f1b;color:#f8ecd0;border-color:#ffd27a}
+body.sk .who strong{font:900 22px Cinzel,serif;color:#f3e6cf}
+body.sk .who small,body.sk .bars small{color:#d9c3a0;font-size:17px}
+body.sk .hp{height:22px;border-radius:11px;background:#120a06;border:3px solid #ffd27a;box-shadow:inset 0 0 0 2px #5a3a22}
+body.sk .hp i{background:linear-gradient(90deg,#2f6b3a,#8fd49a)}
+body.sk #arena{border:4px solid #ffd27a;border-radius:10px;box-shadow:0 0 0 6px #2a1a12,0 0 0 8px #8c6a3a,0 30px 60px rgba(0,0,0,.6)}
+body.sk #log{background:linear-gradient(180deg,#f8edcf,#efdcae);color:#2b1a0f;border:3px solid #ffd27a;border-radius:10px;padding:14px 20px;font-size:20px;box-shadow:inset 0 0 0 4px #f8edcf,inset 0 0 0 5px #b99a62;margin:26px 0 18px}
+body.sk .dmg{font-family:Cinzel,serif;font-weight:900}
+body.sk .scname{font-family:Cinzel,serif}
+body.sk .acc-head h2{color:#f3e6cf}
+body.sk .btn.ghost{color:#f3dfb8;border:2px solid #8c6a3a;background:rgba(26,15,10,.5)}
+body.sk .btn.ghost:hover{background:rgba(255,210,122,.14)}
+body.sk .panel .btn.ghost,body.sk .create>div .btn.ghost,body.sk .slot .btn.ghost,body.sk .gc .btn.ghost,body.sk .tour .btn.ghost{color:#2b1a0f;background:transparent}
+body.sk .panel .btn.ghost:hover,body.sk .slot .btn.ghost:hover{background:rgba(140,106,58,.18)}
+body.sk .lead{color:#e6d4b4}
+body.sk .panel .lead,body.sk .create .lead,body.sk .slot .lead{color:var(--muted)}
+body.sk .gh,body.sk .slotsbar h3,body.sk #s-guide>h2,body.sk #s-history h2,body.sk #s-league>h2{color:#f3e6cf;font-family:Cinzel,serif}
+body.sk .slotcount{color:#d9c3a0}
+body.sk .slot.add,body.sk .slot.empty{color:#5f4a32}
+body.sk .ctl .btn.ghost{color:#f3dfb8;border-color:#8c6a3a;background:rgba(26,15,10,.5)}
+body.sk .ctl .btn.ghost[aria-pressed="true"]{background:#8c2f1b;color:#f8ecd0;border-color:#ffd27a}
+body.sk .ctl .btn.ghost:hover{background:rgba(255,210,122,.14)}
+body.sk .acc-head .lead{color:#e6d4b4}
+body.sk .acc-head label{font:600 13px Cinzel,serif;letter-spacing:.12em;text-transform:uppercase;color:#f3dfb8}
+body.sk #res h3{font-size:26px}
+body.sk textarea{background:#fbf3de;border:2px solid #8c6a3a;color:#2b1a0f}
+body.sk #toast span{background:#2b1a0f;color:#f8ecd0;border:2px solid #ffd27a;font:600 17px 'EB Garamond',serif}
 </style><script>window.CC_CLOUD={url:"https://ulwxnharicpevojoerff.supabase.co",key:"sb_publishable_5TK0S386gpVHezHm7ZydQQ_rWi9VWua",google:false};</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script></head><body>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="gmSkA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0c9a0"/><stop offset=".55" stop-color="#d89e72"/><stop offset="1" stop-color="#a86a45"/></linearGradient><linearGradient id="gmSkB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e2b48c"/><stop offset=".55" stop-color="#bf8559"/><stop offset="1" stop-color="#8a5636"/></linearGradient><linearGradient id="gmBr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe0a0"/><stop offset=".5" stop-color="#c98a2c"/><stop offset="1" stop-color="#7a4a14"/></linearGradient><linearGradient id="gmLe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a4a26"/><stop offset="1" stop-color="#4a2410"/></linearGradient><linearGradient id="gmSh" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".42"/></linearGradient><pattern id="gmArch" width="48" height="100" patternUnits="userSpaceOnUse"><rect width="48" height="100" fill="#b17a47"/><path d="M7 100V46Q7 18 24 18Q41 18 41 46V100Z" fill="#2a140c"/><path d="M7 46Q7 18 24 18Q41 18 41 46" fill="none" stroke="#e9b982" stroke-width="2.5"/></pattern><linearGradient id="gmSand" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9a066"/><stop offset="1" stop-color="#8a5a2c"/></linearGradient></defs></svg>
 <div class="wrap">
   <header>
     <div>
@@ -1154,7 +1212,7 @@ function refreshSnd(){
   $('btn-snd').setAttribute('aria-checked',String(!off));
 }
 function show(id){
-  document.body.classList.toggle('sk',id==='s-login'||id==='s-create'||id==='s-tut');
+  document.body.classList.add('sk');
   ['s-login','s-account','s-create','s-hub','s-fight','s-guide','s-history','s-league','s-tut'].forEach(x=>{$(x).hidden=x!==id});
   if(id!=='s-guide'&&id!=='s-history'&&id!=='s-league'&&id!=='s-tut'&&id!=='s-login')lastScreen=id;
   $('btn-lang').hidden=id==='s-fight';
@@ -1211,14 +1269,29 @@ function cosFront(c){
 }
 function figure(wid,cos){return cosBack(cos)+figureBase(wid)+cosFront(cos)}
 function figureBase(wid){
-  return '<path class="fg-body" d="M-40 -115L40 -115L25 -40L-25 -40Z"/>'+
-  '<path class="fg-body" d="M-40 -115L-55 -65L-40 -60L-25 -110Z"/>'+
-  '<path class="fg-body" d="M40 -115L60 -150L73 -142L53 -102Z"/>'+
-  '<rect class="fg-body" x="-21" y="-40" width="18" height="40"/>'+
-  '<rect class="fg-body" x="3" y="-40" width="18" height="40"/>'+
-  '<circle class="fg-body" cx="0" cy="-152" r="24"/>'+
-  '<rect class="fg-acc" x="-25" y="-70" width="50" height="8"/>'+
-  '<rect class="fg-acc" x="-12" y="-156" width="24" height="4"/>'+
+  const body='<g transform="translate(0 -147) scale(1.25)">'+
+  '<rect x="-17" y="74" width="13" height="38" rx="5" fill="url(#gmSkB)"/><rect x="4" y="74" width="13" height="38" rx="5" fill="url(#gmSkA)"/>'+
+  '<path d="M-19 96 H-3 L-4 112 H-21Z" fill="url(#gmBr)" stroke="#6a3c0e" stroke-width="1.5"/><path d="M3 96 H19 L21 112 H4Z" fill="url(#gmBr)" stroke="#6a3c0e" stroke-width="1.5"/>'+
+  '<rect x="-21" y="108" width="19" height="9" rx="4" fill="#3a1d10"/><rect x="2" y="108" width="20" height="9" rx="4" fill="#3a1d10"/>'+
+  '<path class="fg-acc" d="M-24 20 Q-28 58 -22 82 H22 Q28 58 24 20Z"/>'+
+  '<path d="M-24 20 Q-28 58 -22 82 H22 Q28 58 24 20Z" fill="url(#gmSh)"/>'+
+  '<path d="M-24 34 H24 M-25 48 H25 M-24 62 H24" stroke="#f3dfb8" stroke-width="2.5" opacity=".65"/>'+
+  '<g fill="url(#gmLe)" stroke="#2a140c" stroke-width="1"><rect x="-24" y="78" width="9" height="16" rx="3"/><rect x="-14" y="78" width="9" height="18" rx="3"/><rect x="-4" y="78" width="9" height="18" rx="3"/><rect x="6" y="78" width="9" height="18" rx="3"/><rect x="15" y="78" width="9" height="16" rx="3"/></g>'+
+  '<rect x="-26" y="72" width="52" height="9" rx="3" fill="url(#gmBr)" stroke="#6a3c0e" stroke-width="1.5"/><rect x="-6" y="70" width="12" height="13" rx="3" fill="url(#gmBr)" stroke="#6a3c0e" stroke-width="1.5"/>'+
+  '<path d="M-30 20 Q0 4 30 20 Q27 36 0 40 Q-27 36 -30 20Z" fill="url(#gmBr)" stroke="#6a3c0e" stroke-width="1.5"/><path d="M-20 18 Q0 10 20 18" fill="none" stroke="#fff0bd" stroke-width="2" opacity=".7"/>'+
+  '<path d="M-30 26 Q-34 56 -26 64" stroke="url(#gmSkA)" stroke-width="9" stroke-linecap="round" fill="none"/>'+
+  '<g transform="translate(-36 38) scale(.8)"><path d="M0 -38 Q28 -40 31 0 Q29 42 0 52 Q-29 42 -31 0 Q-28 -40 0 -38Z" class="fg-acc" stroke="url(#gmBr)" stroke-width="5"/><path d="M0 -38 Q28 -40 31 0 Q29 42 0 52 Q-29 42 -31 0 Q-28 -40 0 -38Z" fill="url(#gmSh)"/><path d="M-13 -20 L-5 22 M0 -22 L8 24 M12 -18 L17 12" stroke="#ffd27a" stroke-width="4.5" stroke-linecap="round"/><circle cy="-2" r="6" fill="url(#gmBr)" stroke="#6a3c0e" stroke-width="1.5"/></g>'+
+  '<rect x="-6" y="14" width="12" height="9" fill="url(#gmSkB)"/>'+
+  '<ellipse cx="0" cy="-4" rx="15" ry="17" fill="url(#gmSkA)"/>'+
+  '<path d="M-20 -6 Q-19 -30 0 -32 Q19 -30 20 -6 L21 8 Q16 17 8 18 L7 4 Q0 6 -7 4 L-8 18 Q-16 17 -21 8Z" fill="url(#gmBr)" stroke="#6a3c0e" stroke-width="1.5"/>'+
+  '<path d="M-14 -3 H14 V8 Q8 14 0 14 Q-8 14 -14 8Z" fill="#1c0e08"/><path d="M-9 -3 V12 M-4.5 -3 V13 M0 -3 V14 M4.5 -3 V13 M9 -3 V12" stroke="url(#gmBr)" stroke-width="2" stroke-linecap="round"/><path d="M-14 -3 H14" stroke="#ffd27a" stroke-width="2.5"/>'+
+  '<path d="M-17 -18 Q0 -34 17 -18" fill="none" stroke="#fff0bd" stroke-width="1.8" opacity=".6"/>'+
+  '<rect x="-4" y="-34" width="8" height="5" fill="url(#gmBr)"/><path class="fg-acc" d="M0 -34 Q-18 -46 -2 -52 Q-2 -44 8 -40 Q18 -38 12 -32Z"/></g>';
+  return '<g class="gl">'+
+  '<path d="M34 -108 L62 -142" stroke="url(#gmSkA)" stroke-width="13" stroke-linecap="round" fill="none"/>'+
+  body+
+  '<path d="M44 -121 L58 -138" stroke="url(#gmBr)" stroke-width="15" stroke-linecap="round" fill="none"/><path d="M47 -118 L60 -134" stroke="#6a3c0e" stroke-width="1.5" stroke-dasharray="3 5" fill="none"/>'+
+  '<circle cx="66" cy="-146" r="8" fill="url(#gmSkA)"/></g>'+
   '<g class="wp" transform="translate(66,-146)">'+weaponShape(wid)+'</g>';
 }
 function miniSvg(f){
@@ -1476,7 +1549,7 @@ function buildArena(fa,fb,evId,sc){sc=sc||'dia';
   $('arena').setAttribute('class',sc==='noite'?'night':'');
   const SCN=SCENES.find(x=>x.id===sc)||SCENES[1];
   const tags=['a','b'].map(s=>petsOf(fs[s]).map(id=>[id,sceneTag(SCN,id)]).filter(x=>x[1]).map((x,i)=>'<text class="boosttag '+(fxGood(SCN.fx[x[0]])?'good':'bad')+'" text-anchor="'+(s==='a'?'start':'end')+'" x="'+(s==='a'?20:660)+'" y="'+(92+i*17)+'">'+PETS[x[0]].nome.split(' ')[0]+': '+x[1]+'</text>').join('')).join('');
-  $('arena').innerHTML=ambience(sc,evId||'')+'<text class="scname" x="20" y="28">'+SCN.nome+'</text>'+'<line class="ground" x1="30" y1="262" x2="650" y2="262"/>'+
+  $('arena').innerHTML=ambience(sc,evId||'')+'<text class="scname" x="20" y="28">'+SCN.nome+'</text>'+'<g transform="translate(0 100)"><rect width="680" height="162" fill="url(#gmArch)" opacity=".55"/></g><rect x="0" y="262" width="680" height="28" fill="url(#gmSand)" opacity=".9"/><line class="ground" x1="30" y1="262" x2="650" y2="262"/>'+
     ['a','b'].map(s=>'<g transform="translate('+xs[s]+',262)"><g class="fx" id="fx-'+s+'" style="--acc:'+fs[s].color+'"><ellipse class="shadow" cx="0" cy="2" rx="38" ry="6"/><g class="idle '+s+'"><g transform="'+(s==='b'?'scale(-1,1)':'')+'">'+figure(fs[s].weapons[0]||'',fs[s].cos)+'</g></g></g></g>').join('')+
     petsHtml+tags+'<g id="fxl"></g>';
   ['a','b'].forEach(s=>{const fx=$('fx-'+s);fig[s]={fx,wp:fx.querySelector('.wp'),pets:Object.fromEntries(petsOf(fs[s]).map(id=>[id,$('pet-'+s+'-'+id)]))}});
