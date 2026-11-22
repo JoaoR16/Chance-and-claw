@@ -56,9 +56,9 @@ section>.w>h2{font-size:clamp(28px,5vw,44px);margin:12px 0 0;max-width:20ch}
 .fin p{margin:0 auto 32px;color:var(--mut)}
 footer{border-top:1px solid var(--line);padding-block:26px 34px;color:var(--mut);font-size:13px}
 @media (prefers-reduced-motion:reduce){.btn{transition:none}}
-</style></head><body>
+</style><style>.lang{margin-left:auto;background:transparent;color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font:600 13px/1 Inter,system-ui,sans-serif;cursor:pointer}.lang:hover{border-color:var(--acc)}.lang:focus-visible{outline:3px solid #fff;outline-offset:2px}</style></head><body>
 <header class="hero"><svg class="claws" viewBox="0 0 520 420" aria-hidden="true"><g fill="none" stroke="#f5a524" stroke-linecap="round"><path d="M70 20 C170 130 250 250 330 400" stroke-width="30"/><path d="M190 10 C290 120 370 240 450 390" stroke-width="22" opacity=".75"/><path d="M300 0 C390 100 460 200 520 320" stroke-width="14" opacity=".5"/></g></svg>
-<div class="w"><div class="brand"><svg viewBox="0 0 28 28" aria-hidden="true"><g fill="none" stroke="#f5a524" stroke-width="3.4" stroke-linecap="round"><path d="M6 3l9 22"/><path d="M13 3l9 22" opacity=".7"/></g></svg>Chance &amp; Claw</div>
+<div class="w"><div class="brand"><svg viewBox="0 0 28 28" aria-hidden="true"><g fill="none" stroke="#f5a524" stroke-width="3.4" stroke-linecap="round"><path d="M6 3l9 22"/><path d="M13 3l9 22" opacity=".7"/></g></svg>Chance &amp; Claw<button id="btn-lang" type="button" class="lang"></button></div>
 <h1>A sorte escolhe. <em>Tu</em> aguentas.</h1>
 <p class="lead">Cria um lutador, deixa os dados decidirem como ele evolui e vê-o combater sozinho. Sem instalar nada.</p>
 <div class="cta"><a class="btn" href="jogar/">Jogar agora <span aria-hidden="true">→</span></a><small>Grátis · corre no browser · telemóvel ou computador</small></div></div></header>
@@ -83,8 +83,74 @@ footer{border-top:1px solid var(--line);padding-block:26px 34px;color:var(--mut)
 <div class="odds"><h3>Quanto vale uma vitória no torneio?</h3><p>É a sorte que decide o prémio. Estas são as probabilidades reais:</p>
 <div class="bar" role="img" aria-label="83% pontos de atributo, 10% habilidade, 5% arma, 2% animal"><span class="a">83%</span><span class="b">10%</span><span class="c">5%</span><span class="d"></span></div>
 <div class="leg"><span><i style="background:#7f8ba3"></i>Pontos de atributo</span><span><i style="background:#5fd39a"></i>Habilidade</span><span><i style="background:#f5a524"></i>Arma</span><span><i style="background:#ff7a70"></i>Animal (2%)</span></div></div>
-<p class="note">Podes jogar logo, sem criar conta. Se quiseres guardar os lutadores na nuvem, basta um email: enviamos-te um link de entrada, sem palavra-passe.</p></div></section>
+<p class="note">Podes jogar logo, sem criar conta. Se quiseres guardar os lutadores na nuvem, cria uma conta com email e palavra-passe.</p></div></section>
 
 <section class="fin"><div class="w"><h2>Pronto para tentar a sorte?</h2><p>O teu primeiro lutador demora meio minuto a criar.</p><a class="btn" href="jogar/">Jogar agora <span aria-hidden="true">→</span></a></div></section>
 <footer><div class="w">Chance &amp; Claw · um jogo feito a dois, por diversão.</div></footer>
-</body></html>
+<script>(function(){
+var L='';try{L=localStorage.getItem('cc-lang')||''}catch(e){}
+if(L!=='pt'&&L!=='en')L=/^pt/i.test(navigator.language||'')?'pt':'en';
+window.LANG=L;window.EN=L==='en';
+document.documentElement.lang=EN?'en':'pt-PT';
+window.setLang=function(l){try{localStorage.setItem('cc-lang',l)}catch(e){}location.reload()};
+window.petOf=function(p,o){return EN?o+"'s "+p:p+' de '+o};
+var D={"A sorte escolhe.":"Luck chooses.","aguentas.":"endure.","Tu":"You","Cria um lutador, deixa os dados decidirem como ele evolui e vê-o combater sozinho. Sem instalar nada.":"Create a fighter, let the dice decide how it evolves and watch it fight on its own. Nothing to install.","Jogar agora":"Play now","Grátis · corre no browser · telemóvel ou computador":"Free · runs in the browser · phone or computer","Como funciona":"How it works","Três passos e já estás na arena":"Three steps and you're in the arena","Nasce um lutador":"A fighter is born","Escolhes o nome e a cor. Os atributos saem à sorte: 15 pontos repartidos ao acaso, mais um traço bom e um mau.":"You pick the name and color. The attributes are random: 15 points spread at random, plus one good trait and one bad trait.","Os combates são automáticos":"Fights are automatic","Não controlas nada durante a luta. Escolhes o adversário e assistes, a 1x, 2x ou 4x.":"You don't control anything during the fight. You pick the opponent and watch, at 1x, 2x or 4x.","Cada nível é um sorteio":"Every level is a draw","Ao subir, sai-te uma melhoria à sorte: atributo, habilidade, arma ou até um animal. Aceitas, ou arriscas mais uma troca.":"When you level up, you get a random upgrade: an attribute, a skill, a weapon or even a pet. Take it, or risk one more swap.","O jogo por dentro":"Inside the game","Capturas reais, direto do jogo":"Real screenshots, straight from the game","O teu lutador e os seus traços":"Your fighter and its traits","Combate automático":"Automatic fight","A melhoria sorteada ao subir":"The random upgrade when you level up","O que tem":"What's inside","Pequeno por fora, com muito por descobrir":"Small on the outside, lots to discover","Animais raros":"Rare pets","Com sorte, um animal junta-se a ti e luta ao teu lado. Quanto mais tens, mais difícil é encontrar o próximo.":"With luck, a pet joins you and fights by your side. The more you have, the harder it is to find the next one.","Armas e habilidades":"Weapons and skills","Nove armas e dezenas de habilidades. Certas combinações ativam combos escondidos; o Guia dá as pistas.":"Nine weapons and dozens of skills. Certain combinations unlock hidden combos; the Guide gives you hints.","Torneios":"Tournaments","Oito lutadores, três rondas, eliminação direta. Quem ganha leva uma recompensa sorteada.":"Eight fighters, three rounds, single elimination. The winner takes a random reward.","Desafio diário e eventos":"Daily challenge and events","Todos os dias há um desafio novo e um evento que muda as regras, como XP a dobrar.":"Every day there is a new challenge and an event that changes the rules, like double XP.","Liga entre amigos":"League with friends","Ranking e duelos assíncronos, calculados no servidor. Entra com a tua conta online e desafia outros jogadores.":"Ranking and asynchronous duels, calculated on the server. Log in with your online account and challenge other players.","Conta online":"Online account","Entra com o teu email para guardar os lutadores na nuvem e jogar em qualquer dispositivo. Ou joga como convidado.":"Log in with your email to save your fighters in the cloud and play on any device. Or play as a guest.","Quanto vale uma vitória no torneio?":"What is a tournament win worth?","É a sorte que decide o prémio. Estas são as probabilidades reais:":"Luck decides the prize. These are the real odds:","Pontos de atributo":"Attribute points","Habilidade":"Skill","Arma":"Weapon","Animal (2%)":"Pet (2%)","Podes jogar logo, sem criar conta. Se quiseres guardar os lutadores na nuvem, cria uma conta com email e palavra-passe.":"You can play right away, without an account. If you want to save your fighters in the cloud, create an account with email and password.","Pronto para tentar a sorte?":"Ready to try your luck?","O teu primeiro lutador demora meio minuto a criar.":"Your first fighter takes half a minute to create.","Chance & Claw · um jogo feito a dois, por diversão.":"Chance & Claw · a game made by two friends, for fun.","Ecrã do lutador com nível, atributos e traços":"Fighter screen with level, attributes and traits","Combate automático entre dois lutadores à noite":"Automatic fight between two fighters at night","Cartão de melhoria sorteada ao subir de nível":"Random upgrade card when leveling up","83% pontos de atributo, 10% habilidade, 5% arma, 2% animal":"83% attribute points, 10% skill, 5% weapon, 2% pet","Cria um lutador, deixa a sorte decidir como evolui e vê-o combater sozinho.":"Create a fighter, let luck decide how it evolves and watch it fight on its own.","Hoje é dia de festa!":"Today is party day!","VAI FESTEJAR!!!!":"GO CELEBRATE!!!!","Volta mais tarde, obrigado":"Come back later, thank you"};
+var ATTRS=['title','aria-label','placeholder','alt'];
+var DK=Object.create(null),EX=Object.create(null),SUBL=[];
+var PATS=[[/(\d+)V (\d+)D/g,'$1W $2L'],[/(\d+)V\b/g,'$1W'],[/(\d+)D\b/g,'$1L']];
+function build(){
+  EX=Object.create(null);var SM=Object.create(null),ks=[];
+  for(var k in D){
+    var t=k.trim();if(!t)continue;
+    EX[t]=D[k].trim();
+    if(DK[k]||D[k]===k)continue;
+    if(/\s/.test(k)||t.length>=14){var kk=k,vv=D[k];if(t.length>=8&&t!==k){kk=t;vv=D[k].trim()}if(SM[kk]===undefined)ks.push(kk);SM[kk]=vv}
+  }
+  ks.sort(function(a,b){var d=b.trim().length-a.trim().length;return d||b.length-a.length});
+  SUBL=ks.map(function(k){return [k,SM[k]]});
+}
+function tr(s){
+  if(!EN||!s)return s;
+  var t=s.trim();if(!t)return s;
+  var e=EX[t];
+  if(e!==undefined){var i=s.indexOf(t);return s.slice(0,i)+e+s.slice(i+t.length)}
+  for(var j=0;j<SUBL.length;j++){var r=SUBL[j];if(s.indexOf(r[0])!==-1)s=s.split(r[0]).join(r[1])}
+  if(s.indexOf('pts · attacks')>=0)for(var i2=0;i2<PATS.length;i2++)s=s.replace(PATS[i2][0],PATS[i2][1]);
+  return s;
+}
+function doAttr(el,a){var v=el.getAttribute(a);if(v==null)return;var r=tr(v);if(r!==v)el.setAttribute(a,r)}
+function doNode(n){
+  if(n.nodeType===3){var pt=n.parentNode&&n.parentNode.tagName;if(pt==='SCRIPT'||pt==='STYLE'||pt==='TEXTAREA')return;var v=n.nodeValue;if(n.__tv===v)return;var r=tr(v);if(r!==v)n.nodeValue=r;n.__tv=n.nodeValue;return}
+  if(n.nodeType!==1)return;
+  var tg=n.tagName;if(tg==='SCRIPT'||tg==='STYLE')return;
+  for(var i=0;i<ATTRS.length;i++)if(n.hasAttribute&&n.hasAttribute(ATTRS[i]))doAttr(n,ATTRS[i]);
+  for(var c=n.firstChild;c;c=c.nextSibling)doNode(c);
+}
+function walk(o,d){
+  if(d>6||o==null)return;
+  if(Array.isArray(o)){for(var i=0;i<o.length;i++){if(typeof o[i]==='string'){if(D[o[i]]!==undefined){DK[o[i]]=1;o[i]=D[o[i]]}}else walk(o[i],d+1)}return}
+  if(typeof o==='object'){for(var k in o){var v=o[k];if(typeof v==='string'){if(D[v]!==undefined){DK[v]=1;o[k]=D[v]}}else if(typeof v==='object')walk(v,d+1)}}
+}
+window.I18N={tr:tr,data:function(){
+  if(!EN)return;
+  var names=['WEAPONS','SKILLS','TRAITS','PETS','SCENES','SC_NEUTRAL','STATS','COLORS','EVENTS','COMBOS','COS_H','COS_E','ACHS','PVE_ERR','LS_ERR','TN_ERR'];
+  var G=(0,eval);
+  names.forEach(function(n){try{walk(G(n),0)}catch(e){}});
+  build();doNode(document.body);
+}};
+build();
+if(EN){
+  doNode(document.body);
+  new MutationObserver(function(ms){
+    for(var i=0;i<ms.length;i++){var m=ms[i];
+      if(m.type==='childList'){for(var j=0;j<m.addedNodes.length;j++)doNode(m.addedNodes[j])}
+      else if(m.type==='characterData')doNode(m.target);
+      else if(m.type==='attributes')doAttr(m.target,m.attributeName);
+    }
+  }).observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:ATTRS});
+}
+if(EN){var md=document.querySelector('meta[name=description]');if(md){var mc=md.getAttribute('content'),mr=tr(mc);if(mr!==mc)md.setAttribute('content',mr)}}
+var b=document.getElementById('btn-lang');
+if(b){b.textContent=EN?'Português':'English';b.setAttribute('aria-label',EN?'Mudar para português':'Switch to English');b.lang=EN?'pt':'en';b.addEventListener('click',function(){window.setLang(EN?'pt':'en')})}
+})();
+</script></body></html>
