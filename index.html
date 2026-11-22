@@ -1,92 +1,243 @@
-<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#11141b"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2312161f'/%3E%3Cg fill='none' stroke='%23f5a524' stroke-width='3.4' stroke-linecap='round'%3E%3Cpath d='M9 6l8 21'/%3E%3Cpath d='M16 6l8 21' opacity='.7'/%3E%3C/g%3E%3C/svg%3E"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style><title>Chance &amp; Claw</title>
-
+<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#11141b"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2312161f'/%3E%3Cg fill='none' stroke='%23f5a524' stroke-width='3.4' stroke-linecap='round'%3E%3Cpath d='M9 6l8 21'/%3E%3Cpath d='M16 6l8 21' opacity='.7'/%3E%3C/g%3E%3C/svg%3E"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style><title>Chance & Claw</title>
 <meta name="description" content="Cria um lutador, deixa a sorte decidir como evolui e vê-o combater sozinho.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=EB+Garamond:wght@400;500;600&display=swap">
 <style>
-:root{--bg:#12161f;--bg2:#1a2030;--line:#2b3447;--fg:#eef1f6;--mut:#a3adc2;--acc:#f5a524;--acc-ink:#1a1204;--good:#5fd39a;color-scheme:dark}
+:root{--ink:#f3e6cf;--gold:#ffd27a;--gold2:#e8a553;--red:#8c2f1b;--dark:#1a0f0a;--parch:#e9d8b0;color-scheme:dark}
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--fg);font:16px/1.6 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));-webkit-text-size-adjust:100%}
-.w{max-width:1040px;margin:0 auto}
-h1,h2,h3{font-family:"Space Grotesk",Inter,system-ui,sans-serif;line-height:1.1;margin:0;text-wrap:balance;letter-spacing:-.01em}
-p{margin:0;max-width:62ch}
-a{color:inherit}
-.btn{display:inline-flex;align-items:center;gap:.5em;background:var(--acc);color:var(--acc-ink);font:600 17px/1 Inter,system-ui,sans-serif;padding:16px 26px;border-radius:12px;text-decoration:none;box-shadow:0 6px 0 #a86d0a;transition:transform .12s,box-shadow .12s}
-.btn:hover{transform:translateY(2px);box-shadow:0 4px 0 #a86d0a}
-.btn:active{transform:translateY(6px);box-shadow:0 0 0 #a86d0a}
-.btn:focus-visible{outline:3px solid #fff;outline-offset:3px}
-.lab{font:600 12px/1 Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
-header.hero{position:relative;overflow:hidden;padding-block:56px 64px}
-.hero .w{position:relative;z-index:1}
-.brand{display:flex;align-items:center;gap:10px;font:700 18px/1 "Space Grotesk",sans-serif;margin-bottom:56px}
-.brand svg{width:28px;height:28px}
-.hero h1{font-size:clamp(44px,9vw,92px);max-width:11ch}
-.hero h1 em{font-style:normal;color:var(--acc)}
-.hero .lead{font-size:clamp(18px,2.6vw,22px);color:var(--mut);margin-top:22px;max-width:36ch}
-.cta{margin-top:34px;display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px}
-.cta small{color:var(--mut);font-size:14px}
-.claws{position:absolute;right:-40px;top:-10px;width:min(78vw,520px);opacity:.9;z-index:0;pointer-events:none}
-section{padding-block:56px;border-top:1px solid var(--line)}
-section>.w>h2{font-size:clamp(28px,5vw,44px);margin:12px 0 0;max-width:20ch}
-.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:32px;counter-reset:s;padding:0;list-style:none}
-.steps li{background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:22px;counter-increment:s;min-width:0}
-.steps li::before{content:counter(s);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--acc);color:var(--acc-ink);font:700 16px "Space Grotesk",sans-serif;margin-bottom:14px}
-.steps h3{font-size:20px;margin-bottom:6px}
-.steps p{color:var(--mut);font-size:15px}
-.shots{display:flex;flex-wrap:wrap;gap:28px;justify-content:center;margin-top:36px}
+body{margin:0;background:var(--dark);color:var(--ink);font:18px/1.5 "EB Garamond",Georgia,serif;-webkit-text-size-adjust:100%;overflow-x:hidden}
+a{color:var(--gold2)}
+.cz{font-family:Cinzel,Georgia,serif}
+.foil{background:linear-gradient(180deg,#fff2c9 0%,#ffd27a 38%,#c98a2c 58%,#ffe3a1 80%,#b8741c 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.in{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:Cinzel,Georgia,serif;margin:0;text-wrap:balance}
+.eyebrow{font:800 14px/1 Cinzel,serif;letter-spacing:.32em;text-transform:uppercase;color:var(--gold2)}
+.hero{position:relative;min-height:900px;overflow:hidden;background:#1b1230}
+.scene{position:absolute;inset:0;width:100%;height:100%}
+.shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,7,16,.85) 0%,rgba(13,7,16,0) 24%,rgba(13,7,16,0) 56%,rgba(26,15,10,.9) 100%)}
+.nav{position:relative;background:linear-gradient(180deg,rgba(13,7,16,.75),rgba(13,7,16,0));border-bottom:1px solid rgba(255,210,122,.25)}
+.nav .in{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-block:16px;padding-right:96px}
+.logo{display:flex;align-items:center;gap:12px;font:900 22px/1 Cinzel,serif;letter-spacing:.12em;text-transform:uppercase;text-shadow:0 2px 8px rgba(0,0,0,.6);color:var(--ink);text-decoration:none}
+.nav .l{display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+.nav a.t{color:#f3dfb8;text-decoration:none;font:600 13px/1 Cinzel,serif;letter-spacing:.16em;text-transform:uppercase}
+.nav a.t:hover{color:var(--gold)}
+.btn2{display:inline-flex;align-items:center;min-height:44px;padding:0 24px;border:2px solid var(--gold);background:rgba(140,47,27,.55);color:#ffe3a8;text-decoration:none;font:800 13px/1 Cinzel,serif;letter-spacing:.16em;text-transform:uppercase;border-radius:4px}
+.btn2:hover{background:rgba(140,47,27,.85);color:#fff2d6}
+.btn2:focus-visible,.cta a:focus-visible,.cta2:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.hc{position:relative;max-width:1000px;margin:0 auto;padding:30px max(16px,env(safe-area-inset-left,0px)) 40px;text-align:center}
+.hc .eyebrow{display:inline-flex;align-items:center;gap:14px;font-weight:600;letter-spacing:.38em;color:#ffe3a8;text-shadow:0 2px 8px rgba(0,0,0,.7)}
+.hc .eyebrow:before,.hc .eyebrow:after{content:"";width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--gold))}
+.hc .eyebrow:after{transform:scaleX(-1)}
+.hc h1{margin-top:12px;font-weight:900;font-size:clamp(44px,8.4vw,96px);line-height:1.02;filter:drop-shadow(0 6px 0 rgba(60,20,8,.7)) drop-shadow(0 12px 28px rgba(0,0,0,.6))}
+.hc h1 span.w{display:block;color:#fff2d6}
+.hc p.lead{margin:16px auto 0;max-width:620px;font-size:clamp(19px,2.6vw,24px);line-height:1.4;color:#fbeed6;text-shadow:0 2px 10px rgba(0,0,0,.85)}
+.cta{margin-top:24px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.cta a{display:inline-flex;align-items:center;min-height:66px;padding:0 clamp(28px,6vw,52px);background:linear-gradient(180deg,#c4412f 0%,#7a1d10 100%);color:#fff2d6;border-radius:6px;border:3px solid var(--gold);font:900 clamp(17px,3vw,21px)/1 Cinzel,serif;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;box-shadow:inset 0 2px 0 rgba(255,255,255,.3),inset 0 0 0 3px #5f1d0f,0 7px 0 #3b0f06,0 0 40px rgba(255,160,60,.35),0 18px 36px rgba(0,0,0,.55);transition:transform .12s,box-shadow .12s}
+.cta a:hover{transform:translateY(2px);box-shadow:inset 0 2px 0 rgba(255,255,255,.3),inset 0 0 0 3px #5f1d0f,0 5px 0 #3b0f06,0 0 50px rgba(255,160,60,.5),0 14px 30px rgba(0,0,0,.55)}
+.pill1{display:inline-block;padding:8px 20px;border-radius:999px;background:rgba(26,15,10,.82);border:1px solid rgba(255,210,122,.5);font-size:18px;color:#fff2d6}
+.strip{background:#120a06;border-block:3px solid var(--red)}
+.strip .in{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;padding-block:16px}
+.strip span{display:inline-flex;padding:10px 18px;background:rgba(26,15,10,.7);border:1px solid #8c6a3a;border-radius:999px;font:600 13px/1 Cinzel,serif;letter-spacing:.14em;text-transform:uppercase;color:#ffe3a8}
+.parch{position:relative;background:var(--parch);color:#2b1a0f;box-shadow:inset 0 8px 0 var(--gold)}
+.parch>svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.parch .in{position:relative;padding-block:70px 72px}
+.parch .eyebrow{color:var(--red)}
+.hd{text-align:center}
+.hd h2{margin-top:10px;font-weight:900;font-size:clamp(30px,5vw,44px)}
+.orn{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:14px}
+.orn i{width:110px;height:2px;background:linear-gradient(90deg,transparent,#8c6a3a)}
+.orn i+svg+i{transform:scaleX(-1)}
+.cards{display:flex;flex-wrap:wrap;gap:34px 26px;margin-top:60px}
+.card{position:relative;flex:1 1 280px;min-width:0;background:linear-gradient(180deg,#f8edcf,#efdcae);border:2px solid #8c6a3a;border-radius:8px;padding:48px 26px 28px;box-shadow:inset 0 0 0 5px #f8edcf,inset 0 0 0 6px #b99a62,0 8px 0 rgba(95,29,15,.3),0 22px 34px rgba(60,30,10,.28);text-align:center}
+.card .seal{position:absolute;left:50%;top:-32px;transform:translateX(-50%);width:66px;height:66px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e0583f,#7a1d10);border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;box-shadow:0 5px 0 #3b0f06,0 0 0 6px rgba(140,47,27,.18)}
+.card .n{font:800 13px/1 Cinzel,serif;letter-spacing:.24em;color:var(--red)}
+.card h3{margin:8px 0 10px;font-weight:800;font-size:23px}
+.card hr{border:0;margin:0 auto 12px;width:60px;height:2px;background:linear-gradient(90deg,transparent,#8c6a3a,transparent)}
+.card p{margin:0;font-size:19px;line-height:1.45;color:#4a3320}
+.fighter{background:radial-gradient(900px 500px at 70% 30%,#4a2412 0%,#1d120b 70%);border-top:6px solid var(--red)}
+.fighter .in{padding-block:72px;display:flex;flex-wrap:wrap;gap:48px;align-items:center}
+.fighter .tx{flex:1 1 360px;min-width:0}
+.fighter h2,.sec h2,.liga h2{margin-top:10px;font-weight:900;font-size:clamp(30px,5vw,44px);line-height:1.08}
+.fighter p,.liga p{margin:16px 0 0;font-size:22px;line-height:1.5;color:#e6d4b4}
+.cta2{display:inline-flex;align-items:center;min-height:56px;margin-top:24px;padding:0 34px;border:2px solid var(--gold);border-radius:6px;background:rgba(140,47,27,.6);color:#ffe3a8;text-decoration:none;font:800 15px/1 Cinzel,serif;letter-spacing:.16em;text-transform:uppercase}
+.cta2:hover{background:rgba(140,47,27,.9);color:#fff2d6}
+.sheet{flex:1 1 380px;min-width:0;max-width:520px;margin:0 auto;background:linear-gradient(180deg,#3a2216,#24150d);border:3px solid var(--gold);border-radius:10px;padding:26px;box-shadow:inset 0 0 0 5px #24150d,inset 0 0 0 6px #8c6a3a,0 26px 50px rgba(0,0,0,.6)}
+.sheet .hd2{display:flex;align-items:center;gap:16px}
+.av{width:72px;height:72px;flex:none;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffd27a,#c4762d);border:3px solid #fff2c9;display:flex;align-items:center;justify-content:center}
+.sheet .nm{font:900 26px/1.1 Cinzel,serif;color:#fff2d6}
+.sheet .sub{font-size:18px;color:#d9c3a0}
+.bar{display:flex;align-items:center;gap:12px;margin-top:12px}
+.bar b{width:96px;font:600 13px/1 Cinzel,serif;letter-spacing:.1em;text-transform:uppercase;color:#d9c3a0}
+.bar .tr{flex:1;height:12px;border-radius:6px;background:#1a0f0a;border:1px solid #5a3a22;overflow:hidden}
+.bar .tr i{display:block;height:100%}
+.bar em{width:28px;text-align:right;font-style:normal;font-size:18px;color:#fff2d6}
+.gift{margin-top:20px;padding:12px 14px;background:rgba(255,210,122,.1);border:1px dashed #b99a62;border-radius:6px;font-size:18px;color:#f3e6cf}
+.gift strong{font-family:Cinzel,serif;color:var(--gold)}
+.sec{background:#120a06;border-top:3px solid var(--red)}
+.sec .in{padding-block:68px}
+.sec .hd p{margin:14px auto 0;max-width:640px;font-size:21px;line-height:1.45;color:#d9c3a0}
+.tiers{display:flex;flex-wrap:wrap;gap:20px;margin-top:40px}
+.tier{flex:1 1 230px;min-width:0;background:linear-gradient(180deg,#2e1b12,#1d120b);border:2px solid var(--c);border-radius:8px;padding:24px 22px;text-align:center;box-shadow:0 0 0 4px rgba(0,0,0,.25),0 14px 28px rgba(0,0,0,.4)}
+.tier .p{font:900 46px/1 Cinzel,serif}
+.tier .k{margin-top:8px;font:800 16px/1.2 Cinzel,serif;letter-spacing:.18em;text-transform:uppercase;color:var(--c)}
+.tier p{margin:10px 0 0;font-size:18px;line-height:1.4;color:#e6d4b4}
+.shots{display:flex;flex-wrap:wrap;gap:28px;justify-content:center;margin-top:40px}
 .shot{width:min(100%,260px);margin:0}
-.phone{border:6px solid #0a0d13;outline:1px solid var(--line);border-radius:30px;overflow:hidden;background:#e8eaea;aspect-ratio:780/1160}
+.phone{border:6px solid #0a0d13;outline:2px solid #8c6a3a;border-radius:30px;overflow:hidden;background:#e8eaea;aspect-ratio:780/1160;box-shadow:0 20px 40px rgba(0,0,0,.5)}
 .phone img{display:block;width:100%;height:auto}
-.shot figcaption{margin-top:12px;color:var(--mut);font-size:14px;text-align:center}
-.feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:32px}
-.feat div{border:1px solid var(--line);border-radius:14px;padding:20px;min-width:0}
-.feat h3{font-size:18px;margin-bottom:6px}
-.feat p{color:var(--mut);font-size:15px}
-.odds{margin-top:32px;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:24px;max-width:640px}
-.odds h3{font-size:20px;margin-bottom:4px}
-.odds>p{color:var(--mut);font-size:15px;margin-bottom:18px}
-.bar{display:flex;height:38px;border-radius:9px;overflow:hidden;gap:2px}
-.bar span{display:grid;place-items:center;font:600 12px/1 Inter,sans-serif;color:#10131a;min-width:0}
-.bar .a{flex:83;background:#7f8ba3}.bar .b{flex:10;background:#5fd39a}.bar .c{flex:5;background:var(--acc)}.bar .d{flex:2;background:#ff7a70}
-.leg{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font-size:14px;color:var(--mut)}
-.leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
-.note{margin-top:28px;border-left:3px solid var(--acc);padding:4px 0 4px 16px;color:var(--mut);font-size:15px;max-width:62ch}
-.fin{text-align:center;padding-block:72px}
-.fin h2{font-size:clamp(32px,6vw,56px);margin:0 auto 12px!important;max-width:14ch!important}
-.fin p{margin:0 auto 32px;color:var(--mut)}
-footer{border-top:1px solid var(--line);padding-block:26px 34px;color:var(--mut);font-size:13px}
-@media (prefers-reduced-motion:reduce){.btn{transition:none}}
-</style><style>.lang{margin-left:auto;background:transparent;color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font:600 13px/1 Inter,system-ui,sans-serif;cursor:pointer}.lang:hover{border-color:var(--acc)}.lang:focus-visible{outline:3px solid #fff;outline-offset:2px}</style></head><body>
-<header class="hero"><svg class="claws" viewBox="0 0 520 420" aria-hidden="true"><g fill="none" stroke="#f5a524" stroke-linecap="round"><path d="M70 20 C170 130 250 250 330 400" stroke-width="30"/><path d="M190 10 C290 120 370 240 450 390" stroke-width="22" opacity=".75"/><path d="M300 0 C390 100 460 200 520 320" stroke-width="14" opacity=".5"/></g></svg>
-<div class="w"><div class="brand"><svg viewBox="0 0 28 28" aria-hidden="true"><g fill="none" stroke="#f5a524" stroke-width="3.4" stroke-linecap="round"><path d="M6 3l9 22"/><path d="M13 3l9 22" opacity=".7"/></g></svg>Chance &amp; Claw<button id="btn-lang" type="button" class="lang"></button></div>
-<h1>A sorte escolhe. <em>Tu</em> aguentas.</h1>
-<p class="lead">Cria um lutador, deixa os dados decidirem como ele evolui e vê-o combater sozinho. Sem instalar nada.</p>
-<div class="cta"><a class="btn" href="jogar/">Jogar agora <span aria-hidden="true">→</span></a><small>Grátis · corre no browser · telemóvel ou computador</small></div></div></header>
+.shot figcaption{margin-top:12px;color:#d9c3a0;font-size:17px;text-align:center}
+.liga{background:linear-gradient(180deg,#1d120b,#2a1a12);border-top:3px solid var(--red)}
+.liga .in{padding-block:68px;display:flex;flex-wrap:wrap;gap:48px;align-items:center}
+.liga .tx{flex:1 1 360px;min-width:0}
+.board{flex:1 1 380px;min-width:0;max-width:560px;margin:0 auto;background:#24150d;border:2px solid #8c6a3a;border-radius:8px;overflow:hidden;box-shadow:0 22px 44px rgba(0,0,0,.5)}
+.board h3{padding:14px 16px;background:var(--red);font:800 15px/1 Cinzel,serif;letter-spacing:.2em;text-transform:uppercase;color:#fff2d6}
+.row{display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid #4a2e1c}
+.row.me{background:rgba(232,165,83,.12)}
+.row .r{width:34px;font:900 20px/1 Cinzel,serif;color:var(--gold)}
+.row .nm{flex:1;min-width:0;font-size:20px;color:#fff2d6;overflow-wrap:anywhere}
+.row .lv{font-size:17px;color:#d9c3a0}
+.row .v{width:64px;text-align:right;font:800 17px/1 Cinzel,serif;color:#9fbf86}
+.final{background:linear-gradient(180deg,#8c2f1b,#5f1d0f);border-top:6px solid var(--gold);text-align:center}
+.final .in{max-width:900px;padding-block:64px}
+.final h2{font-weight:900;font-size:clamp(32px,6vw,48px);line-height:1.1;color:#fff2d6;text-shadow:0 4px 0 rgba(0,0,0,.35)}
+.final p{margin:14px auto 0;font-size:22px;color:#f6e3c0}
+.final a{display:inline-flex;align-items:center;min-height:64px;margin-top:26px;padding:0 clamp(28px,6vw,50px);background:linear-gradient(180deg,#ffe3a1,#e8a553);color:#2b1a0f;border-radius:6px;border:3px solid #fff2c9;font:900 clamp(17px,3vw,20px)/1 Cinzel,serif;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;box-shadow:0 7px 0 #7a4a14,0 18px 36px rgba(0,0,0,.45)}
+.final a:focus-visible{outline:3px solid #fff;outline-offset:3px}
+footer{background:#0d0706;border-top:3px solid var(--gold);color:#b9a68a;font-size:17px}
+footer .in{padding-block:28px;display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center}
+footer b{font:800 15px/1 Cinzel,serif;letter-spacing:.14em;text-transform:uppercase;color:#d9c3a0}
+@media(max-width:700px){.nav .in{padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:52px}.nav .l{gap:16px}.hero{min-height:0;display:flex;flex-direction:column;background:linear-gradient(180deg,#0d0710,#2a1636)}.nav{order:1}.hc{order:2}.scene{position:relative;order:3;height:380px;inset:auto}.shade{display:none}.cta{align-items:stretch}.cta a{justify-content:center}.hc{padding-bottom:28px}}
+@media (prefers-reduced-motion:reduce){.cta a{transition:none}.scene animate{display:none}}
+</style></head><body>
+<header class="hero"><svg class="scene" viewBox="0 0 1280 880" role="img" aria-label="Coliseu ao pôr do sol com dois gladiadores na areia" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="jsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#15102b"/><stop offset=".35" stop-color="#4a1f4a"/><stop offset=".58" stop-color="#b6402a"/><stop offset=".74" stop-color="#f08a3a"/><stop offset=".86" stop-color="#ffcf86"/></linearGradient>
+        <radialGradient id="jsun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fffbe8"/><stop offset=".35" stop-color="#ffe3a0"/><stop offset=".7" stop-color="#ffb255" stop-opacity=".55"/><stop offset="1" stop-color="#ff8a3a" stop-opacity="0"/></radialGradient>
+        <linearGradient id="jstone" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d9a36c"/><stop offset=".5" stop-color="#b17a47"/><stop offset="1" stop-color="#7a4a2a"/></linearGradient>
+        <linearGradient id="jstoneDark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a5a35"/><stop offset="1" stop-color="#4a2a17"/></linearGradient>
+        <linearGradient id="jarchIn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a140c"/><stop offset="1" stop-color="#5a2e18"/></linearGradient>
+        <linearGradient id="jsand" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2a867"/><stop offset=".6" stop-color="#c88a4c"/><stop offset="1" stop-color="#8a5a2c"/></linearGradient>
+        <radialGradient id="jflame" cx=".5" cy=".7" r=".6"><stop offset="0" stop-color="#fff6c8"/><stop offset=".4" stop-color="#ffb23a"/><stop offset="1" stop-color="#e5481a"/></radialGradient>
+        <radialGradient id="jvig" cx=".5" cy=".55" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient>
+        <linearGradient id="jsteel" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8e97a6"/><stop offset=".45" stop-color="#f1f4f9"/><stop offset="1" stop-color="#9aa3b2"/></linearGradient>
+        <linearGradient id="jbronze" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe0a0"/><stop offset=".5" stop-color="#c98a2c"/><stop offset="1" stop-color="#7a4a14"/></linearGradient>
+        <linearGradient id="jredcloth" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c2442b"/><stop offset="1" stop-color="#6d1a0f"/></linearGradient>
+        <linearGradient id="jbluecloth" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f7bd0"/><stop offset="1" stop-color="#1c2f66"/></linearGradient>
+        <filter id="jblur6"><feGaussianBlur stdDeviation="6"/></filter>
+        <filter id="jblur2"><feGaussianBlur stdDeviation="2"/></filter>
+        <filter id="jglow"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="jgrain"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="3"/><feColorMatrix values="0 0 0 0 .25  0 0 0 0 .14  0 0 0 0 .06  0 0 0 .55 0"/></filter>
+        <pattern id="jarches" width="64" height="120" patternUnits="userSpaceOnUse"><rect width="64" height="120" fill="url(#jstone)"/><path d="M10 120 V54 Q10 22 32 22 Q54 22 54 54 V120Z" fill="url(#jarchIn)"/><path d="M10 54 Q10 22 32 22 Q54 22 54 54" fill="none" stroke="#e9b982" stroke-width="3"/><rect x="0" y="116" width="64" height="4" fill="#7a4a2a"/></pattern>
+        <pattern id="jwindows" width="32" height="64" patternUnits="userSpaceOnUse"><rect width="32" height="64" fill="url(#jstoneDark)"/><rect x="9" y="18" width="14" height="28" rx="2" fill="#1c0e08"/></pattern>
+      </defs>
 
-<section><div class="w"><span class="lab">Como funciona</span><h2>Três passos e já estás na arena</h2>
-<ol class="steps"><li><h3>Nasce um lutador</h3><p>Escolhes o nome e a cor. Os atributos saem à sorte: 15 pontos repartidos ao acaso, mais um traço bom e um mau.</p></li>
-<li><h3>Os combates são automáticos</h3><p>Não controlas nada durante a luta. Escolhes o adversário e assistes, a 1x, 2x ou 4x.</p></li>
-<li><h3>Cada nível é um sorteio</h3><p>Ao subir, sai-te uma melhoria à sorte: atributo, habilidade, arma ou até um animal. Aceitas, ou arriscas mais uma troca.</p></li></ol></div></section>
+      <rect width="1280" height="880" fill="url(#jsky)"/>
+      <g opacity=".9">
+        <g stroke="#ffe0a0" stroke-opacity=".07"><path d="M640 560 L0 120 L120 80Z" fill="#ffe0a0" fill-opacity=".07"/><path d="M640 560 L360 0 L520 0Z" fill="#ffe0a0" fill-opacity=".06"/><path d="M640 560 L760 0 L920 0Z" fill="#ffe0a0" fill-opacity=".06"/><path d="M640 560 L1280 110 L1280 260Z" fill="#ffe0a0" fill-opacity=".07"/></g>
+      </g>
+      <circle cx="640" cy="520" r="260" fill="url(#jsun)"/>
+      <circle cx="640" cy="520" r="74" fill="#fff4d0"/>
+      <g filter="url(#jblur6)" opacity=".75"><ellipse cx="220" cy="270" rx="190" ry="22" fill="#ff9a5c"/><ellipse cx="320" cy="296" rx="150" ry="16" fill="#ffb57a"/><ellipse cx="1040" cy="230" rx="210" ry="24" fill="#ff8c55"/><ellipse cx="930" cy="262" rx="140" ry="14" fill="#ffb070"/></g>
+      <path d="M0 540 L90 500 L170 530 L280 470 L380 520 L470 490 L560 540 L700 520 L820 480 L930 530 L1040 490 L1140 520 L1280 480 V620 H0Z" fill="#6b2d3a" opacity=".8"/>
 
-<section><div class="w"><span class="lab">O jogo por dentro</span><h2>Capturas reais, direto do jogo</h2>
-<div class="shots"><figure class="shot"><div class="phone"><img src="img/hub-pt.webp" data-en="img/hub-en.webp" alt="Ecrã do lutador com nível, atributos e traços" width="390" height="720" loading="lazy"></div><figcaption>O teu lutador e os seus traços</figcaption></figure>
-<figure class="shot"><div class="phone"><img src="img/fight-pt.webp" data-en="img/fight-en.webp" alt="Combate automático entre dois lutadores" width="390" height="580" loading="lazy"></div><figcaption>Combate automático</figcaption></figure>
-<figure class="shot"><div class="phone"><img src="img/up-pt.webp" data-en="img/up-en.webp" alt="Cartão de melhoria sorteada ao subir de nível" width="390" height="400" loading="lazy"></div><figcaption>A melhoria sorteada ao subir</figcaption></figure></div></div></section>
+      <!-- coliseu -->
+      <g>
+        <rect x="40" y="440" width="1200" height="40" fill="url(#jwindows)"/>
+        <rect x="40" y="436" width="1200" height="8" fill="#e9b982"/>
+        <rect x="40" y="480" width="1200" height="120" fill="url(#jarches)"/>
+        <rect x="40" y="476" width="1200" height="6" fill="#e9b982"/>
+        <rect x="40" y="600" width="1200" height="120" fill="url(#jarches)"/>
+        <rect x="40" y="596" width="1200" height="6" fill="#e9b982"/>
+        <rect x="40" y="480" width="1200" height="240" fill="#000" opacity=".1"/>
+        <rect x="0" y="440" width="1280" height="280" fill="url(#jgrain)" opacity=".5"/>
+        <g fill="#2a140c" opacity=".95"><g id="jcrowd"><circle cx="70" cy="432" r="4"/><circle cx="92" cy="430" r="4"/><circle cx="118" cy="433" r="4"/><circle cx="141" cy="431" r="4"/><circle cx="170" cy="432" r="4"/><circle cx="196" cy="430" r="4"/><circle cx="222" cy="433" r="4"/><circle cx="250" cy="431" r="4"/></g><use href="#jcrowd" x="190"/><use href="#jcrowd" x="380"/><use href="#jcrowd" x="570"/><use href="#jcrowd" x="760"/><use href="#jcrowd" x="950"/></g>
+        <g fill="#8c2f1b"><path d="M150 480 h46 v118 l-23 -22 l-23 22Z"/><path d="M586 480 h46 v118 l-23 -22 l-23 22Z"/><path d="M1020 480 h46 v118 l-23 -22 l-23 22Z"/></g>
+        <g stroke="#ffd27a" stroke-width="4" stroke-linecap="round"><path d="M164 504 l5 40 M174 502 l5 42 M184 504 l4 34"/><path d="M600 504 l5 40 M610 502 l5 42 M620 504 l4 34"/><path d="M1034 504 l5 40 M1044 502 l5 42 M1054 504 l4 34"/></g>
+      </g>
 
-<section><div class="w"><span class="lab">O que tem</span><h2>Pequeno por fora, com muito por descobrir</h2>
-<div class="feat"><div><h3>Animais raros</h3><p>Com sorte, um animal junta-se a ti e luta ao teu lado. Quanto mais tens, mais difícil é encontrar o próximo.</p></div>
-<div><h3>Armas e habilidades</h3><p>Nove armas e dezenas de habilidades. Certas combinações ativam combos escondidos; o Guia dá as pistas.</p></div>
-<div><h3>Torneios</h3><p>Oito lutadores, três rondas, eliminação direta. Quem ganha leva uma recompensa sorteada.</p></div>
-<div><h3>Desafio diário e eventos</h3><p>Todos os dias há um desafio novo e um evento que muda as regras, como XP a dobrar.</p></div>
-<div><h3>Liga entre amigos</h3><p>Ranking e duelos assíncronos, calculados no servidor. Entra com a tua conta online e desafia outros jogadores.</p></div>
-<div><h3>Conta online</h3><p>Entra com o teu email para guardar os lutadores na nuvem e jogar em qualquer dispositivo. Ou joga como convidado.</p></div></div>
-<div class="odds"><h3>Quanto vale uma vitória no torneio?</h3><p>É a sorte que decide o prémio. Estas são as probabilidades reais:</p>
-<div class="bar" role="img" aria-label="83% pontos de atributo, 10% habilidade, 5% arma, 2% animal"><span class="a">83%</span><span class="b">10%</span><span class="c">5%</span><span class="d"></span></div>
-<div class="leg"><span><i style="background:#7f8ba3"></i>Pontos de atributo</span><span><i style="background:#5fd39a"></i>Habilidade</span><span><i style="background:#f5a524"></i>Arma</span><span><i style="background:#ff7a70"></i>Animal (2%)</span></div></div>
-<p class="note">Podes jogar logo, sem criar conta. Se quiseres guardar os lutadores na nuvem, cria uma conta com email e palavra-passe.</p></div></section>
+      <g opacity=".9"><path d="M300 436 V396" stroke="#2a140c" stroke-width="3"/><path d="M300 396 h34 l-8 9 l8 9 h-34Z" fill="#8c2f1b"/><path d="M980 436 V392" stroke="#2a140c" stroke-width="3"/><path d="M980 392 h34 l-8 9 l8 9 h-34Z" fill="#8c2f1b"/></g><g fill="#3a1d10" opacity=".85"><path d="M240 600 h14 v-30 q7 -10 0 -20 q-7 10 0 20Z"/><path d="M1030 600 h14 v-30 q7 -10 0 -20 q-7 10 0 20Z"/></g><ellipse cx="640" cy="720" rx="640" ry="40" fill="#ffd9a0" opacity=".18" filter="url(#jblur6)"/><!-- areia -->
+      <path d="M0 700 Q640 660 1280 700 V880 H0Z" fill="url(#jsand)"/>
+      <rect x="0" y="690" width="1280" height="190" fill="url(#jgrain)" opacity=".6"/>
+      <ellipse cx="640" cy="790" rx="520" ry="58" fill="#f6c27c" opacity=".35"/>
+      <g stroke="#9a6a38" stroke-opacity=".5" fill="none"><path d="M120 820 q60 -12 130 0"/><path d="M980 840 q70 -14 150 2"/><path d="M420 850 q90 -12 180 0"/></g>
 
-<section class="fin"><div class="w"><h2>Pronto para tentar a sorte?</h2><p>O teu primeiro lutador demora meio minuto a criar.</p><a class="btn" href="jogar/">Jogar agora <span aria-hidden="true">→</span></a></div></section>
-<footer><div class="w">Chance &amp; Claw · um jogo feito a dois, por diversão.</div></footer>
+      <!-- colunas e braseiros -->
+      <g>
+        <rect x="60" y="480" width="64" height="400" fill="url(#jstone)"/><rect x="48" y="470" width="88" height="22" rx="4" fill="#e9b982"/><rect x="48" y="860" width="88" height="20" fill="#7a4a2a"/>
+        <path d="M70 480 V880 M92 480 V880 M114 480 V880" stroke="#5a301a" stroke-opacity=".45" stroke-width="3"/>
+        <rect x="1156" y="480" width="64" height="400" fill="url(#jstone)"/><rect x="1144" y="470" width="88" height="22" rx="4" fill="#e9b982"/><rect x="1144" y="860" width="88" height="20" fill="#7a4a2a"/>
+        <path d="M1166 480 V880 M1188 480 V880 M1210 480 V880" stroke="#5a301a" stroke-opacity=".45" stroke-width="3"/>
+        <g transform="translate(92 440)"><path d="M-34 0 H34 L24 26 H-24Z" fill="url(#jbronze)"/><g filter="url(#jglow)"><path d="M0 -62 C26 -34 30 -14 14 0 H-14 C-30 -14 -24 -36 0 -62Z" fill="url(#jflame)"><animate attributeName="d" dur="1.6s" repeatCount="indefinite" values="M0 -62 C26 -34 30 -14 14 0 H-14 C-30 -14 -24 -36 0 -62Z;M2 -70 C28 -38 28 -12 14 0 H-14 C-32 -16 -22 -40 2 -70Z;M0 -62 C26 -34 30 -14 14 0 H-14 C-30 -14 -24 -36 0 -62Z"/></path></g></g>
+        <g transform="translate(1188 440)"><path d="M-34 0 H34 L24 26 H-24Z" fill="url(#jbronze)"/><g filter="url(#jglow)"><path d="M0 -62 C26 -34 30 -14 14 0 H-14 C-30 -14 -24 -36 0 -62Z" fill="url(#jflame)"><animate attributeName="d" dur="1.9s" repeatCount="indefinite" values="M0 -62 C26 -34 30 -14 14 0 H-14 C-30 -14 -24 -36 0 -62Z;M-2 -72 C26 -36 30 -12 14 0 H-14 C-28 -16 -26 -40 -2 -72Z;M0 -62 C26 -34 30 -14 14 0 H-14 C-30 -14 -24 -36 0 -62Z"/></path></g></g>
+      </g>
+
+      <!-- gladiador esquerda -->
+      <g transform="translate(450 600)">
+        <ellipse cx="0" cy="236" rx="96" ry="14" fill="#2a140c" opacity=".45"/>
+        <rect x="-34" y="150" width="26" height="86" rx="10" fill="#6a3a22"/><rect x="6" y="150" width="26" height="86" rx="10" fill="#7a4428"/>
+        <rect x="-40" y="214" width="36" height="22" rx="8" fill="#3a1d10"/><rect x="2" y="214" width="38" height="22" rx="8" fill="#3a1d10"/>
+        <path d="M-50 40 Q-56 130 -46 156 H46 Q56 130 50 40Z" fill="url(#jredcloth)"/>
+        <path d="M-46 56 H46 M-47 78 H47 M-46 100 H46 M-44 122 H44" stroke="#e9b982" stroke-width="5" stroke-opacity=".85"/>
+        <rect x="-52" y="146" width="104" height="14" rx="6" fill="url(#jbronze)"/>
+        <path d="M-58 36 Q0 8 58 36 Q54 64 0 70 Q-54 64 -58 36Z" fill="url(#jbronze)"/>
+        <circle cx="-56" cy="44" r="22" fill="url(#jbronze)"/>
+        <path d="M-52 40 Q-60 90 -48 118" stroke="#d9a36c" stroke-width="16" stroke-linecap="round" fill="none"/>
+        <circle cx="0" cy="-4" r="32" fill="#e0b08a"/>
+        <path d="M-36 -8 Q-34 -50 0 -52 Q34 -50 36 -8 L36 6 Q22 -8 0 -8 Q-22 -8 -36 6Z" fill="url(#jbronze)"/>
+        <rect x="-26" y="-4" width="52" height="26" rx="8" fill="url(#jbronze)" opacity=".92"/><rect x="-18" y="2" width="36" height="6" rx="3" fill="#1c0e08"/>
+        <path d="M0 -52 Q-26 -92 14 -98 Q8 -80 22 -62Z" fill="#c2442b"/><path d="M0 -52 Q34 -86 -4 -104 Q10 -80 -10 -60Z" fill="#8c2f1b"/>
+        <g transform="translate(-136 70)"><path d="M0 -70 Q54 -76 60 0 Q56 80 0 100 Q-56 80 -60 0 Q-54 -76 0 -70Z" fill="url(#jredcloth)" stroke="url(#jbronze)" stroke-width="7"/><path d="M-22 -34 L-8 40 M-2 -40 L12 46 M18 -34 L28 24" stroke="#ffd27a" stroke-width="8" stroke-linecap="round"/><circle cx="0" cy="-4" r="9" fill="url(#jbronze)"/></g>
+        <g transform="translate(88 -14) rotate(32)"><rect x="-6" y="0" width="12" height="150" rx="3" fill="url(#jsteel)"/><path d="M-6 0 L0 -30 L6 0Z" fill="#f1f4f9"/><rect x="-22" y="148" width="44" height="9" rx="4" fill="url(#jbronze)"/><rect x="-5" y="156" width="10" height="34" rx="4" fill="#5a301a"/></g>
+      </g>
+
+      <!-- gladiador direita -->
+      <g transform="translate(830 604)">
+        <ellipse cx="0" cy="232" rx="92" ry="13" fill="#2a140c" opacity=".45"/>
+        <rect x="-32" y="146" width="24" height="86" rx="10" fill="#7a4428"/><rect x="6" y="146" width="26" height="86" rx="10" fill="#6a3a22"/>
+        <rect x="-40" y="210" width="36" height="22" rx="8" fill="#3a1d10"/><rect x="2" y="210" width="38" height="22" rx="8" fill="#3a1d10"/>
+        <path d="M-46 38 Q-50 126 -42 152 H42 Q50 126 46 38Z" fill="url(#jbluecloth)"/>
+        <path d="M-42 56 H42 M-43 78 H43 M-42 100 H42 M-40 122 H40" stroke="#c9ced6" stroke-width="5" stroke-opacity=".85"/>
+        <rect x="-48" y="142" width="96" height="14" rx="6" fill="url(#jbronze)"/>
+        <path d="M-54 36 Q0 10 54 36 Q50 62 0 68 Q-50 62 -54 36Z" fill="#c9ced6"/><circle cx="52" cy="44" r="20" fill="#c9ced6"/>
+        <circle cx="0" cy="-6" r="30" fill="#c99a76"/>
+        <path d="M-34 -10 Q-32 -48 0 -50 Q32 -48 34 -10 L34 2 Q20 -10 0 -10 Q-20 -10 -34 2Z" fill="#c9ced6"/>
+        <path d="M-34 -30 Q0 -62 34 -30" fill="none" stroke="url(#jbronze)" stroke-width="6"/>
+        <path d="M0 -50 Q10 -84 34 -78 Q20 -62 20 -48Z" fill="#4f7bd0"/>
+        <g transform="translate(-26 70)"><path d="M-34 -50 L-26 -64 L-10 -50Z" fill="#c9ced6"/><g transform="rotate(-22)"><rect x="-4" y="-160" width="8" height="260" rx="3" fill="#6a3a22"/><path d="M-22 -150 Q-22 -190 0 -200 Q22 -190 22 -150 Q10 -160 0 -156 Q-10 -160 -22 -150Z" fill="url(#jsteel)"/><path d="M0 -208 L0 -150" stroke="url(#jsteel)" stroke-width="6"/></g></g>
+        <g transform="translate(100 74)"><circle r="46" fill="url(#jbronze)" stroke="#7a4a14" stroke-width="5"/><circle r="30" fill="none" stroke="#7a4a14" stroke-width="3"/><path d="M-12 -20 L-6 18 M0 -22 L6 20 M12 -18 L16 12" stroke="#5a301a" stroke-width="6" stroke-linecap="round"/><circle r="8" fill="#ffe0a0"/></g>
+      </g>
+
+      <!-- dado -->
+      <g transform="translate(600 744) rotate(14)"><rect width="52" height="52" rx="11" fill="#f8ecd0" stroke="#7a4a14" stroke-width="3"/><circle cx="15" cy="15" r="5" fill="#2b1a0f"/><circle cx="37" cy="37" r="5" fill="#2b1a0f"/><circle cx="15" cy="37" r="5" fill="#2b1a0f"/><circle cx="37" cy="15" r="5" fill="#2b1a0f"/><circle cx="26" cy="26" r="5" fill="#2b1a0f"/></g>
+
+      <!-- brasas -->
+      <g fill="#ffb23a" filter="url(#jblur2)"><circle cx="150" cy="380" r="3"><animate attributeName="cy" values="380;300;230" dur="5s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;.6;0" dur="5s" repeatCount="indefinite"/></circle><circle cx="190" cy="400" r="2.5"><animate attributeName="cy" values="400;330;250" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;.6;0" dur="6s" repeatCount="indefinite"/></circle><circle cx="1130" cy="390" r="3"><animate attributeName="cy" values="390;310;230" dur="5.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;.6;0" dur="5.5s" repeatCount="indefinite"/></circle><circle cx="1090" cy="410" r="2.5"><animate attributeName="cy" values="410;340;260" dur="6.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;.6;0" dur="6.5s" repeatCount="indefinite"/></circle></g>
+      <rect width="1280" height="880" fill="url(#jvig)"/>
+      <rect width="1280" height="300" fill="#0d0710" opacity=".0"/>
+    </svg><div class="shade"></div>
+<div class="nav"><div class="in"><a class="logo" href="./"><svg width="40" height="44" viewBox="0 0 34 38" aria-hidden="true"><path d="M3 4 H31 V20 Q31 32 17 36 Q3 32 3 20Z" fill="#8c2f1b" stroke="#ffd27a" stroke-width="2.5"/><path d="M6 7 H28 V19 Q28 29 17 33 Q6 29 6 19Z" fill="none" stroke="#ffd27a" stroke-width=".8" opacity=".7"/><path d="M11 10 L15 28 M17 10 L21 28 M23 11 L26 24" stroke="#fff2c9" stroke-width="2.6" stroke-linecap="round"/></svg>Chance &amp; Claw</a>
+<div class="l"><a class="t" href="#como">Como jogar</a><a class="t" href="#presentes">Presentes</a><a class="t" href="#liga">Liga</a><a class="btn2" href="jogar/">Entrar</a></div></div></div>
+<div class="hc"><div class="eyebrow">Que comece o combate</div>
+<h1><span class="foil">A sorte escolhe.</span><span class="w">Tu aguentas.</span></h1>
+<p class="lead">Forja o teu gladiador, deixa os dados do destino decidirem e vê-o lutar sozinho na areia.</p>
+<div class="cta"><a href="jogar/">Entrar na arena</a><span class="pill1">Grátis · no browser · sem instalar nada</span></div></div></header>
+<div class="strip"><div class="in"><span>★ Torneios com amigos</span><span>★ Liga online</span><span>★ 50 adversários</span><span>★ Animais raros</span><span>★ Português e inglês</span></div></div>
+<section class="parch" id="como"><svg aria-hidden="true"><filter id="pg"><feTurbulence type="fractalNoise" baseFrequency=".7" numOctaves="3" seed="8"/><feColorMatrix values="0 0 0 0 .45  0 0 0 0 .3  0 0 0 0 .12  0 0 0 .35 0"/></filter><rect width="100%" height="100%" filter="url(#pg)" opacity=".7"/></svg>
+<div class="in"><div class="hd"><div class="eyebrow">Como funciona</div><h2>Três passos até à glória</h2><div class="orn"><i></i><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M11 1 L14 8 L21 11 L14 14 L11 21 L8 14 L1 11 L8 8Z" fill="#8c2f1b"/></svg><i></i></div></div>
+<div class="cards"><div class="card"><div class="seal"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path d="M15 3 L25 8 V16 Q25 24 15 28 Q5 24 5 16 V8Z" fill="none" stroke="#fff2d6" stroke-width="2.5"/><path d="M11 11 L14 21 M16 10 L19 21" stroke="#fff2d6" stroke-width="2.4" stroke-linecap="round"/></svg></div><div class="n">CAPÍTULO I</div><h3>Recruta o gladiador</h3><hr><p>Nasce com duas qualidades sorteadas e, com sorte, um presente raro: uma arma, uma habilidade ou até um animal.</p></div><div class="card"><div class="seal"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path d="M6 24 L22 8 M24 24 L8 8" stroke="#fff2d6" stroke-width="3" stroke-linecap="round"/><path d="M20 6 L25 5 L24 10Z M10 6 L5 5 L6 10Z" fill="#fff2d6"/></svg></div><div class="n">CAPÍTULO II</div><h3>Assiste ao duelo</h3><hr><p>Escolhes o adversário; os golpes são automáticos e a sorte decide quem fica de pé.</p></div><div class="card"><div class="seal"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path d="M9 5 H21 V12 Q21 19 15 20 Q9 19 9 12Z" fill="none" stroke="#fff2d6" stroke-width="2.5"/><path d="M9 7 H4 Q4 14 10 15 M21 7 H26 Q26 14 20 15 M15 20 V24 M10 26 H20" fill="none" stroke="#fff2d6" stroke-width="2.4" stroke-linecap="round"/></svg></div><div class="n">CAPÍTULO III</div><h3>Conquista a glória</h3><hr><p>Sobe de nível, enfrenta amigos, vence torneios e entra para a liga.</p></div></div></div></section>
+<section class="fighter"><div class="in"><div class="tx"><div class="eyebrow">O teu lutador</div><h2>Cada gladiador é <span class="foil">único</span></h2>
+<p>Nasce com qualidades sorteadas, ganha pontos a cada nível e pode receber presentes raros. Não há dois iguais, e quem manda é a sorte.</p>
+<a class="cta2" href="jogar/">Criar o meu lutador</a></div>
+<div class="sheet"><div class="hd2"><div class="av"><svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M8 22 Q8 6 20 6 Q32 6 32 22 L32 28 Q26 22 20 22 Q14 22 8 28Z" fill="#7a4a14"/><rect x="13" y="22" width="14" height="10" rx="3" fill="#7a4a14"/></svg></div><div style="min-width:0"><div class="nm">Brutus Cinzento</div><div class="sub">Nível 3 · Robusto, Lento</div></div></div>
+<div style="margin-top:14px"><div class="bar"><b>Vida</b><span class="tr"><i style="width:80%;background:linear-gradient(90deg,#c4412f,#ffd27a)"></i></span><em>16</em></div><div class="bar"><b>Ataque</b><span class="tr"><i style="width:60%;background:linear-gradient(90deg,#e8a553,#ffd27a)"></i></span><em>12</em></div><div class="bar"><b>Defesa</b><span class="tr"><i style="width:70%;background:linear-gradient(90deg,#8fb4e8,#ffd27a)"></i></span><em>14</em></div><div class="bar"><b>Velocidade</b><span class="tr"><i style="width:35%;background:linear-gradient(90deg,#9fbf86,#ffd27a)"></i></span><em>7</em></div></div>
+<div class="gift"><strong>Presente de nascença:</strong> Gladius de ferro</div></div></div></section>
+<section class="sec" id="presentes"><div class="in"><div class="hd"><div class="eyebrow">Presente de nascença</div><h2>O destino abre a mão</h2><p>Ao criares um lutador, os dados sorteiam um bónus. Estas são as probabilidades.</p></div><div class="tiers"><div class="tier" style="--c:#9fbf86"><div class="p foil">50%</div><div class="k">Atributo</div><p>Um ponto extra numa qualidade, para começares um passo à frente.</p></div><div class="tier" style="--c:#8fb4e8"><div class="p foil">25%</div><div class="k">Arma</div><p>Uma arma sorteada, logo na primeira luta.</p></div><div class="tier" style="--c:#d59be8"><div class="p foil">24,5%</div><div class="k">Habilidade</div><p>As mais fracas saem mais vezes; as lendárias quase nunca.</p></div><div class="tier" style="--c:#ffd27a"><div class="p foil">0,5%</div><div class="k">Animal</div><p>Um companheiro raro que luta ao teu lado. Qualquer um pode sair.</p></div></div></div></section>
+<section class="sec" style="border-top:3px solid #8c2f1b;background:linear-gradient(180deg,#1d120b,#120a06)"><div class="in"><div class="hd"><div class="eyebrow">O jogo por dentro</div><h2>Capturas reais, direto do jogo</h2></div><div class="shots"><figure class="shot"><div class="phone"><img src="img/hub-pt.webp" data-en="img/hub-en.webp" alt="Ecrã do lutador com nível, atributos e traços" width="780" height="1160" loading="lazy"></div><figcaption>O teu lutador e os seus traços</figcaption></figure><figure class="shot"><div class="phone"><img src="img/fight-pt.webp" data-en="img/fight-en.webp" alt="Combate automático entre dois lutadores" width="780" height="1160" loading="lazy"></div><figcaption>Combate automático</figcaption></figure><figure class="shot"><div class="phone"><img src="img/up-pt.webp" data-en="img/up-en.webp" alt="Cartão de melhoria sorteada ao subir de nível" width="780" height="1160" loading="lazy"></div><figcaption>A melhoria sorteada ao subir</figcaption></figure></div></div></section>
+<section class="liga" id="liga"><div class="in"><div class="board"><h3>Liga da arena</h3><div class="row me"><span class="r">1</span><span class="nm">Brutus Cinzento</span><span class="lv">Nv. 9</span><span class="v">41 V</span></div><div class="row"><span class="r">2</span><span class="nm">Lúcia Garra</span><span class="lv">Nv. 8</span><span class="v">37 V</span></div><div class="row"><span class="r">3</span><span class="nm">Marco o Tenaz</span><span class="lv">Nv. 8</span><span class="v">34 V</span></div><div class="row"><span class="r">4</span><span class="nm">Ísis da Areia</span><span class="lv">Nv. 7</span><span class="v">29 V</span></div><div class="row"><span class="r">5</span><span class="nm">Cássio Trovão</span><span class="lv">Nv. 7</span><span class="v">27 V</span></div></div><div class="tx"><div class="eyebrow">Liga e torneios</div><h2>Sobe na <span class="foil">classificação</span></h2>
+<p>Enfrenta amigos, entra em torneios e vê o teu lutador subir na liga. Cada vitória conta.</p></div></div></section>
+<section class="final"><div class="in"><h2>A arena está à tua espera</h2><p>Cria o teu lutador em menos de um minuto.</p><a href="jogar/">Entrar na arena</a></div></section>
+<footer><div class="in"><b>Chance &amp; Claw</b><span>Um jogo feito a dois, por diversão.</span></div></footer>
+<button id="btn-lang" type="button" hidden></button>
 <script>(function(){
 var L='';try{L=localStorage.getItem('cc-lang')||''}catch(e){}
 if(L!=='pt'&&L!=='en')L=/^pt/i.test(navigator.language||'')?'pt':'en';
@@ -94,7 +245,7 @@ window.LANG=L;window.EN=L==='en';
 document.documentElement.lang=EN?'en':'pt-PT';
 window.setLang=function(l){try{localStorage.setItem('cc-lang',l)}catch(e){}location.reload()};
 window.petOf=function(p,o){return EN?o+"'s "+p:p+' de '+o};
-var D={"A sorte escolhe.":"Luck chooses.","aguentas.":"endure.","Tu":"You","Cria um lutador, deixa os dados decidirem como ele evolui e vê-o combater sozinho. Sem instalar nada.":"Create a fighter, let the dice decide how it evolves and watch it fight on its own. Nothing to install.","Jogar agora":"Play now","Grátis · corre no browser · telemóvel ou computador":"Free · runs in the browser · phone or computer","Como funciona":"How it works","Três passos e já estás na arena":"Three steps and you're in the arena","Nasce um lutador":"A fighter is born","Escolhes o nome e a cor. Os atributos saem à sorte: 15 pontos repartidos ao acaso, mais um traço bom e um mau.":"You pick the name and color. The attributes are random: 15 points spread at random, plus one good trait and one bad trait.","Os combates são automáticos":"Fights are automatic","Não controlas nada durante a luta. Escolhes o adversário e assistes, a 1x, 2x ou 4x.":"You don't control anything during the fight. You pick the opponent and watch, at 1x, 2x or 4x.","Cada nível é um sorteio":"Every level is a draw","Ao subir, sai-te uma melhoria à sorte: atributo, habilidade, arma ou até um animal. Aceitas, ou arriscas mais uma troca.":"When you level up, you get a random upgrade: an attribute, a skill, a weapon or even a pet. Take it, or risk one more swap.","O jogo por dentro":"Inside the game","Capturas reais, direto do jogo":"Real screenshots, straight from the game","O teu lutador e os seus traços":"Your fighter and its traits","Combate automático":"Automatic fight","A melhoria sorteada ao subir":"The random upgrade when you level up","O que tem":"What's inside","Pequeno por fora, com muito por descobrir":"Small on the outside, lots to discover","Animais raros":"Rare pets","Com sorte, um animal junta-se a ti e luta ao teu lado. Quanto mais tens, mais difícil é encontrar o próximo.":"With luck, a pet joins you and fights by your side. The more you have, the harder it is to find the next one.","Armas e habilidades":"Weapons and skills","Nove armas e dezenas de habilidades. Certas combinações ativam combos escondidos; o Guia dá as pistas.":"Nine weapons and dozens of skills. Certain combinations unlock hidden combos; the Guide gives you hints.","Torneios":"Tournaments","Oito lutadores, três rondas, eliminação direta. Quem ganha leva uma recompensa sorteada.":"Eight fighters, three rounds, single elimination. The winner takes a random reward.","Desafio diário e eventos":"Daily challenge and events","Todos os dias há um desafio novo e um evento que muda as regras, como XP a dobrar.":"Every day there is a new challenge and an event that changes the rules, like double XP.","Liga entre amigos":"League with friends","Ranking e duelos assíncronos, calculados no servidor. Entra com a tua conta online e desafia outros jogadores.":"Ranking and asynchronous duels, calculated on the server. Log in with your online account and challenge other players.","Conta online":"Online account","Entra com o teu email para guardar os lutadores na nuvem e jogar em qualquer dispositivo. Ou joga como convidado.":"Log in with your email to save your fighters in the cloud and play on any device. Or play as a guest.","Quanto vale uma vitória no torneio?":"What is a tournament win worth?","É a sorte que decide o prémio. Estas são as probabilidades reais:":"Luck decides the prize. These are the real odds:","Pontos de atributo":"Attribute points","Habilidade":"Skill","Arma":"Weapon","Animal (2%)":"Pet (2%)","Podes jogar logo, sem criar conta. Se quiseres guardar os lutadores na nuvem, cria uma conta com email e palavra-passe.":"You can play right away, without an account. If you want to save your fighters in the cloud, create an account with email and password.","Pronto para tentar a sorte?":"Ready to try your luck?","O teu primeiro lutador demora meio minuto a criar.":"Your first fighter takes half a minute to create.","Chance & Claw · um jogo feito a dois, por diversão.":"Chance & Claw · a game made by two friends, for fun.","Ecrã do lutador com nível, atributos e traços":"Fighter screen with level, attributes and traits","Combate automático entre dois lutadores":"Automatic fight between two fighters","Cartão de melhoria sorteada ao subir de nível":"Random upgrade card when leveling up","83% pontos de atributo, 10% habilidade, 5% arma, 2% animal":"83% attribute points, 10% skill, 5% weapon, 2% pet","Cria um lutador, deixa a sorte decidir como evolui e vê-o combater sozinho.":"Create a fighter, let luck decide how it evolves and watch it fight on its own.","Hoje é dia de festa!":"Today is party day!","VAI FESTEJAR!!!!":"GO CELEBRATE!!!!","Volta mais tarde, obrigado":"Come back later, thank you"};
+var D={"A sorte escolhe.":"Luck chooses.","aguentas.":"endure.","Tu":"You","Cria um lutador, deixa os dados decidirem como ele evolui e vê-o combater sozinho. Sem instalar nada.":"Create a fighter, let the dice decide how it evolves and watch it fight on its own. Nothing to install.","Jogar agora":"Play now","Grátis · corre no browser · telemóvel ou computador":"Free · runs in the browser · phone or computer","Como funciona":"How it works","Três passos e já estás na arena":"Three steps and you're in the arena","Nasce um lutador":"A fighter is born","Escolhes o nome e a cor. Os atributos saem à sorte: 15 pontos repartidos ao acaso, mais um traço bom e um mau.":"You pick the name and color. The attributes are random: 15 points spread at random, plus one good trait and one bad trait.","Os combates são automáticos":"Fights are automatic","Não controlas nada durante a luta. Escolhes o adversário e assistes, a 1x, 2x ou 4x.":"You don't control anything during the fight. You pick the opponent and watch, at 1x, 2x or 4x.","Cada nível é um sorteio":"Every level is a draw","Ao subir, sai-te uma melhoria à sorte: atributo, habilidade, arma ou até um animal. Aceitas, ou arriscas mais uma troca.":"When you level up, you get a random upgrade: an attribute, a skill, a weapon or even a pet. Take it, or risk one more swap.","O jogo por dentro":"Inside the game","Capturas reais, direto do jogo":"Real screenshots, straight from the game","O teu lutador e os seus traços":"Your fighter and its traits","Combate automático":"Automatic fight","A melhoria sorteada ao subir":"The random upgrade on level up","O que tem":"What's inside","Pequeno por fora, com muito por descobrir":"Small on the outside, lots to discover","Animais raros":"Rare pets","Com sorte, um animal junta-se a ti e luta ao teu lado. Quanto mais tens, mais difícil é encontrar o próximo.":"With luck, a pet joins you and fights by your side. The more you have, the harder it is to find the next one.","Armas e habilidades":"Weapons and skills","Nove armas e dezenas de habilidades. Certas combinações ativam combos escondidos; o Guia dá as pistas.":"Nine weapons and dozens of skills. Certain combinations unlock hidden combos; the Guide gives you hints.","Torneios":"Tournaments","Oito lutadores, três rondas, eliminação direta. Quem ganha leva uma recompensa sorteada.":"Eight fighters, three rounds, single elimination. The winner takes a random reward.","Desafio diário e eventos":"Daily challenge and events","Todos os dias há um desafio novo e um evento que muda as regras, como XP a dobrar.":"Every day there is a new challenge and an event that changes the rules, like double XP.","Liga entre amigos":"League with friends","Ranking e duelos assíncronos, calculados no servidor. Entra com a tua conta online e desafia outros jogadores.":"Ranking and asynchronous duels, calculated on the server. Log in with your online account and challenge other players.","Conta online":"Online account","Entra com o teu email para guardar os lutadores na nuvem e jogar em qualquer dispositivo. Ou joga como convidado.":"Log in with your email to save your fighters in the cloud and play on any device. Or play as a guest.","Quanto vale uma vitória no torneio?":"What is a tournament win worth?","É a sorte que decide o prémio. Estas são as probabilidades reais:":"Luck decides the prize. These are the real odds:","Pontos de atributo":"Attribute points","Habilidade":"Skill","Arma":"Weapon","Animal (2%)":"Pet (2%)","Podes jogar logo, sem criar conta. Se quiseres guardar os lutadores na nuvem, cria uma conta com email e palavra-passe.":"You can play right away, without an account. If you want to save your fighters in the cloud, create an account with email and password.","Pronto para tentar a sorte?":"Ready to try your luck?","O teu primeiro lutador demora meio minuto a criar.":"Your first fighter takes half a minute to create.","Chance & Claw · um jogo feito a dois, por diversão.":"Chance & Claw · a game made by two friends, for fun.","Ecrã do lutador com nível, atributos e traços":"Fighter screen with level, attributes and traits","Combate automático entre dois lutadores":"Automatic fight between two fighters","Cartão de melhoria sorteada ao subir de nível":"Random upgrade card on level up","83% pontos de atributo, 10% habilidade, 5% arma, 2% animal":"83% attribute points, 10% skill, 5% weapon, 2% pet","Cria um lutador, deixa a sorte decidir como evolui e vê-o combater sozinho.":"Create a fighter, let luck decide how it evolves and watch it fight on its own.","Hoje é dia de festa!":"Today is party day!","VAI FESTEJAR!!!!":"GO CELEBRATE!!!!","Volta mais tarde, obrigado":"Come back later, thank you","CAPÍTULO I":"CHAPTER I","Recruta o gladiador":"Recruit the gladiator","Nasce com duas qualidades sorteadas e, com sorte, um presente raro: uma arma, uma habilidade ou até um animal.":"Born with two random traits and, with luck, a rare gift: a weapon, a skill or even a pet.","CAPÍTULO II":"CHAPTER II","Assiste ao duelo":"Watch the duel","Escolhes o adversário; os golpes são automáticos e a sorte decide quem fica de pé.":"You pick the opponent; the blows are automatic and luck decides who stays standing.","CAPÍTULO III":"CHAPTER III","Conquista a glória":"Win glory","Sobe de nível, enfrenta amigos, vence torneios e entra para a liga.":"Level up, face friends, win tournaments and join the league.","Atributo":"Attribute","Um ponto extra numa qualidade, para começares um passo à frente.":"An extra point in a stat, so you start a step ahead.","Uma arma sorteada, logo na primeira luta.":"A random weapon, right from the first fight.","As mais fracas saem mais vezes; as lendárias quase nunca.":"The weaker ones come up more often; the legendary ones almost never.","Animal":"Pet","Um companheiro raro que luta ao teu lado. Qualquer um pode sair.":"A rare companion that fights by your side. Any of them can come up.","Nv.":"Lv.","V":"W","Torneios com amigos":"Tournaments with friends","Liga online":"Online league","50 adversários":"50 opponents","Português e inglês":"Portuguese and English","Chance & Claw":"Chance & Claw","Como jogar":"How to play","Presentes":"Gifts","Liga":"League","Entrar":"Enter","Que comece o combate":"Let the combat begin","Tu aguentas.":"You endure.","Forja o teu gladiador, deixa os dados do destino decidirem e vê-o lutar sozinho na areia.":"Forge your gladiator, let the dice of fate decide and watch it fight on its own in the sand.","Entrar na arena":"Enter the arena","Grátis · no browser · sem instalar nada":"Free · in the browser · nothing to install","Três passos até à glória":"Three steps to glory","O teu lutador":"Your fighter","Cada gladiador é":"Every gladiator is","único":"unique","Nasce com qualidades sorteadas, ganha pontos a cada nível e pode receber presentes raros. Não há dois iguais, e quem manda é a sorte.":"Born with random traits, earns points at every level and can receive rare gifts. No two are alike, and luck is in charge.","Criar o meu lutador":"Create my fighter","Nível 3 · Robusto, Lento":"Level 3 · Sturdy, Slow","Vida":"Health","Ataque":"Attack","Defesa":"Defense","Velocidade":"Speed","Presente de nascença:":"Birth gift:","Gladius de ferro":"Iron gladius","Presente de nascença":"Birth gift","O destino abre a mão":"Fate opens its hand","Ao criares um lutador, os dados sorteiam um bónus. Estas são as probabilidades.":"When you create a fighter, the dice draw a bonus. These are the odds.","Liga da arena":"Arena league","Liga e torneios":"League and tournaments","Sobe na":"Climb the","classificação":"ranking","Enfrenta amigos, entra em torneios e vê o teu lutador subir na liga. Cada vitória conta.":"Face friends, enter tournaments and watch your fighter climb the league. Every win counts.","A arena está à tua espera":"The arena is waiting for you","Cria o teu lutador em menos de um minuto.":"Create your fighter in under a minute.","Um jogo feito a dois, por diversão.":"A game made by two, for fun."};
 var ATTRS=['title','aria-label','placeholder','alt'];
 var DK=Object.create(null),EX=Object.create(null),SUBL=[];
 var PATS=[[/(\d+)V (\d+)D/g,'$1W $2L'],[/(\d+)V\b/g,'$1W'],[/(\d+)D\b/g,'$1L']];
