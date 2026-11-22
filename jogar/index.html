@@ -1,6 +1,7 @@
 <!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#11141b"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2312161f'/%3E%3Cg fill='none' stroke='%23f5a524' stroke-width='3.4' stroke-linecap='round'%3E%3Cpath d='M9 6l8 21'/%3E%3Cpath d='M16 6l8 21' opacity='.7'/%3E%3C/g%3E%3C/svg%3E"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style><title>Chance &amp; Claw</title>
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=EB+Garamond:wght@400;500;600&display=swap">
 <style>
 /* Layout: cabeçalho curto e um ecrã de cada vez (conta, criar, hub, combate). Papel frio, tinta escura, âmbar só nas armas. */
 :root{
@@ -293,6 +294,66 @@ section:not([hidden]){animation:enter .28s ease-out}
 .lg-feed small{color:var(--muted)}
 #lg-body select{max-width:100%}
 @media (max-width:520px){.lg-r{grid-template-columns:34px minmax(0,1fr)}.lg-r .go{grid-column:1/-1}}
+
+/* ---- Pele "Coliseu" (login e criar lutador) ---- */
+body.sk{--bg:#1a0f0a;--panel:#efdfb8;--ink:#2b1a0f;--muted:#5f4a32;--line:#b99a62;--focus:#8c2f1b;--f-display:Cinzel,Georgia,serif;--f-body:'EB Garamond',Georgia,serif;color:#f3e6cf;color-scheme:light;font-size:18px;
+  background:radial-gradient(900px 520px at 50% -80px,#7a3b1d 0%,#3a1d10 45%,#1a0f0a 100%) fixed;position:relative}
+body.sk::before{content:"";position:fixed;left:0;right:0;bottom:0;height:150px;pointer-events:none;z-index:0;opacity:.55;
+  background:linear-gradient(180deg,transparent,rgba(26,15,10,.9)),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='150' viewBox='0 0 64 150'%3E%3Crect width='64' height='150' fill='%23b17a47'/%3E%3Cpath d='M10 150V70Q10 34 32 34Q54 34 54 70V150Z' fill='%232a140c'/%3E%3Cpath d='M10 70Q10 34 32 34Q54 34 54 70' fill='none' stroke='%23e9b982' stroke-width='3'/%3E%3C/svg%3E") repeat-x bottom}
+body.sk .wrap{position:relative;z-index:1}
+body.sk h1,body.sk h2,body.sk h3{font-family:Cinzel,Georgia,serif}
+body.sk header{border-bottom:3px solid #8c2f1b;box-shadow:0 1px 0 #ffd27a;align-items:center;margin-bottom:28px}
+body.sk header h1{display:flex;align-items:center;gap:12px;font-weight:900;font-size:clamp(22px,5vw,30px);letter-spacing:.12em;text-transform:uppercase;color:#f3e6cf;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+body.sk header h1::before{content:"";flex:none;width:36px;height:40px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 38'%3E%3Cpath d='M3 4H31V20Q31 32 17 36Q3 32 3 20Z' fill='%238c2f1b' stroke='%23ffd27a' stroke-width='2.5'/%3E%3Cpath d='M11 10L15 28M17 10L21 28M23 11L26 24' stroke='%23fff2c9' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat}
+body.sk .tagline{color:#e6d4b4;font-size:19px}
+body.sk header .btn.ghost{color:#f3dfb8;border-color:#8c6a3a;background:rgba(26,15,10,.5)}
+body.sk .eyebrow{font-family:Cinzel,serif;font-weight:800;letter-spacing:.2em}
+body.sk .panel,body.sk .create>div:first-child{position:relative;background:linear-gradient(180deg,#f8edcf,#efdcae);color:var(--ink);border:3px solid #ffd27a;border-radius:10px;padding:30px;box-shadow:inset 0 0 0 5px #f8edcf,inset 0 0 0 6px #b99a62,0 10px 0 rgba(0,0,0,.35),0 26px 50px rgba(0,0,0,.5)}
+body.sk .create{gap:32px}
+body.sk .create h2,body.sk #lg-title{font-weight:900;font-size:clamp(26px,5vw,32px)}
+body.sk #s-login h2::before,body.sk #s-create h2::before{display:block;margin-bottom:8px;font:800 13px/1 Cinzel,serif;letter-spacing:.28em;color:#8c2f1b}
+body.sk #s-tut h2::before{display:none}
+body.sk .tut-dots i{background:#b99a62}body.sk .tut-dots i.on{background:#8c2f1b}body.sk .tut-step{font-family:Cinzel,serif;color:#8c2f1b}body.sk #tut-body{font-size:19px}
+body.sk #s-login h2::before{content:"PORTÃO DA ARENA"}
+body.sk #s-create h2::before{content:"RECRUTAMENTO"}
+html:lang(en) body.sk #s-login h2::before{content:"ARENA GATE"}
+html:lang(en) body.sk #s-create h2::before{content:"RECRUITMENT"}
+body.sk .lead,body.sk .msg{color:var(--muted);font-size:19px;line-height:1.4}
+body.sk .msg{font-size:17px}
+body.sk label.lbl,body.sk .lbl2,body.sk .create legend{font:600 13px/1.2 Cinzel,serif;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+body.sk input[type=text],body.sk input[type=email],body.sk input[type=password],body.sk select{background:#fbf3de;border:2px solid #8c6a3a;border-radius:4px;color:#2b1a0f;font:19px 'EB Garamond',Georgia,serif;min-height:48px}
+body.sk input:focus-visible,body.sk select:focus-visible,body.sk button:focus-visible{outline:3px solid #8c2f1b;outline-offset:2px}
+body.sk .btn{font:800 15px/1 Cinzel,serif;letter-spacing:.12em;text-transform:uppercase;min-height:50px;padding:0 24px;border-radius:6px;border:3px solid #5f1d0f;background:#8c2f1b;color:#f8ecd0;box-shadow:0 5px 0 #3b0f06;transition:transform .1s,box-shadow .1s}
+body.sk .btn:hover{opacity:1;background:#a53a24;transform:translateY(2px);box-shadow:0 3px 0 #3b0f06}
+body.sk .btn:disabled{opacity:.5}
+body.sk .btn.ghost{background:transparent;color:#2b1a0f;border:2px solid #8c6a3a;box-shadow:none}
+body.sk .btn.ghost:hover{background:rgba(140,106,58,.18);transform:none}
+body.sk .btn.small{min-height:40px;padding:0 14px;font-size:13px}
+body.sk header .btn.ghost:hover{background:rgba(255,210,122,.12)}
+body.sk #lg-tabs{gap:8px}
+body.sk #lg-tabs .btn{flex:1;box-shadow:none;border-width:2px}
+body.sk #lg-tabs .btn:not(.ghost){background:#2b1a0f;border-color:#2b1a0f;color:#f3e6cf}
+body.sk .linkbtn{color:#8c2f1b;font-size:17px}
+body.sk #lg-guestbox{border-top:2px dashed #b99a62}
+body.sk .err{color:#9c2216;font-size:17px}
+body.sk .sw span{width:40px;height:40px;box-shadow:inset 0 0 0 2px rgba(0,0,0,.2)}
+body.sk .sw input:checked+span{outline-color:#2b1a0f}
+body.sk .pvbox{background:radial-gradient(260px 200px at 50% 85%,rgba(255,214,150,.55),transparent 70%),linear-gradient(180deg,#5a2e1c 0%,#a5612e 60%,#c89055 60.1%,#a8743c 100%);border:3px solid #ffd27a;border-radius:10px;padding:20px 12px 16px;box-shadow:inset 0 0 0 5px rgba(0,0,0,.22),0 10px 0 rgba(0,0,0,.35),0 26px 50px rgba(0,0,0,.5)}
+body.sk .pvbox .eyebrow{color:#fff2d6;margin-top:6px;text-shadow:0 2px 6px rgba(0,0,0,.6)}
+html:has(body.sk){background:#1a0f0a}
+body.sk .evtag,body.sk #evtag{color:#e8a553!important;font-size:17px}
+body.sk input[type=text],body.sk input[type=email],body.sk input[type=password]{max-width:none}
+body.sk .lbl2{margin-top:16px}
+body.sk #lg-form{margin-top:18px!important}
+body.sk #lg-form .row,body.sk #f-create>.row{margin-top:22px}
+body.sk #lg-alt{margin-top:14px;gap:6px 18px}
+body.sk #lg-guestbox{margin-top:20px!important;padding-top:20px!important}
+body.sk #lg-tabs{margin-top:6px}
+body.sk .create .lead{margin-bottom:22px}
+body.sk .create fieldset{margin:22px 0}
+body.sk #st-roll{margin-top:10px!important}
+@media (max-width:700px){body.sk{padding-top:60px}body.sk .panel,body.sk .create>div:first-child{padding:22px 18px}}
+@media (prefers-reduced-motion:reduce){body.sk .btn{transition:none}}
 </style><script>window.CC_CLOUD={url:"https://ulwxnharicpevojoerff.supabase.co",key:"sb_publishable_5TK0S386gpVHezHm7ZydQQ_rWi9VWua",google:false};</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script></head><body>
 
 <div class="wrap">
@@ -1093,6 +1154,7 @@ function refreshSnd(){
   $('btn-snd').setAttribute('aria-checked',String(!off));
 }
 function show(id){
+  document.body.classList.toggle('sk',id==='s-login'||id==='s-create'||id==='s-tut');
   ['s-login','s-account','s-create','s-hub','s-fight','s-guide','s-history','s-league','s-tut'].forEach(x=>{$(x).hidden=x!==id});
   if(id!=='s-guide'&&id!=='s-history'&&id!=='s-league'&&id!=='s-tut'&&id!=='s-login')lastScreen=id;
   $('btn-lang').hidden=id==='s-fight';
