@@ -886,10 +886,10 @@ function pickOptions(f,rng=Math.random){
   if(!out.some(o=>o.type==='stat'))out[2]={type:'stat',id:Object.keys(STATS)[Math.floor(rng()*4)]};
   return out;
 }
-const UP_W={stat:.55,skill:.30,weapon:.15};
+const UP_W={stat:.75,skill:.18,weapon:.07};
 function rollUpgrade(f,rng=Math.random,not=null){
   let p=pool(f);if(not)p=p.filter(o=>!(o.type===not.type&&o.id===not.id));
-  const w=Object.assign({},UP_W);if(!f.weapons.some(id=>id!=='punhos'))w.weapon=.3;
+  const w=Object.assign({},UP_W);
   const by={stat:[],weapon:[],skill:[]};p.forEach(o=>by[o.type].push(o));
   const types=Object.keys(by).filter(t=>by[t].length);
   let r=rng()*types.reduce((a,t)=>a+w[t],0),t=types[types.length-1];
