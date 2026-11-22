@@ -2256,10 +2256,9 @@ async function lsLoad(){
   if(!CL.sb||!CL.user)return;
   LS.loading=true;lsRender();
   try{
-    const a=await CL.sb.from('league_fighters').select('*');
-    const b=await CL.sb.from('league_duels').select('*').order('created_at',{ascending:false}).limit(200);
-    if(a.error)throw a.error;if(b.error)throw b.error;
-    LS.rows=a.data||[];LS.duels=b.data||[];
+    const bd=await CL.sb.rpc('league_board');
+    if(bd.error)throw bd.error;
+    const bj=bd.data||{};LS.rows=bj.f||[];LS.duels=bj.d||[];
   }catch(e){LS.err='net'}
   try{LS.fr=await lsCall('friends')}catch(e){LS.frErr=e.code||'net'}
   LS.loading=false;lsRender();
