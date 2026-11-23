@@ -411,6 +411,26 @@ body.sk .acc-head label{font:600 13px Cinzel,serif;letter-spacing:.12em;text-tra
 body.sk #res h3{font-size:26px}
 body.sk textarea{background:#fbf3de;border:2px solid #8c6a3a;color:#2b1a0f}
 body.sk #toast span{background:#2b1a0f;color:#f8ecd0;border:2px solid #ffd27a;font:600 17px 'EB Garamond',serif}
+
+/* layout largo para PC e tablet */
+@media (min-width:1000px){
+body.sk .wrap{max-width:1320px}
+body.sk .wrap>section:not(#s-hub):not(#s-account){max-width:980px;margin-left:auto;margin-right:auto}
+body.sk .hub{grid-template-columns:minmax(0,340px) minmax(0,1fr)}
+}
+@media (min-width:700px){
+.opps{grid-template-columns:repeat(2,minmax(0,1fr))}
+.opps .eyebrow{grid-column:1/-1}
+.opps .opp{grid-template-columns:78px minmax(0,1fr)}
+.opps .opp .go{grid-column:1/-1}
+.opps .opp .go .btn{width:100%}
+}
+@media (min-width:761px) and (max-width:999px){
+body.sk .hub{grid-template-columns:minmax(0,1fr)}
+body.sk #hub-f{column-count:2;column-gap:28px}
+body.sk #hub-f>*{break-inside:avoid}
+body.sk #hub-f .eyebrow{break-after:avoid}
+}
 </style><script>window.CC_CLOUD={url:"https://ulwxnharicpevojoerff.supabase.co",key:"sb_publishable_5TK0S386gpVHezHm7ZydQQ_rWi9VWua",google:false};</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script></head><body>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="gmSkA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0c9a0"/><stop offset=".55" stop-color="#d89e72"/><stop offset="1" stop-color="#a86a45"/></linearGradient><linearGradient id="gmSkB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e2b48c"/><stop offset=".55" stop-color="#bf8559"/><stop offset="1" stop-color="#8a5636"/></linearGradient><linearGradient id="gmBr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe0a0"/><stop offset=".5" stop-color="#c98a2c"/><stop offset="1" stop-color="#7a4a14"/></linearGradient><linearGradient id="gmLe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a4a26"/><stop offset="1" stop-color="#4a2410"/></linearGradient><linearGradient id="gmSh" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".42"/></linearGradient><pattern id="gmArch" width="48" height="100" patternUnits="userSpaceOnUse"><rect width="48" height="100" fill="#b17a47"/><path d="M7 100V46Q7 18 24 18Q41 18 41 46V100Z" fill="#2a140c"/><path d="M7 46Q7 18 24 18Q41 18 41 46" fill="none" stroke="#e9b982" stroke-width="2.5"/></pattern><linearGradient id="gmSand" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9a066"/><stop offset="1" stop-color="#8a5a2c"/></linearGradient></defs></svg>
