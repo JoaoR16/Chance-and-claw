@@ -2753,7 +2753,7 @@ function rkHtml(){
   h+='<div class="lg-list">'+rows.map((r,i)=>{
     const ratio=r.l?(r.w/r.l).toFixed(2):(r.w?r.w+'.00':'0.00');
     const big=RK.b==='wins'?r.w+(EN?' W':' V'):RK.b==='losses'?r.l+(EN?' L':' D'):RK.b==='level'?(EN?'Lv ':'Nív. ')+r.lv:ratio;
-    return '<div class="lg-r'+(r.me?' me':'')+'"><div class="lg-rk">'+(i+1)+'</div><div><h3>'+esc(r.n)+' <small>'+(EN?'level ':'nível ')+r.lv+'</small></h3><small>'+(r.nk?esc(r.nk)+' · ':'')+r.w+(EN?'W ':'V ')+r.l+(EN?'L':'D')+' · '+(EN?'ratio ':'rácio ')+ratio+'</small></div><div class="go"><strong>'+big+'</strong></div></div>';
+    return '<div class="lg-r'+(r.me?' me':'')+'"><div class="lg-rk">'+(i+1)+'</div><div><h3>'+(r.nk?'<small class="rk-acc">'+esc(r.nk)+' ·</small> ':'')+esc(r.n)+' <small>'+(EN?'level ':'nível ')+r.lv+'</small></h3><small>'+r.w+(EN?'W ':'V ')+r.l+(EN?'L':'D')+' · '+(EN?'ratio ':'rácio ')+ratio+'</small></div><div class="go"><strong>'+big+'</strong></div></div>';
   }).join('')+'</div>';
   return h;
 }
