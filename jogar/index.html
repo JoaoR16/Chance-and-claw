@@ -447,6 +447,7 @@ body.sk #hub-f .eyebrow{break-after:avoid}
 body.sk .lg-r h3,body.sk .lg-r .go strong{color:var(--ink)}
 body.sk .lg-r h3 small{color:var(--muted)}
 body.sk .rk-note{color:#e8d9b5}
+body.sk .wrap>section#s-rank{max-width:980px;margin-left:auto;margin-right:auto}
 </style><script>window.CC_CLOUD={url:"https://ulwxnharicpevojoerff.supabase.co",key:"sb_publishable_5TK0S386gpVHezHm7ZydQQ_rWi9VWua",google:false};</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script></head><body>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="gmSkA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0c9a0"/><stop offset=".55" stop-color="#d89e72"/><stop offset="1" stop-color="#a86a45"/></linearGradient><linearGradient id="gmSkB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e2b48c"/><stop offset=".55" stop-color="#bf8559"/><stop offset="1" stop-color="#8a5636"/></linearGradient><linearGradient id="gmBr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe0a0"/><stop offset=".5" stop-color="#c98a2c"/><stop offset="1" stop-color="#7a4a14"/></linearGradient><linearGradient id="gmLe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a4a26"/><stop offset="1" stop-color="#4a2410"/></linearGradient><linearGradient id="gmSh" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".42"/></linearGradient><pattern id="gmArch" width="48" height="100" patternUnits="userSpaceOnUse"><rect width="48" height="100" fill="#b17a47"/><path d="M7 100V46Q7 18 24 18Q41 18 41 46V100Z" fill="#2a140c"/><path d="M7 46Q7 18 24 18Q41 18 41 46" fill="none" stroke="#e9b982" stroke-width="2.5"/></pattern><linearGradient id="gmSand" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9a066"/><stop offset="1" stop-color="#8a5a2c"/></linearGradient></defs></svg>
@@ -457,7 +458,7 @@ body.sk .rk-note{color:#e8d9b5}
       <p class="tagline">Os combates são automáticos. A sorte decide como o lutador evolui.</p>
       <p class="evtag" id="evtag"></p>
     </div>
-    <nav class="row"><button class="btn ghost small" id="btn-lang" type="button"></button><button class="btn ghost small" id="btn-acc" hidden>A tua conta</button><button class="btn ghost small" id="btn-league" hidden>Liga</button><button class="btn ghost small" id="btn-friends" hidden>Amigos</button><button class="btn ghost small" id="btn-hist" hidden>Histórico</button><button class="btn ghost small" id="btn-guide">Guia</button><div class="langbox setbox" id="setbox"><button type="button" class="lb-cur" aria-haspopup="true" aria-expanded="false" aria-label="Definições" title="Definições"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.5-2-3.4-2.3.9a7.6 7.6 0 0 0-2.6-1.5L14 2.5h-4l-.5 2.5a7.6 7.6 0 0 0-2.6 1.5l-2.3-.9-2 3.4 2 1.5a7.6 7.6 0 0 0 0 3l-2 1.5 2 3.4 2.3-.9a7.6 7.6 0 0 0 2.6 1.5l.5 2.5h4l.5-2.5a7.6 7.6 0 0 0 2.6-1.5l2.3.9 2-3.4z"/></svg></button><div class="lb-menu" hidden><button type="button" class="lb-it" id="btn-snd" role="switch" aria-checked="true"><span>Som</span><span class="sw" aria-hidden="true"></span></button></div></div></nav>
+    <nav class="row"><button class="btn ghost small" id="btn-lang" type="button"></button><button class="btn ghost small" id="btn-acc" hidden>A tua conta</button><button class="btn ghost small" id="btn-league" hidden>Liga</button><button class="btn ghost small" id="btn-friends" hidden>Amigos</button><button class="btn ghost small" id="btn-rank" hidden>Rankings</button><button class="btn ghost small" id="btn-hist" hidden>Histórico</button><button class="btn ghost small" id="btn-guide">Guia</button><div class="langbox setbox" id="setbox"><button type="button" class="lb-cur" aria-haspopup="true" aria-expanded="false" aria-label="Definições" title="Definições"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.5-2-3.4-2.3.9a7.6 7.6 0 0 0-2.6-1.5L14 2.5h-4l-.5 2.5a7.6 7.6 0 0 0-2.6 1.5l-2.3-.9-2 3.4 2 1.5a7.6 7.6 0 0 0 0 3l-2 1.5 2 3.4 2.3-.9a7.6 7.6 0 0 0 2.6 1.5l.5 2.5h4l.5-2.5a7.6 7.6 0 0 0 2.6-1.5l2.3.9 2-3.4z"/></svg></button><div class="lb-menu" hidden><button type="button" class="lb-it" id="btn-snd" role="switch" aria-checked="true"><span>Som</span><span class="sw" aria-hidden="true"></span></button></div></div></nav>
   </header>
 
   <section id="s-login" hidden>
@@ -605,6 +606,17 @@ body.sk .rk-note{color:#e8d9b5}
       <button class="btn ghost small" id="lg-back">Voltar</button>
     </div>
     <div id="lg-body" style="margin-top:18px"></div>
+  </section>
+
+    <section id="s-rank" hidden>
+    <div class="acc-head">
+      <div>
+        <h2>Rankings</h2>
+        <p class="lead" style="margin-bottom:0">Os melhores lutadores do jogo. Os números vêm do servidor, por isso não dá para os falsificar.</p>
+      </div>
+      <button class="btn ghost small" id="rk-back">Voltar</button>
+    </div>
+    <div id="rk-body" style="margin-top:18px"></div>
   </section>
 
   <div id="toast" role="status" aria-live="polite" hidden></div>
@@ -1253,15 +1265,16 @@ function refreshSnd(){
 }
 function show(id){
   document.body.classList.add('sk');
-  ['s-login','s-account','s-create','s-hub','s-fight','s-guide','s-history','s-league','s-tut'].forEach(x=>{$(x).hidden=x!==id});
-  if(id!=='s-guide'&&id!=='s-history'&&id!=='s-league'&&id!=='s-tut'&&id!=='s-login')lastScreen=id;
+  ['s-login','s-account','s-create','s-hub','s-fight','s-guide','s-history','s-league','s-rank','s-tut'].forEach(x=>{$(x).hidden=x!==id});
+  if(id!=='s-guide'&&id!=='s-history'&&id!=='s-league'&&id!=='s-rank'&&id!=='s-tut'&&id!=='s-login')lastScreen=id;
   $('btn-lang').hidden=id==='s-fight';
   $('btn-acc').hidden=!(ACC&&ACC.chars.length)||id==='s-fight'||id==='s-account';
   $('btn-guide').hidden=id==='s-fight'||id==='s-guide';
   $('btn-league').hidden=!(ACC&&ACC.chars.length)||id==='s-fight'||id==='s-league'||id==='s-create';
   $('btn-friends').hidden=!(window.CC_CLOUD&&ACC&&ACC.chars.length)||id==='s-fight'||id==='s-league'||id==='s-create';
+  $('btn-rank').hidden=!(window.CC_CLOUD&&ACC&&ACC.chars.length)||id==='s-fight'||id==='s-rank'||id==='s-create';
   $('btn-hist').hidden=!S||id==='s-fight'||id==='s-create'||id==='s-history';
-  if(id==='s-tut'||id==='s-login')['btn-acc','btn-hist','btn-league','btn-friends','btn-guide'].forEach(b=>{$(b).hidden=true});
+  if(id==='s-tut'||id==='s-login')['btn-acc','btn-hist','btn-league','btn-friends','btn-rank','btn-guide'].forEach(b=>{$(b).hidden=true});
   refreshSnd();
   const ev=curEv();$('evtag').textContent='Evento de hoje: '+ev.nome+'. '+ev.desc;
 }
@@ -2482,28 +2495,6 @@ async function lsRoster(){
     if(rj&&rj.dropped>0)toast(rj.dropped+(rj.dropped>1?' lutadores não ficam visíveis aos amigos':' lutador não fica visível aos amigos')+': o servidor não confirmou o progresso deles.');
   }catch(e){}
 }
-
-const RK={data:null,loading:false,err:'',b:'wins'};
-const RK_B=[['wins','Mais vitórias'],['level','Maior nível'],['ratio','Melhor rácio'],['losses','Os mais azarados']];
-async function rkLoad(){
-  RK.loading=true;RK.err='';lsRender();
-  try{const j=await lsCall('rank');RK.data=j.boards;RK.min=j.min||20}catch(e){RK.err=e.code||'net'}
-  RK.loading=false;lsRender();
-}
-function rkHtml(){
-  let h='<div class="row" role="tablist" style="margin-bottom:12px">'+RK_B.map(x=>'<button class="btn small'+(RK.b===x[0]?'':' ghost')+'" role="tab" aria-selected="'+(RK.b===x[0])+'" data-ls="rkb" data-b="'+x[0]+'">'+x[1]+'</button>').join('')+'<button class="btn ghost small" data-ls="rkr"'+(RK.loading?' disabled':'')+'>Atualizar</button></div>';
-  h+='<p class="msg rk-note" style="margin:0 0 10px">'+(RK.b==='ratio'?(EN?'Win/loss ratio, for fighters with at least '+(RK.min||20)+' counted fights.':'Rácio vitórias/derrotas, só para lutadores com pelo menos '+(RK.min||20)+' combates contados.'):RK.b==='losses'?(EN?'For a laugh: the unluckiest fighters in the arena.':'Para rir: os lutadores mais azarados da arena.'):(EN?'Normal, challenge and tournament fights count. Friendly duels and imported rivals do not.':'Contam os combates normais, o desafio diário e o torneio. Lutas com amigos e rivais importados não contam.'))+'</p>';
-  if(RK.loading&&!RK.data)return h+'<p class="msg">A carregar...</p>';
-  if(RK.err&&!RK.data)return h+'<p class="err" role="alert">Não foi possível carregar os rankings agora.</p>';
-  const rows=(RK.data&&RK.data[RK.b])||[];
-  if(!rows.length)return h+'<p class="msg">Ainda não há resultados neste ranking. Luta para aparecer aqui.</p>';
-  h+='<div class="lg-list">'+rows.map((r,i)=>{
-    const tot=r.w+r.l,ratio=r.l?(r.w/r.l).toFixed(2):(r.w?r.w+'.00':'0.00');
-    const big=RK.b==='wins'?r.w+(EN?' W':' V'):RK.b==='losses'?r.l+(EN?' L':' D'):RK.b==='level'?(EN?'Lv ':'Nív. ')+r.lv:ratio;
-    return '<div class="lg-r'+(r.me?' me':'')+'"><div class="lg-rk">'+(i+1)+'</div><div><h3>'+esc(r.n)+' <small>'+(EN?'level ':'nível ')+r.lv+'</small></h3><small>'+(r.nk?esc(r.nk)+' · ':'')+r.w+(EN?'W ':'V ')+r.l+(EN?'L':'D')+' · '+(EN?'ratio ':'rácio ')+ratio+'</small></div><div class="go"><strong>'+big+'</strong></div></div>';
-  }).join('')+'</div>';
-  return h;
-}
 async function lsOpen(){
   LS.err='';LS.leave=false;lsRender();
   await lsRoster();
@@ -2692,13 +2683,13 @@ function lsRender(){
   if(fd.length)h+='<h3 class="gh" style="margin-top:22px">Últimos duelos</h3><ul class="lg-feed">'+fd.map(d=>'<li><strong>'+esc(d.an)+'</strong>'+(d.a===uid?' (tu)':'')+' '+(d.won?'venceu':'perdeu contra')+' <strong>'+esc(d.bn)+'</strong>'+(d.b===uid?' (tu)':'')+' <small>'+fmtDT(Date.parse(d.created_at))+'</small></li>').join('')+'</ul>';
   const fa=h.indexOf('<!--FR-->'),fb=h.indexOf('<!--/FR-->'),fch=h.slice(fa+9,fb),rest=h.slice(0,fa)+h.slice(fb+10);
   const nin=LS.fr?LS.fr.list.filter(x=>x.status==='in').length:0;
-  const tabs='<div class="row" role="tablist" style="margin-bottom:14px"><button class="btn small'+(LS.tab==='liga'?'':' ghost')+'" role="tab" aria-selected="'+(LS.tab==='liga')+'" data-ls="tab" data-t="liga">Liga</button><button class="btn small'+(LS.tab==='amigos'?'':' ghost')+'" role="tab" aria-selected="'+(LS.tab==='amigos')+'" data-ls="tab" data-t="amigos">Amigos'+(nin?' ('+nin+')':'')+'</button><button class="btn small'+(LS.tab==='torneios'?'':' ghost')+'" role="tab" aria-selected="'+(LS.tab==='torneios')+'" data-ls="tab" data-t="torneios">Torneios</button><button class="btn small'+(LS.tab==='rank'?'':' ghost')+'" role="tab" aria-selected="'+(LS.tab==='rank')+'" data-ls="tab" data-t="rank">Rankings</button></div>';
+  const tabs='<div class="row" role="tablist" style="margin-bottom:14px"><button class="btn small'+(LS.tab==='liga'?'':' ghost')+'" role="tab" aria-selected="'+(LS.tab==='liga')+'" data-ls="tab" data-t="liga">Liga</button><button class="btn small'+(LS.tab==='amigos'?'':' ghost')+'" role="tab" aria-selected="'+(LS.tab==='amigos')+'" data-ls="tab" data-t="amigos">Amigos'+(nin?' ('+nin+')':'')+'</button><button class="btn small'+(LS.tab==='torneios'?'':' ghost')+'" role="tab" aria-selected="'+(LS.tab==='torneios')+'" data-ls="tab" data-t="torneios">Torneios</button></div>';
   const h2=document.querySelector('#s-league h2'),ld=document.querySelector('#s-league .lead');
-  if(h2)h2.textContent=LS.tab==='rank'?'Rankings':LS.tab==='amigos'?'Amigos':LS.tab==='torneios'?'Torneios':'Liga';
-  if(ld)ld.textContent=LS.tab==='rank'?'Os melhores lutadores do jogo. Os números vêm do servidor, por isso não dá para os falsificar.':LS.tab==='torneios'?'Cria um torneio de 4 ou 8 jogadores, partilha o código e vê quem fica com o título.':LS.tab==='amigos'?'Adiciona amigos com o código deles e luta contra os lutadores que eles partilham. As lutas amigáveis não dão XP nem pontos.':'Entra com um dos teus lutadores. Os outros jogadores podem desafiá-lo e tu podes desafiar os deles. Os duelos são automáticos, mesmo que o dono não esteja online.';
+  if(h2)h2.textContent=LS.tab==='amigos'?'Amigos':LS.tab==='torneios'?'Torneios':'Liga';
+  if(ld)ld.textContent=LS.tab==='torneios'?'Cria um torneio de 4 ou 8 jogadores, partilha o código e vê quem fica com o título.':LS.tab==='amigos'?'Adiciona amigos com o código deles e luta contra os lutadores que eles partilham. As lutas amigáveis não dão XP nem pontos.':'Entra com um dos teus lutadores. Os outros jogadores podem desafiá-lo e tu podes desafiar os deles. Os duelos são automáticos, mesmo que o dono não esteja online.';
   const keep=($('fr-code')||{}).value||'',pm=($('fr-me')||{}).value,pt=($('fr-them')||{}).value;
   const keepT={n:($('tn-name')||{}).value,s:($('tn-size')||{}).value,m:($('tn-me')||{}).value,c:($('tn-code')||{}).value};
-  el.innerHTML=tabs+(LS.tab==='rank'?rkHtml():LS.tab==='torneios'?tnHtml():LS.tab==='amigos'?fch:rest);
+  el.innerHTML=tabs+(LS.tab==='torneios'?tnHtml():LS.tab==='amigos'?fch:rest);
   if($('tn-name')&&keepT.n!==undefined)LS.tn.name=keepT.n,$('tn-name').value=keepT.n;
   if($('tn-size')&&keepT.s!==undefined)$('tn-size').value=keepT.s;
   if($('tn-me')&&keepT.m!==undefined)$('tn-me').value=keepT.m;
@@ -2712,9 +2703,7 @@ $('lg-body').addEventListener('click',async e=>{
   const b=e.target.closest('[data-ls]');if(!b||b.disabled)return;
   const a=b.dataset.ls;
   if(a==='acc')renderAccount();
-  else if(a==='tab'){LS.tab=b.dataset.t==='amigos'?'amigos':b.dataset.t==='torneios'?'torneios':b.dataset.t==='rank'?'rank':'liga';lsRender();if(LS.tab==='torneios')tnLoad();if(LS.tab==='rank')rkLoad()}
-  else if(a==='rkb'){RK.b=b.dataset.b;lsRender()}
-  else if(a==='rkr')rkLoad()
+  else if(a==='tab'){LS.tab=b.dataset.t==='amigos'?'amigos':b.dataset.t==='torneios'?'torneios':'liga';lsRender();if(LS.tab==='torneios')tnLoad()}
   else if(a==='tback'){LS.tn.sel=null;LS.tn.detail=null;lsRender()}
   else if(a==='topen')await tnOpenDetail(+b.dataset.id)
   else if(a==='twatch')tnWatch(+b.dataset.r,+b.dataset.m)
@@ -2740,6 +2729,40 @@ function lgOpen(){
   LG.leave=false;show('s-league');lgInit();lgRender();lgSync();
 }
 $('btn-league').addEventListener('click',()=>{if(!busy){LS.tab='liga';lgOpen()}});
+
+const RK={data:null,loading:false,err:'',b:'wins',min:20};
+const RK_B=[['wins','Mais vitórias'],['level','Maior nível'],['ratio','Melhor rácio'],['losses','Os mais azarados']];
+async function rkLoad(){
+  if(!(window.CC_CLOUD&&CL&&CL.user)){rkRender();return}
+  RK.loading=true;RK.err='';rkRender();
+  try{const j=await lsCall('rank');RK.data=j.boards;RK.min=j.min||20}catch(e){RK.err=e.code||'net'}
+  RK.loading=false;rkRender();
+}
+function rkHtml(){
+  if(!(window.CC_CLOUD&&CL&&CL.user))return '<div class="panel"><p>Inicia sessão com a tua conta online para veres os rankings.</p></div>';
+  let h='<div class="row" role="tablist" style="margin-bottom:12px">'+RK_B.map(x=>'<button class="btn small'+(RK.b===x[0]?'':' ghost')+'" role="tab" aria-selected="'+(RK.b===x[0])+'" data-rk="b" data-b="'+x[0]+'">'+x[1]+'</button>').join('')+'<button class="btn ghost small" data-rk="r"'+(RK.loading?' disabled':'')+'>Atualizar</button></div>';
+  h+='<p class="msg rk-note" style="margin:0 0 10px">'+(RK.b==='ratio'?(EN?'Win/loss ratio, for fighters with at least '+(RK.min||20)+' counted fights.':'Rácio vitórias/derrotas, só para lutadores com pelo menos '+(RK.min||20)+' combates contados.'):RK.b==='losses'?(EN?'For a laugh: the unluckiest fighters in the arena.':'Para rir: os lutadores mais azarados da arena.'):(EN?'Normal, challenge and tournament fights count. Friendly duels and imported rivals do not.':'Contam os combates normais, o desafio diário e o torneio. Lutas com amigos e rivais importados não contam.'))+'</p>';
+  if(RK.loading&&!RK.data)return h+'<p class="msg rk-note">A carregar...</p>';
+  if(RK.err&&!RK.data)return h+'<p class="err" role="alert">Não foi possível carregar os rankings agora.</p>';
+  const rows=(RK.data&&RK.data[RK.b])||[];
+  if(!rows.length)return h+'<p class="msg rk-note">Ainda não há resultados neste ranking. Luta para aparecer aqui.</p>';
+  h+='<div class="lg-list">'+rows.map((r,i)=>{
+    const ratio=r.l?(r.w/r.l).toFixed(2):(r.w?r.w+'.00':'0.00');
+    const big=RK.b==='wins'?r.w+(EN?' W':' V'):RK.b==='losses'?r.l+(EN?' L':' D'):RK.b==='level'?(EN?'Lv ':'Nív. ')+r.lv:ratio;
+    return '<div class="lg-r'+(r.me?' me':'')+'"><div class="lg-rk">'+(i+1)+'</div><div><h3>'+esc(r.n)+' <small>'+(EN?'level ':'nível ')+r.lv+'</small></h3><small>'+(r.nk?esc(r.nk)+' · ':'')+r.w+(EN?'W ':'V ')+r.l+(EN?'L':'D')+' · '+(EN?'ratio ':'rácio ')+ratio+'</small></div><div class="go"><strong>'+big+'</strong></div></div>';
+  }).join('')+'</div>';
+  return h;
+}
+function rkRender(){const el=$('rk-body');if(el)el.innerHTML=rkHtml()}
+function rkOpen(){show('s-rank');rkRender();rkLoad()}
+$('btn-rank').addEventListener('click',()=>{if(!busy)rkOpen()});
+$('rk-back').addEventListener('click',()=>{
+  if(lastScreen==='s-hub'&&S)renderHub();else if(lastScreen==='s-account')renderAccount();else show(lastScreen);
+});
+$('rk-body').addEventListener('click',e=>{
+  const b=e.target.closest('[data-rk]');if(!b||b.disabled)return;
+  if(b.dataset.rk==='b'){RK.b=b.dataset.b;rkRender()}else if(b.dataset.rk==='r')rkLoad();
+});
 $('btn-friends').addEventListener('click',()=>{if(!busy){LS.tab='amigos';lgOpen()}});
 $('lg-back').addEventListener('click',()=>{
   if(lastScreen==='s-hub'&&S)renderHub();else if(lastScreen==='s-account')renderAccount();else show(lastScreen);
