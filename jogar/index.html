@@ -2789,6 +2789,7 @@ function clErr(e){
   if(c==='email_not_confirmed')return 'Ainda não confirmaste o email. Abre o link que te enviámos.';
   if(c==='weak_password')return 'Palavra-passe fraca ou já exposta em fugas de dados. Escolhe outra, com pelo menos 8 caracteres.';
   if(c==='same_password')return 'Essa já é a tua palavra-passe atual.';
+  if(c==='reauthentication_needed'||c==='current_password_required')return 'Para mudar uma palavra-passe que já existe, sai da conta e usa "Esqueci-me da palavra-passe" no ecrã de entrada.';
   if(c==='user_already_exists'||c==='email_exists')return 'Já existe uma conta com esse email. Usa "Entrar".';
   if(c===429||c==='over_email_send_rate_limit'||c==='over_request_rate_limit')return 'Pediste emails a mais. Espera uns minutos e tenta outra vez.';
   if(c==='otp_expired'||c==='invalid_otp'||/expired|invalid/i.test((e&&e.message)||''))return 'Esse código ou link já não é válido. Pede um novo.';
@@ -3051,7 +3052,11 @@ $('lg-form').addEventListener('submit',async ev=>{
         upd.data.nickname=nk;
       }else if(LGN.setup&&LGN.nick){upd.data.nickname=LGN.nick}
       lgMsg('A guardar…');
-      const {data:ud,error}=await CL.sb.auth.updateUser(upd);
+      let {data:ud,error}=await CL.sb.auth.updateUser(upd);
+      if(error&&LGN.setup&&(error.code==='reauthentication_needed'||error.code==='current_password_required')){
+        // a conta já tem palavra-passe: só marcamos como completa
+        const r2=await CL.sb.auth.updateUser({data:upd.data});ud=r2.data;error=r2.error;
+      }
       if(error){lgMsg(clErr(error));return}
       if(ud&&ud.user)CL.user=ud.user;
       clNick();clRender();
@@ -3076,6 +3081,7 @@ $('lg-form').addEventListener('submit',async ev=>{
     lgMsg('A entrar…');
     const {error}=await CL.sb.auth.signInWithPassword({email,password:pw});
     if(error){lgMsg(clErr(error));return}
+    try{const r3=await CL.sb.auth.updateUser({data:{has_pw:true}});if(r3&&r3.data&&r3.data.user)CL.user=r3.data.user}catch(e){}
     $('lg-pw').value='';lgMsg('');
   }finally{$('lg-go').disabled=false}
 });
