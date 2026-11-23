@@ -2781,17 +2781,22 @@ function rkHtml(){
   h+='<div class="lg-list">'+rows.map((r,i)=>{
     const ratio=r.l?(r.w/r.l).toFixed(2):(r.w?r.w+'.00':'0.00');
     const big=RK.b==='wins'?r.w+(EN?' W':' V'):RK.b==='losses'?r.l+(EN?' L':' D'):RK.b==='level'?(EN?'Lv ':'Nív. ')+r.lv:ratio;
-    const lgm=r.me?[]:(LS.rows||[]).filter(x=>x.fname===r.n&&x.user_id!==lsUid()),dz=lgm.length===1?'<br><button type="button" class="btn small" data-rk="d" data-id="'+esc(lgm[0].user_id)+'"'+(LS.busy?' disabled':'')+'>'+(EN?'Challenge':'Desafiar')+'</button>':'';
+    const dz=(!r.me&&r.u)?'<br><button type="button" class="btn small" data-rk="d" data-id="'+esc(r.u)+'" data-fn="'+esc(r.n)+'"'+(RK.busy?' disabled':'')+'>'+(EN?'Challenge':'Desafiar')+'</button>':'';
     return '<div class="lg-r'+(r.me?' me':'')+'"><div class="lg-rk">'+(i+1)+'</div><div><h3>'+(r.nk?'<small class="rk-acc">'+esc(r.nk)+' ·</small> ':'')+esc(r.n)+' <small>'+(EN?'level ':'nível ')+r.lv+'</small></h3><small>'+r.w+(EN?'W ':'V ')+r.l+(EN?'L':'D')+' · '+(EN?'ratio ':'rácio ')+ratio+'</small></div><div class="go"><strong>'+big+'</strong>'+dz+'</div></div>';
   }).join('')+'</div>';
   return h;
 }
-async function rkDuel(id){
-  if(busy||LS.busy)return;
-  if(!lsMine()||!lgChamp()){toast(EN?'Join the League with a fighter first to challenge others.':'Entra primeiro na Liga com um lutador para poderes desafiar.');return}
-  LS.err='';
-  await lsDuel(id);
-  if(LS.err){toast(LS_ERR[LS.err]||LS_ERR.net);LS.err=''}
+const RK_ERR={target_not_visible:'Este lutador não está visível para desafios.',target_gone:'Esse lutador já não está no ranking.',too_fast:'Calma, espera uns segundos entre combates.'};
+async function rkDuel(id,fn){
+  if(busy||RK.busy||!S)return;
+  const c=S;RK.busy=true;rkRender();
+  let j;
+  try{j=await lsCall('rduel',{target:id,fname:fn,code:exportFighter(c.f)})}
+  catch(e){RK.busy=false;rkRender();toast(RK_ERR[e.code]||LS_ERR[e.code]||LS_ERR.net);return}
+  RK.busy=false;
+  const rb=importFighter(j.tcode||'');
+  if(rb.err){rkRender();toast(RK_ERR.target_not_visible);return}
+  await runFight({f:rb.f,rival:true,friendly:true,diff:'Ranking',xp:0,scene:j.scene,ev:j.ev,pre:j.res},false);
 }
 function rkRender(){const el=$('rk-body');if(el)el.innerHTML=rkHtml()}
 function rkOpen(){show('s-rank');rkRender();rkLoad()}
@@ -2802,7 +2807,7 @@ $('rk-back').addEventListener('click',()=>{
 $('rk-body').addEventListener('click',e=>{
   const b=e.target.closest('[data-rk]');if(!b||b.disabled)return;
   if(b.dataset.rk==='b'){RK.b=b.dataset.b;rkRender()}else if(b.dataset.rk==='r')rkLoad();
-  else if(b.dataset.rk==='d')rkDuel(b.dataset.id);
+  else if(b.dataset.rk==='d')rkDuel(b.dataset.id,b.dataset.fn);
 });
 $('btn-friends').addEventListener('click',()=>{if(!busy){LS.tab='amigos';lgOpen()}});
 $('lg-back').addEventListener('click',()=>{
