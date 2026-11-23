@@ -927,7 +927,7 @@ let _evk='',_ev=EVENTS[0],_evForce=null;
 function forceEvent(id){_evForce=EVENTS.find(e=>e.id===id)||null}
 function curEv(){
   if(_evForce)return _evForce;
-  const d=new Date(),k=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+  const d=new Date(),k=d.getUTCFullYear()+'-'+(d.getUTCMonth()+1)+'-'+d.getUTCDate();
   if(k!==_evk){_evk=k;let h=0;for(let i=0;i<k.length;i++)h=(h*31+k.charCodeAt(i))>>>0;_ev=EVENTS[h%EVENTS.length]}
   return _ev;
 }
@@ -1261,7 +1261,7 @@ function saveAcc(){try{localStorage.setItem(KEY2,JSON.stringify(ACC));localStora
 
 let lastScreen='s-create',guideTab='weapons';
 const tourCost=()=>curEv().cost||5;
-function dayStr(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
+function dayStr(){const d=new Date();return d.getUTCFullYear()+'-'+(d.getUTCMonth()+1)+'-'+d.getUTCDate()}
 function dateLabel(){const d=new Date();return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')}
 function refreshSnd(){
   const off=!!(ACC&&ACC.mute);
@@ -1723,8 +1723,8 @@ function tourPanel(){
   const c=Math.min(5,S.charge||0);
   return '<div class="tour"><h2 class="right-h">Torneio</h2><p class="right-p" style="margin-bottom:12px">8 lutadores, 3 rondas, eliminação direta. Quem ganha recebe uma recompensa: 2 pontos de atributo (83%), uma habilidade (10%), uma arma (5%) ou um animal (2%, menos se já tiveres animais). Entrar gasta '+tourCost()+' combates normais.</p>'+
     '<p class="rec" style="margin:0 0 10px">Enquanto o torneio estiver em curso, não podes fazer combates normais nem o desafio diário.</p>'+
-    '<div class="xp" role="progressbar" aria-valuemin="0" aria-valuemax="5" aria-valuenow="'+c+'" aria-label="Combates para o torneio"><i style="width:'+(c*20)+'%"></i></div>'+
-    '<small>'+c+' / 5 combates'+(S.titles?' · Torneios ganhos: '+S.titles:'')+'</small>'+
+    '<div class="xp" role="progressbar" aria-valuemin="0" aria-valuemax="'+tourCost()+'" aria-valuenow="'+Math.min(c,tourCost())+'" aria-label="Combates para o torneio"><i style="width:'+Math.min(100,Math.round(c/tourCost()*100))+'%"></i></div>'+
+    '<small>'+c+' / '+tourCost()+' combates'+(S.titles?' · Torneios ganhos: '+S.titles:'')+'</small>'+
     '<div class="row" style="margin-top:12px"><button class="btn" data-tenter="1"'+(c>=tourCost()?'':' disabled')+'>Entrar no torneio</button></div></div>';
 }
 function awardXp(gain){
