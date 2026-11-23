@@ -457,6 +457,8 @@ body.sk{--sky:#cfe3ee;--floor:#cdd5d3;--sun:#f3c969;--hpB:#8fd9b0;--dawn1:#f9d5b
 #lg-link,#lg-google,#cl-email,label[for=cl-email],#cl-send,#cl-google,#cl-codebox{display:none!important}
 
 .pet-ren{font:600 12px var(--f-body);background:transparent;border:1px solid var(--line);border-radius:6px;padding:1px 8px;margin-left:6px;color:var(--focus);cursor:pointer}.pet-in{font:inherit;font-weight:700;width:9em;max-width:60%;padding:1px 6px;border:1px solid var(--line);border-radius:6px;background:#fbf4e1;color:var(--ink)}
+
+#rk-body .lg-r .go .btn{margin-top:4px}
 </style><script>window.CC_CLOUD={url:"https://ulwxnharicpevojoerff.supabase.co",key:"sb_publishable_5TK0S386gpVHezHm7ZydQQ_rWi9VWua",google:false};</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script></head><body>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="gmSkA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0c9a0"/><stop offset=".55" stop-color="#d89e72"/><stop offset="1" stop-color="#a86a45"/></linearGradient><linearGradient id="gmSkB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e2b48c"/><stop offset=".55" stop-color="#bf8559"/><stop offset="1" stop-color="#8a5636"/></linearGradient><linearGradient id="gmBr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe0a0"/><stop offset=".5" stop-color="#c98a2c"/><stop offset="1" stop-color="#7a4a14"/></linearGradient><linearGradient id="gmLe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a4a26"/><stop offset="1" stop-color="#4a2410"/></linearGradient><linearGradient id="gmSh" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".42"/></linearGradient><linearGradient id="gmSteel" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f4f7fb"/><stop offset=".45" stop-color="#b7bfca"/><stop offset="1" stop-color="#6f7886"/></linearGradient><linearGradient id="gmWood" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#a87444"/><stop offset=".6" stop-color="#6b4423"/><stop offset="1" stop-color="#43290f"/></linearGradient><linearGradient id="gmFire" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe27a"/><stop offset=".5" stop-color="#ff8c2a"/><stop offset="1" stop-color="#c8281a"/></linearGradient><pattern id="gmArch" width="48" height="100" patternUnits="userSpaceOnUse"><rect width="48" height="100" fill="#b17a47"/><path d="M7 100V46Q7 18 24 18Q41 18 41 46V100Z" fill="#2a140c"/><path d="M7 46Q7 18 24 18Q41 18 41 46" fill="none" stroke="#e9b982" stroke-width="2.5"/></pattern><linearGradient id="gmSand" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9a066"/><stop offset="1" stop-color="#8a5a2c"/></linearGradient></defs></svg>
@@ -2765,6 +2767,7 @@ async function rkLoad(){
   if(!(window.CC_CLOUD&&CL&&CL.user)){rkRender();return}
   RK.loading=true;RK.err='';rkRender();
   try{const j=await lsCall('rank');RK.data=j.boards;RK.min=j.min||20}catch(e){RK.err=e.code||'net'}
+  try{const bd=await CL.sb.rpc('league_board');if(!bd.error&&bd.data){LS.rows=bd.data.f||[];LS.duels=bd.data.d||[]}}catch(e){}
   RK.loading=false;rkRender();
 }
 function rkHtml(){
@@ -2778,9 +2781,17 @@ function rkHtml(){
   h+='<div class="lg-list">'+rows.map((r,i)=>{
     const ratio=r.l?(r.w/r.l).toFixed(2):(r.w?r.w+'.00':'0.00');
     const big=RK.b==='wins'?r.w+(EN?' W':' V'):RK.b==='losses'?r.l+(EN?' L':' D'):RK.b==='level'?(EN?'Lv ':'Nív. ')+r.lv:ratio;
-    return '<div class="lg-r'+(r.me?' me':'')+'"><div class="lg-rk">'+(i+1)+'</div><div><h3>'+(r.nk?'<small class="rk-acc">'+esc(r.nk)+' ·</small> ':'')+esc(r.n)+' <small>'+(EN?'level ':'nível ')+r.lv+'</small></h3><small>'+r.w+(EN?'W ':'V ')+r.l+(EN?'L':'D')+' · '+(EN?'ratio ':'rácio ')+ratio+'</small></div><div class="go"><strong>'+big+'</strong></div></div>';
+    const lgm=r.me?[]:(LS.rows||[]).filter(x=>x.fname===r.n&&x.user_id!==lsUid()),dz=lgm.length===1?'<br><button type="button" class="btn small" data-rk="d" data-id="'+esc(lgm[0].user_id)+'"'+(LS.busy?' disabled':'')+'>'+(EN?'Challenge':'Desafiar')+'</button>':'';
+    return '<div class="lg-r'+(r.me?' me':'')+'"><div class="lg-rk">'+(i+1)+'</div><div><h3>'+(r.nk?'<small class="rk-acc">'+esc(r.nk)+' ·</small> ':'')+esc(r.n)+' <small>'+(EN?'level ':'nível ')+r.lv+'</small></h3><small>'+r.w+(EN?'W ':'V ')+r.l+(EN?'L':'D')+' · '+(EN?'ratio ':'rácio ')+ratio+'</small></div><div class="go"><strong>'+big+'</strong>'+dz+'</div></div>';
   }).join('')+'</div>';
   return h;
+}
+async function rkDuel(id){
+  if(busy||LS.busy)return;
+  if(!lsMine()||!lgChamp()){toast(EN?'Join the League with a fighter first to challenge others.':'Entra primeiro na Liga com um lutador para poderes desafiar.');return}
+  LS.err='';
+  await lsDuel(id);
+  if(LS.err){toast(LS_ERR[LS.err]||LS_ERR.net);LS.err=''}
 }
 function rkRender(){const el=$('rk-body');if(el)el.innerHTML=rkHtml()}
 function rkOpen(){show('s-rank');rkRender();rkLoad()}
@@ -2791,6 +2802,7 @@ $('rk-back').addEventListener('click',()=>{
 $('rk-body').addEventListener('click',e=>{
   const b=e.target.closest('[data-rk]');if(!b||b.disabled)return;
   if(b.dataset.rk==='b'){RK.b=b.dataset.b;rkRender()}else if(b.dataset.rk==='r')rkLoad();
+  else if(b.dataset.rk==='d')rkDuel(b.dataset.id);
 });
 $('btn-friends').addEventListener('click',()=>{if(!busy){LS.tab='amigos';lgOpen()}});
 $('lg-back').addEventListener('click',()=>{
