@@ -1449,8 +1449,8 @@ function optCard(o,i){
   return '<button class="up" data-up="'+i+'"><span class="kind">'+kind+'</span><strong>'+name+'</strong><span>'+desc+'</span>'+(hs.length?'<span class="hint">Completa o combo '+hs.map(id=>COMBOS[id].nome).join(', ')+'</span>':'')+'</button>';
 }
 
-let _twAt=0;
-function twSync(){if(!srvOn()||Date.now()-_twAt<30000)return;_twAt=Date.now();lsCall('tstatus').then(j=>{const had=twLeft()>0;if(j.wait>0)twSet(j.wait*1000);else{try{localStorage.removeItem('cc_tw')}catch(e){}}if(had!==(j.wait>0)||j.wait>0)renderHub()}).catch(()=>{})}
+const _twAt={};
+function twSync(){if(!srvOn()||!S||!S.f)return;const k=twKey();if(Date.now()-(_twAt[k]||0)<30000)return;_twAt[k]=Date.now();lsCall('tstatus',{code:exportFighter(S.f)}).then(j=>{if(twKey()!==k)return;const had=twLeft()>0;if(j.wait>0)twSet(j.wait*1000);else{try{localStorage.removeItem(k)}catch(e){}}if(had!==(j.wait>0)||j.wait>0)renderHub()}).catch(()=>{})}
 function renderHub(){twSync();
   const f=S.f,need=xpNeed(f.level),mult=derive(f).xp;
   $('hub-f').innerHTML=
@@ -1702,15 +1702,16 @@ function resolveNpc(t){
     if(m.w===null&&m.a!==t.p&&m.b!==t.p)m.w=simulate(t.field[m.a],t.field[m.b]).winner==='a'?m.a:m.b;
   });
 }
-function twLeft(){try{return Math.max(0,(+localStorage.getItem('cc_tw')||0)-Date.now())}catch(e){return 0}}
-function twSet(ms){try{localStorage.setItem('cc_tw',String(Date.now()+ms))}catch(e){}}
+function twKey(){return 'cc_tw_'+((S&&S.f&&S.f.name)||'')}
+function twLeft(){try{return Math.max(0,(+localStorage.getItem(twKey())||0)-Date.now())}catch(e){return 0}}
+function twSet(ms){try{localStorage.setItem(twKey(),String(Date.now()+ms))}catch(e){}}
 function twLabel(){const r=twLeft();if(!r)return EN?'Enter the tournament':'Entrar no torneio';const t=Math.ceil(r/1000),m=Math.floor(t/60),s=t%60;return (EN?'Wait ':'Espera ')+m+':'+(s<10?'0':'')+s}
 setInterval(()=>{const b=document.querySelector('[data-tenter]');if(!b)return;const r=twLeft();b.textContent=twLabel();if(r>0)b.disabled=true;else if((S&&S.charge||0)>=tourCost()&&!S.tour)b.disabled=false},1000);
 async function tourEnter(){
   let j=null;
   if(srvOn()){
     busy=true;
-    try{j=await lsCall('tstart')}catch(e){busy=false;if(e.code==='tour_wait'){twSet((+e.wait||3600)*1000);renderHub();const m=Math.max(1,Math.ceil((+e.wait||3600)/60));toast(EN?'Only one tournament per hour. Try again in '+m+' min.':'Só podes fazer um torneio por hora. Tenta outra vez daqui a '+m+' min.')}else toast(PVE_ERR[e.code]||PVE_ERR.net);return}
+    try{j=await lsCall('tstart',{code:exportFighter(S.f)})}catch(e){busy=false;if(e.code==='tour_wait'){twSet((+e.wait||3600)*1000);renderHub();const m=Math.max(1,Math.ceil((+e.wait||3600)/60));toast(EN?'Only one tournament per hour. Try again in '+m+' min.':'Só podes fazer um torneio por hora. Tenta outra vez daqui a '+m+' min.')}else toast(PVE_ERR[e.code]||PVE_ERR.net);return}
     busy=false;
   }
   if(j)twSet(3600000);
