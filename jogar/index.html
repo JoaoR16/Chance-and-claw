@@ -878,6 +878,7 @@ const PETS={
   aguia:{nome:'Águia',rar:'Muito rara',w:10,min:2,max:3,acc:1,sure:true,cd:230,fly:true,desc:'Mergulha do ar e nunca falha: 2–3 de dano.'},
   elefante:{nome:'Elefante',rar:'Lendária',w:5,desc:'Passivo: o dono ganha +10% de PV.'}
 };
+const PET_ORDER=['gato','cao','raposa','cobra','tartaruga','coruja','javali','urso','lobo','corvo','aguia','elefante','dragao','fenix'];
 const MAX_PETS=3,PET_RANK=[1,.75,.55];
 const PET_EV=[0,25,60],PET_DMG=[1,1.15,1.4],PET_GATO=[.07,.12,.18],PET_TART=[.09,.1,.12],PET_COR=[.04,.05,.06],PET_COR_A=[.07,.08,.09],PET_FEN=[0,.04,.08],PET_GATO_T=[0,.04,.08],PET_RAP_D=[.05,.07,.09],PET_RAP_C=[.06,.08,.1],PET_ELE=[.1,.12,.15];
 const SCENES=[
@@ -2055,7 +2056,7 @@ function renderGuide(){
   }else if(guideTab==='events'){
     h='<p class="lead" style="margin:4px 0 12px">Cada dia tem um evento que muda as regras para todos. Muda à meia-noite.</p><div class="gcards">'+EVENTS.map(ev=>gcard('',ev.nome,ev.desc,'',ev.id===curEv().id,'','Hoje')).join('')+'</div>';
   }else{
-    h='<p class="lead" style="margin:4px 0 12px">Podes ter até '+MAX_PETS+' animais. Os que atacam depois do primeiro fazem 75% e 55% do dano, e cada novo animal é mais difícil de encontrar. Os animais ficam mais fortes à medida que o dono sobe de nível. Evoluem ao nível 25 (fase 2) e ao nível 60 (fase 3) do dono: ficam mais fortes e o efeito passivo também melhora.</p><div class="gcards">'+Object.keys(PETS).map(id=>gcard('',PETS[id].nome,PETS[id].desc,'Raridade: '+PETS[id].rar+(petScenes(id)?' · '+petScenes(id):''),f&&petsOf(f).includes(id),petSvg(id))).join('')+'</div>';
+    h='<p class="lead" style="margin:4px 0 12px">Podes ter até '+MAX_PETS+' animais. Os que atacam depois do primeiro fazem 75% e 55% do dano, e cada novo animal é mais difícil de encontrar. Os animais ficam mais fortes à medida que o dono sobe de nível. Evoluem ao nível 25 (fase 2) e ao nível 60 (fase 3) do dono: ficam mais fortes e o efeito passivo também melhora.</p><div class="gcards">'+PET_ORDER.filter(id=>PETS[id]).map(id=>gcard('',PETS[id].nome,PETS[id].desc,'Raridade: '+PETS[id].rar+(petScenes(id)?' · '+petScenes(id):''),f&&petsOf(f).includes(id),petSvg(id))).join('')+'</div>';
   }
   $('guide-body').innerHTML=h;
   $('guide-sub').textContent=f||guideTab==='ach'||guideTab==='events'||guideTab==='scenes'?'As cartas com contorno grosso estão ativas ou desbloqueadas.':'Cria um lutador para veres o que ele tem.';
