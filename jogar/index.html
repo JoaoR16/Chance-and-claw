@@ -1449,7 +1449,9 @@ function optCard(o,i){
   return '<button class="up" data-up="'+i+'"><span class="kind">'+kind+'</span><strong>'+name+'</strong><span>'+desc+'</span>'+(hs.length?'<span class="hint">Completa o combo '+hs.map(id=>COMBOS[id].nome).join(', ')+'</span>':'')+'</button>';
 }
 
-function renderHub(){
+let _twAt=0;
+function twSync(){if(!srvOn()||Date.now()-_twAt<30000)return;_twAt=Date.now();lsCall('tstatus').then(j=>{const had=twLeft()>0;if(j.wait>0)twSet(j.wait*1000);else{try{localStorage.removeItem('cc_tw')}catch(e){}}if(had!==(j.wait>0)||j.wait>0)renderHub()}).catch(()=>{})}
+function renderHub(){twSync();
   const f=S.f,need=xpNeed(f.level),mult=derive(f).xp;
   $('hub-f').innerHTML=
     '<div class="top fcard">'+miniSvg(f)+'<div><div class="eyebrow">Nível '+f.level+'</div><h2>'+esc(f.name)+'</h2><div class="rec">'+S.wins+(S.wins===1?' vitória':' vitórias')+' · '+S.losses+(S.losses===1?' derrota':' derrotas')+(S.titles?' · '+S.titles+(S.titles===1?' torneio ganho':' torneios ganhos'):'')+'</div></div></div>'+
