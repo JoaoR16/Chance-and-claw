@@ -1761,6 +1761,7 @@ function tourPanel(){
   const c=Math.min(5,S.charge||0);
   return '<div class="tour"><h2 class="right-h">Torneio</h2><p class="right-p" style="margin-bottom:12px">8 lutadores, 3 rondas, eliminação direta. Quem ganha recebe uma recompensa: 2 pontos de atributo (83%), uma habilidade (10%), uma arma (5%) ou um animal (2%, menos se já tiveres animais). Entrar gasta '+tourCost()+' combates normais.</p>'+
     '<p class="rec" style="margin:0 0 10px">Enquanto o torneio estiver em curso, não podes fazer combates normais nem o desafio diário.</p>'+
+    '<p class="rec" style="margin:0 0 10px">'+(EN?'Tournament winners wait only 30 minutes for the next one.':'Quem ganha o torneio espera só 30 minutos pelo seguinte.')+'</p>'+
     '<div class="xp" role="progressbar" aria-valuemin="0" aria-valuemax="'+tourCost()+'" aria-valuenow="'+Math.min(c,tourCost())+'" aria-label="Combates para o torneio"><i style="width:'+Math.min(100,Math.round(c/tourCost()*100))+'%"></i></div>'+
     '<small>'+Math.min(c,tourCost())+' / '+tourCost()+' combates'+(S.titles?' · Torneios ganhos: '+S.titles:'')+'</small>'+
     '<div class="row" style="margin-top:12px"><button class="btn" data-tenter="1"'+(c>=tourCost()&&!twLeft()?'':' disabled')+'>'+twLabel()+'</button></div></div>';
@@ -1816,7 +1817,7 @@ function finishTour(res,opp){
       t.rd=rd+1;t.rounds.push(mkRound(winners));resolveNpc(t);
       next=' Próxima ronda: '+TOUR_ROUNDS[t.rd]+', contra '+esc(tourOpp(t).name)+'.';
     }else{
-      champion=true;S.titles=(S.titles||0)+1;S.tour=null;
+      champion=true;S.titles=(S.titles||0)+1;S.tour=null;{const r=twLeft();if(r>1800000)twSet(1800000)}
       const rw=opp.sv&&opp.sv.reward?tourRewardFx(S.f,opp.sv.reward):tourReward(S.f,curEv().pet||1);found=rw.found;rewardText=rw.text;
     }
   }else{S.losses++;gain=opp.sv?opp.sv.gain:Math.max(1,Math.round(4*mult));S.tour=null}
