@@ -132,6 +132,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;max-width:360
 .gc .d{font-size:14px;color:var(--muted)}
 .gc .st{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 .gc svg{width:88px;height:auto}
+.gc svg.wsv{width:auto;height:96px;align-self:flex-start;background:#d9c9a3;border-radius:8px;padding:2px 6px}
 .chip.o{color:var(--ink)}
 .tour{padding-bottom:22px;border-bottom:1px solid var(--line)}
 .tour-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
@@ -2060,6 +2061,7 @@ function petShape(id){
     default:return '';
   }
 }
+function weaponSvg(id){return '<svg class="wsv" viewBox="-30 -95 70 100" aria-hidden="true">'+weaponShape(id)+'</svg>'}
 function petSvg(id){return '<svg viewBox="-50 -75 110 85" aria-hidden="true">'+petShape(id)+'</svg>'}
 function petBlock(f){
   const pl=petsOf(f);
@@ -2102,7 +2104,7 @@ function renderGuide(){
   document.querySelectorAll('[data-gt]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.gt===guideTab)));
   let h='';
   if(guideTab==='weapons'){
-    h='<p class="lead" style="margin:4px 0 12px">Quando tens várias armas, o lutador usa uma de cada vez. Em cerca de 1 de cada 4 ataques larga a que tinha e pega noutra, e a que largou fica de fora até ao fim do combate. Cada arma extra dá +8% de dano (até +24%). A Força aumenta mais o dano das armas pesadas.</p><p class="lead" style="margin:0 0 12px">Maestria: quando uma arma dá o golpe final numa vitória (contra adversários até 3 níveis abaixo de ti, ou mais fortes), ganha 1 ponto de maestria. Aos 15, 50 e 120 pontos a arma dá +2%, +4% e +7% de dano. Cada lutador tem a sua.</p><div class="gcards">'+Object.keys(WEAPONS).filter(id=>id!=='punhos').map(id=>{const w=WEAPONS[id];return gcard('',w.nome,w.desc,'Dano '+w.min+'–'+w.max+' · precisão '+Math.min(100,Math.round(w.acc*100))+'%'+(f&&f.weapons.includes(id)?' · '+masTag(f,id):''),f&&f.weapons.includes(id))}).join('')+'</div>';
+    h='<p class="lead" style="margin:4px 0 12px">Quando tens várias armas, o lutador usa uma de cada vez. Em cerca de 1 de cada 4 ataques larga a que tinha e pega noutra, e a que largou fica de fora até ao fim do combate. Cada arma extra dá +8% de dano (até +24%). A Força aumenta mais o dano das armas pesadas.</p><p class="lead" style="margin:0 0 12px">Maestria: quando uma arma dá o golpe final numa vitória (contra adversários até 3 níveis abaixo de ti, ou mais fortes), ganha 1 ponto de maestria. Aos 15, 50 e 120 pontos a arma dá +2%, +4% e +7% de dano. Cada lutador tem a sua.</p><div class="gcards">'+Object.keys(WEAPONS).filter(id=>id!=='punhos').map(id=>{const w=WEAPONS[id];return gcard('',w.nome,w.desc,'Dano '+w.min+'–'+w.max+' · precisão '+Math.min(100,Math.round(w.acc*100))+'%'+(f&&f.weapons.includes(id)?' · '+masTag(f,id):''),f&&f.weapons.includes(id),weaponSvg(id))}).join('')+'</div>';
   }else if(guideTab==='skills'){
     h='<div class="gcards">'+Object.keys(SKILLS).map(id=>gcard('',SKILLS[id].nome,SKILLS[id].desc,'',f&&f.skills.includes(id))).join('')+'</div>';
   }else if(guideTab==='traits'){
