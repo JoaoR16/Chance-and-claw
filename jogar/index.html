@@ -1704,7 +1704,7 @@ async function tourEnter(){
   let j=null;
   if(srvOn()){
     busy=true;
-    try{j=await lsCall('tstart')}catch(e){busy=false;toast(PVE_ERR[e.code]||PVE_ERR.net);return}
+    try{j=await lsCall('tstart')}catch(e){busy=false;if(e.code==='tour_wait'){const m=Math.max(1,Math.ceil((+e.wait||3600)/60));toast(EN?'Only one tournament per hour. Try again in '+m+' min.':'Só podes fazer um torneio por hora. Tenta outra vez daqui a '+m+' min.')}else toast(PVE_ERR[e.code]||PVE_ERR.net);return}
     busy=false;
   }
   newTour();if(j&&j.charge!=null)S.charge=j.charge;
@@ -2503,7 +2503,7 @@ async function lsCall(action,extra){
   try{r=await fetch(window.CC_CLOUD.url+'/functions/v1/league',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+s.access_token,apikey:window.CC_CLOUD.key},body:JSON.stringify(Object.assign({action},extra||{}))})}
   catch(e){throw Object.assign(new Error('net'),{code:'net'})}
   try{j=await r.json()}catch(e){}
-  if(!r.ok||j.err)throw Object.assign(new Error(j.err||'net'),{code:j.err||'net'});
+  if(!r.ok||j.err)throw Object.assign(new Error(j.err||'net'),{code:j.err||'net',wait:j.wait});
   return j;
 }
 async function lsLoad(){
