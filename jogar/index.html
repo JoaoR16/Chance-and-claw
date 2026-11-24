@@ -1121,9 +1121,10 @@ function makeOpponent(level,rng=Math.random,used=[]){
   return f;
 }
 const BK=1;
+const WSWAP=.25;
 const PETLV=.05,XW=.08,PH=.08,ULT=.8,FEN=.85;
 function simulate(fa,fb,rng=Math.random){
-  const mk=f=>{const d=derive(f),pl=petsOf(f).filter(id=>PETS[id].cd).map((id,i)=>({id,p:PETS[id],pt:PETS[id].cd*d.petSpd*(.6+.4*rng()),mul:(1+((curScene().fx[id]||{}).pdmg||0))*(PET_RANK[i]||.5)*(1+PETLV*Math.max(0,f.level-8))}));return{f,d,hp:d.maxHp,n:0,used:false,ph:false,pets:pl,shield:f.skills.includes('escudo')?6:0,streak:0,t:d.cd*(.6+.4*rng())*(f.skills.includes('primeiro')?.4:1)}};
+  const mk=f=>{const d=derive(f),pl=petsOf(f).filter(id=>PETS[id].cd).map((id,i)=>({id,p:PETS[id],pt:PETS[id].cd*d.petSpd*(.6+.4*rng()),mul:(1+((curScene().fx[id]||{}).pdmg||0))*(PET_RANK[i]||.5)*(1+PETLV*Math.max(0,f.level-8))}));return{f,d,hp:d.maxHp,n:0,used:false,ph:false,pets:pl,shield:f.skills.includes('escudo')?6:0,streak:0,ws:f.weapons.slice(),cur:null,t:d.cd*(.6+.4*rng())*(f.skills.includes('primeiro')?.4:1)}};
   const C={a:mk(fa),b:mk(fb)},ev=[];
   function revive(D,e){
     if(D.f.skills.includes('ultimo')&&!D.used){D.used=true;if(rng()<ULT){D.hp=1;e.saved=true;return}}
@@ -1150,7 +1151,12 @@ function simulate(fa,fb,rng=Math.random){
   }
   function strike(s,counter,kind){
     const o=s==='a'?'b':'a',A=C[s],D=C[o];
-    const wid=A.f.weapons.length?A.f.weapons[Math.floor(rng()*A.f.weapons.length)]:'punhos';
+    let wid='punhos';
+    if(A.ws.length){
+      if(A.cur===null)A.cur=A.ws[Math.floor(rng()*A.ws.length)];
+      else if(A.ws.length>1&&rng()<WSWAP){A.ws=A.ws.filter(x=>x!==A.cur);A.cur=A.ws[Math.floor(rng()*A.ws.length)]}
+      wid=A.cur;
+    }
     const w=WEAPONS[wid];
     const e={a:s,d:o,w:wid,counter:!!counter,double:kind==='duplo'};
     if(A.f.skills.includes('regen')&&A.hp<A.d.maxHp){const r=Math.min(1,A.d.maxHp-A.hp);A.hp+=r;e.regen=r}
@@ -1169,7 +1175,7 @@ function simulate(fa,fb,rng=Math.random){
       if(crit)dmg*=A.f.skills.includes('trevo')?1.95:1.6;
       dmg=Math.round(dmg*D.d.taken);
       if(D.f.skills.includes('coura')&&!w.pierce)dmg-=1;
-      if(D.f.weapons.includes('bastao'))dmg-=1;
+      if(D.ws.includes('bastao'))dmg-=1;
       dmg=Math.max(1,dmg);
       if(D.shield>0){const ab=Math.min(D.shield,dmg);D.shield-=ab;dmg-=ab;e.shield=ab}
       D.hp-=dmg;
