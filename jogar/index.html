@@ -1485,7 +1485,7 @@ $('hub-r').addEventListener('click',e=>{
   else if(b.dataset.rival!==undefined)startRival(+b.dataset.rival);
   else if(b.dataset.chal!==undefined)startChallenge();
   else if(b.dataset.cshare!==undefined)shareChal();
-  else if(b.dataset.tenter!==undefined){if((S.charge||0)>=tourCost()&&!S.tour&&!busy)tourEnter()}
+  else if(b.dataset.tenter!==undefined){if((S.charge||0)>=tourCost()&&!S.tour&&!busy&&!twLeft())tourEnter()}
   else if(b.dataset.tfight!==undefined&&S.tour){tourQuit=false;runFight({f:tourOpp(S.tour),diff:'',xp:0,scene:(S.tour.scs||[])[S.tour.rd]},true)}
   else if(b.dataset.tquit!==undefined){
     const v=b.dataset.tquit;
@@ -1700,13 +1700,18 @@ function resolveNpc(t){
     if(m.w===null&&m.a!==t.p&&m.b!==t.p)m.w=simulate(t.field[m.a],t.field[m.b]).winner==='a'?m.a:m.b;
   });
 }
+function twLeft(){try{return Math.max(0,(+localStorage.getItem('cc_tw')||0)-Date.now())}catch(e){return 0}}
+function twSet(ms){try{localStorage.setItem('cc_tw',String(Date.now()+ms))}catch(e){}}
+function twLabel(){const r=twLeft();if(!r)return EN?'Enter the tournament':'Entrar no torneio';const t=Math.ceil(r/1000),m=Math.floor(t/60),s=t%60;return (EN?'Wait ':'Espera ')+m+':'+(s<10?'0':'')+s}
+setInterval(()=>{const b=document.querySelector('[data-tenter]');if(!b)return;const r=twLeft();b.textContent=twLabel();if(r>0)b.disabled=true;else if((S&&S.charge||0)>=tourCost()&&!S.tour)b.disabled=false},1000);
 async function tourEnter(){
   let j=null;
   if(srvOn()){
     busy=true;
-    try{j=await lsCall('tstart')}catch(e){busy=false;if(e.code==='tour_wait'){const m=Math.max(1,Math.ceil((+e.wait||3600)/60));toast(EN?'Only one tournament per hour. Try again in '+m+' min.':'Só podes fazer um torneio por hora. Tenta outra vez daqui a '+m+' min.')}else toast(PVE_ERR[e.code]||PVE_ERR.net);return}
+    try{j=await lsCall('tstart')}catch(e){busy=false;if(e.code==='tour_wait'){twSet((+e.wait||3600)*1000);renderHub();const m=Math.max(1,Math.ceil((+e.wait||3600)/60));toast(EN?'Only one tournament per hour. Try again in '+m+' min.':'Só podes fazer um torneio por hora. Tenta outra vez daqui a '+m+' min.')}else toast(PVE_ERR[e.code]||PVE_ERR.net);return}
     busy=false;
   }
+  if(j)twSet(3600000);
   newTour();if(j&&j.charge!=null)S.charge=j.charge;
   tourQuit=false;saveAcc();renderHub();
 }
@@ -1749,7 +1754,7 @@ function tourPanel(){
     '<p class="rec" style="margin:0 0 10px">Enquanto o torneio estiver em curso, não podes fazer combates normais nem o desafio diário.</p>'+
     '<div class="xp" role="progressbar" aria-valuemin="0" aria-valuemax="'+tourCost()+'" aria-valuenow="'+Math.min(c,tourCost())+'" aria-label="Combates para o torneio"><i style="width:'+Math.min(100,Math.round(c/tourCost()*100))+'%"></i></div>'+
     '<small>'+Math.min(c,tourCost())+' / '+tourCost()+' combates'+(S.titles?' · Torneios ganhos: '+S.titles:'')+'</small>'+
-    '<div class="row" style="margin-top:12px"><button class="btn" data-tenter="1"'+(c>=tourCost()?'':' disabled')+'>Entrar no torneio</button></div></div>';
+    '<div class="row" style="margin-top:12px"><button class="btn" data-tenter="1"'+(c>=tourCost()&&!twLeft()?'':' disabled')+'>'+twLabel()+'</button></div></div>';
 }
 function awardXp(gain){
   const lv=S.f.level;S.f.xp+=gain;
