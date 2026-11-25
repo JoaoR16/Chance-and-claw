@@ -1448,7 +1448,7 @@ function masRecord(res,opp,sv){
   if(sv&&sv.mas)f.mas=cleanMas(sv.mas,f);
   else if(res.winner==='a'&&res.kw&&opp.f.level>=f.level-3){f.mas=f.mas||{};f.mas[res.kw]=(f.mas[res.kw]||0)+1}
   const up=Object.keys(f.mas||{}).filter(k=>masLv(f,k)>(b[k]||0));
-  if(up.length)toast(up.map(k=>(EN?'Mastery: ':'Maestria: ')+T(WEAPONS[k].nome)+(EN?' reached level ':' subiu para o nível ')+masLv(f,k)).join(' · '))
+  if(up.length)toast(up.map(k=>(EN?'Mastery: ':'Maestria: ')+(window.TR?window.TR(WEAPONS[k].nome):WEAPONS[k].nome)+(EN?' reached level ':' subiu para o nível ')+masLv(f,k)).join(' · '))
 }
 function weaponList(f){
   const ids=f.weapons.length?f.weapons:['punhos'];
