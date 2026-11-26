@@ -815,7 +815,7 @@ document.addEventListener('keydown',function(e){if(e.key!=='Escape')return;boxes
 const WEAPONS={
   punhos:{nome:'Punhos',min:2,max:4,acc:1,cd:0,desc:'Sem arma.'},
   moca:{nome:'Moca',min:7,max:10,acc:.9,cd:16,desc:'Pesada e fiável.'},
-  adaga:{nome:'Adaga',min:2,max:4,acc:1,cd:-55,crit:.1,desc:'Muito rápida, +10% de crítico.'},
+  adaga:{nome:'Adaga',min:3,max:5,acc:1,cd:-36,crit:.1,desc:'Muito rápida, +10% de crítico.'},
   machado:{nome:'Machado',min:11,max:16,acc:.78,cd:52,desc:'Dano enorme, lento e menos preciso.'},
   espada:{nome:'Espada',min:5,max:8,acc:.95,cd:-6,desc:'Equilibrada e precisa.'},
   lanca:{nome:'Lança',min:6,max:9,acc:.92,cd:7,pierce:true,desc:'Ignora a Couraça do adversário.'},
@@ -890,7 +890,7 @@ const PETS={
   tartaruga:{nome:'Tartaruga',rar:'Rara',w:18,desc:'Passivo: o dono sofre menos 9% de dano.'},
   coruja:{nome:'Coruja',rar:'Rara',w:18,desc:'Passivo: o dono ganha +3% de precisão e +3% de crítico.'},
   lobo:{nome:'Lobo',rar:'Muito rara',w:12,min:3,max:5,acc:.8,cd:175,desc:'Caça em matilha com o dono: 3–5 de dano.'},
-  dragao:{nome:'Dragão',rar:'Lendária',w:4,min:3,max:5,acc:1,sure:true,cd:250,fly:true,desc:'Cospe fogo do ar e nunca falha: 3–5 de dano.'},
+  dragao:{nome:'Dragão',rar:'Lendária',w:4,min:3,max:5,acc:1,sure:true,cd:300,fly:true,desc:'Cospe fogo do ar e nunca falha: 3–5 de dano.'},
   raposa:{nome:'Raposa',rar:'Rara',w:24,desc:'Passivo: o dono ganha +5% de esquiva e +6% de crítico.'},
   javali:{nome:'Javali',rar:'Muito rara',w:14,min:4,max:7,acc:.8,cd:210,desc:'Carrega com força: 4–7 de dano.'},
   cobra:{nome:'Cobra',rar:'Rara',w:22,min:2,max:3,acc:.92,cd:120,desc:'Ataca depressa: 2–3 de dano.'},
