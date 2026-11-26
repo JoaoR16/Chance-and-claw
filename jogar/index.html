@@ -1511,9 +1511,9 @@ function oppCard(o,attr){
   const mult=derive(S.f).xp,d=derive(o.f),cls=o.diff==='Fácil'?'f':o.diff==='Igual'?'i':'d';
   const extras=o.f.weapons.map(id=>WEAPONS[id].nome).concat(o.f.skills.map(id=>SKILLS[id].nome)).concat(petsOf(o.f).length?['Animais: '+petsOf(o.f).map(id=>PETS[id].nome).join(', ')]:[]);
   return '<div class="opp">'+miniSvg(o.f)+
-    '<div><h3>'+esc(o.f.name)+'</h3><div class="meta"><span class="chip '+cls+'">'+o.diff+'</span><small>Nível '+o.f.level+' · +'+Math.max(1,Math.round(o.xp*mult))+' XP</small><small>Vitória estimada: '+est+'%</small></div>'+
+    '<div><h3>'+esc(o.f.name)+'</h3><div class="meta"><span class="chip '+cls+'">'+o.diff+'</span>'+(o.real?'<span class="chip">'+NT('Real','Real')+'</span>':'')+'<small>Nível '+o.f.level+' · +'+Math.max(1,Math.round(o.xp*mult))+' XP</small><small>Vitória estimada: '+est+'%</small></div>'+
     '<div class="nums">'+d.maxHp+' PV · For '+o.f.stats.forca+' · Agi '+o.f.stats.agi+' · Vel '+o.f.stats.vel+'</div>'+
-    sceneNote(o)+'<div class="tchips" style="margin-top:6px">'+o.f.traits.map(traitChip).join('')+'</div>'+
+    (o.real&&o.nk?'<div class="nums">'+NT('Jogador: ','Player: ')+esc(o.nk)+'</div>':'')+sceneNote(o)+'<div class="tchips" style="margin-top:6px">'+o.f.traits.map(traitChip).join('')+'</div>'+
     (extras.length?'<div class="nums">'+extras.join(' · ')+'</div>':'')+'</div>'+
     '<div class="go"><button class="btn" '+attr+'>Lutar</button></div></div>';
 }
@@ -1552,10 +1552,10 @@ function renderHub(){twSync();
       '<div class="row" style="margin-top:12px"><button class="btn ghost" data-reroll="1"'+(S.rr>0?'':' disabled')+'>'+(S.rr>0?'Sortear outra (1 troca)':'Troca já usada')+'</button></div>';
   }else{
     if(S.tour)$('hub-r').innerHTML=tourPanel()+'<div class="panel" style="margin-top:18px"><h3>Torneio em curso</h3><p class="right-p" style="margin:6px 0 0">Enquanto estiveres num torneio só podes jogar o torneio e lutas que não dão XP (liga, amigos e torneios online). Termina o torneio ou desiste para voltares aos combates normais e ao desafio diário.</p></div>';
-    else $('hub-r').innerHTML=natalPanel()+'<div class="tc-row">'+tourPanel()+challengePanel()+'</div>'+'<h2 class="right-h" style="margin-top:26px">Combate normal</h2><p class="right-p">Dois adversários por dificuldade. Quanto mais forte, mais experiência ganhas, e cada um tem o seu cenário sorteado. Perder também dá um pouco.</p><div class="opps">'+
+    else $('hub-r').innerHTML=natalPanel()+'<div class="tc-row">'+tourPanel()+challengePanel()+'</div>'+'<h2 class="right-h" style="margin-top:26px">Combate normal</h2><p class="right-p">Dois adversários por dificuldade. Quanto mais forte, mais experiência ganhas, e cada um tem o seu cenário sorteado. Perder também dá um pouco.</p>'+(srvOn()?'<p class="right-p">'+NT('Alguns adversários são lutadores reais de outros jogadores, com nível parecido (só com a conta online). Ganhas o mesmo XP.','Some opponents are real fighters from other players, at a similar level (online account only). You earn the same XP.')+'</p>':'')+'<div class="opps">'+
       S.opps.map((o,i)=>(i%2===0?'<div class="eyebrow" style="margin-top:'+(i?'10':'0')+'px">'+o.diff+'</div>':'')+oppCard(o,'data-fight="'+i+'"')).join('')+'</div>'+rivalsHtml();
   }
-  show('s-hub');bossLoad();
+  show('s-hub');bossLoad();realTry();
 }
 $('hub-r').addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b||busy)return;
@@ -2036,6 +2036,36 @@ async function bossClaim(){
   if(!has){S.f.pets=petsOf(S.f).concat('rena');delete S.f.pet}
   ACC.bx=1;saveAcc();checkAch({});
   toast(NT('Recompensa recebida: Rena e Coroa de gelo!','Reward received: Reindeer and Ice crown!'));renderHub();
+}
+
+/* ===== lutadores reais nos combates normais ===== */
+const REAL_SLOTS=[3,5];
+let _realBusy=false,_realAt={};
+function realFits(i,l,L){return i===3?Math.abs(l-L)<=1:l>=L+1&&l<=L+2}
+async function realTry(){
+  if(!srvOn()||!S||!S.f||S.tour||S.opts||_realBusy)return;
+  const slots=REAL_SLOTS.filter(i=>S.opps[i]&&!S.opps[i].real);
+  if(!slots.length)return;
+  const k=S.f.name+'|'+S.f.level,now=Date.now();
+  if(now-(_realAt[k]||0)<45000)return;
+  _realAt[k]=now;
+  const me=S,L=S.f.level;_realBusy=true;
+  try{
+    const j=await lsCall('real_opps',{level:L,exclude:S.opps.map(o=>o.f.name).concat([S.f.name])});
+    if(S!==me||me.tour||me.opts||me.f.level!==L)return;
+    const pool=(j.list||[]).map(x=>{const r=importFighter(x.code);return r.err?null:{f:r.f,nk:x.nk||''}}).filter(Boolean);
+    let ch=false;
+    for(const i of slots){
+      const o=me.opps[i];if(!o||o.real)continue;
+      const used=me.opps.map(x=>x.f.name);
+      const c=pool.find(p=>realFits(i,p.f.level,L)&&!used.includes(p.f.name));
+      if(!c)continue;
+      const l=c.f.level;
+      me.opps[i]={f:c.f,diff:OPP_CATS[i],xp:(l<L?6:l===L?10:16)+(petsOf(c.f).length?4:0),scene:rndScene(),real:true,nk:c.nk};
+      ch=true;
+    }
+    if(ch){saveAcc();if(S===me&&!$('s-hub').hidden&&!busy)renderHub()}
+  }catch(e){}finally{_realBusy=false}
 }
 
 function startFight(i){return runFight(S.opps[i],false)}
